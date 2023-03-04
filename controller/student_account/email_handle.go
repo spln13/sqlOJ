@@ -18,7 +18,16 @@ import (
 func SendCodeHandle(context *gin.Context) {
 	emailAddr := context.Query("email")
 	// 查询此邮箱是否已经被注册过
-	//ok, err := cache.CheckEmailCodeSendTimeValid()
+	ok, err := cache.CheckEmailCodeSendTimeValid(emailAddr)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, err.Error()))
+		return
+	}
+	if !ok {
+		context.JSON(http.StatusOK, common.NewCommonResponse(1, "请求间隔少于1分钟"))
+		return
+	}
+
 	exist, err := model.NewStudentAccountFlow().QueryStudentExistByEmail(emailAddr)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, err.Error()))

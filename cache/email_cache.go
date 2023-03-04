@@ -9,12 +9,20 @@ import (
 // CheckEmailCodeSendTimeValid 验证请求时间是否大于cache中下次可发送时间
 func CheckEmailCodeSendTimeValid(email string) (bool, error) {
 	nextSendTimeKey := email + "_next_send_time"
+	exists, err := rdb.Exists(ctx, email).Result()
+	if err != nil {
+		log.Println(err)
+		return false, errors.New("查询缓存key错误")
+	}
+	if exists == 0 { // 不存在该键
+		return true, nil // 合法
+	}
 	nextSendTime, err := rdb.Get(ctx, nextSendTimeKey).Int64()
 	if err != nil {
 		log.Println(err)
 		return false, errors.New("检查发送时间错误")
 	}
-	if nextSendTime > time.Now().Unix() {
+	if nextSendTime > time.Now().Unix() { // 重新请求少于1分钟
 		return false, nil
 	}
 	return true, nil
@@ -56,6 +64,12 @@ func VerifyEmailCode(email string, code string) (bool, error) {
 	if err != nil {
 		log.Println(err)
 		return false, errors.New("清除验证码缓存错误")
+	}
+	nextSendTimeKey := email + "_next_send_time"
+	err = rdb.Del(ctx, nextSendTimeKey).Err()
+	if err != nil {
+		log.Println(err)
+		return false, errors.New("清除验证码过期时间缓存错误")
 	}
 
 	return true, nil
