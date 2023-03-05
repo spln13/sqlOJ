@@ -10,8 +10,9 @@ import (
 )
 
 func UploadTableHandle(context *gin.Context) {
-	userID, ok := context.MustGet("user_id").(int64)
-	if !ok {
+	publisherID, ok1 := context.MustGet("user_id").(int64)
+	publisherType, ok2 := context.MustGet("user_type").(int64)
+	if !ok1 || !ok2 {
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, "解析用户id错误"))
 		return
 	}
@@ -50,7 +51,7 @@ func UploadTableHandle(context *gin.Context) {
 		return
 	}
 	// 将记录插入数据库
-	if err := model.NewExerciseTableFlow().InsertExerciseTable(userID, name, description); err != nil {
+	if err := model.NewExerciseTableFlow().InsertExerciseTable(publisherID, publisherType, name, description); err != nil {
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, "更新系统数据库错误"))
 		return
 	}

@@ -17,8 +17,9 @@ type PublishExerciseData struct {
 
 // PublishExerciseHandle 完成发布题目功能
 func PublishExerciseHandle(context *gin.Context) {
-	publisherID, ok := context.MustGet("user_id").(int64) // 获取又JWT设置的user_id
-	if !ok {
+	publisherID, ok1 := context.MustGet("user_id").(int64) // 获取又JWT设置的user_id
+	publisherType, ok2 := context.MustGet("user_type").(int64)
+	if !ok1 || !ok2 {
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, "解析用户token错误"))
 		return
 	}
@@ -34,7 +35,7 @@ func PublishExerciseHandle(context *gin.Context) {
 		id := int64(tableID.(float64))
 		tableIDList = append(tableIDList, id)
 	}
-	exerciseID, err := model.NewExerciseContentFlow().InsertExerciseContent(publisherID, name, answer, description, grade, visitable)
+	exerciseID, err := model.NewExerciseContentFlow().InsertExerciseContent(publisherID, publisherType, name, answer, description, grade, visitable)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, err.Error()))
 		return

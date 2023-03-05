@@ -10,7 +10,8 @@ import (
 
 type ExerciseTable struct {
 	ID               int64 `gorm:"primary_key"`
-	PublishID        int64
+	PublisherID      int64
+	PublisherType    int64
 	Name             string
 	Description      string
 	AssociationCount int
@@ -33,11 +34,12 @@ func NewExerciseTableFlow() *ExerciseTableFlow {
 	return exerciseTableFlow
 }
 
-func (*ExerciseTableFlow) InsertExerciseTable(publishID int64, name, description string) error {
+func (*ExerciseTableFlow) InsertExerciseTable(publisherID int64, publisherType int64, name, description string) error {
 	exerciseTableDAO := &ExerciseTable{
-		PublishID:   publishID,
-		Name:        name,
-		Description: description,
+		PublisherID:   publisherID,
+		PublisherType: publisherType,
+		Name:          name,
+		Description:   description,
 	}
 	if err := GetSysDB().Transaction(func(tx *gorm.DB) error {
 		return tx.Create(exerciseTableDAO).Error
