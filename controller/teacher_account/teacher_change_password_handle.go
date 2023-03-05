@@ -9,7 +9,7 @@ import (
 )
 
 func TeacherChangePasswordHandle(context *gin.Context) {
-	UserID, ok := context.MustGet("user_id").(uint)
+	UserID, ok := context.MustGet("user_id").(int64)
 	if !ok {
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, "解析用户信息错误"))
 		return

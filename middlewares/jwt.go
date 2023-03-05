@@ -11,14 +11,14 @@ import (
 var jwtKey = []byte("key_spln")
 
 type Claims struct {
-	UserId   uint
-	UserType uint
+	UserId   int64
+	UserType int64
 	jwt.RegisteredClaims
 }
 
 // ReleaseToken 颁发管理员专属token
 // UserType -> 用户等级标识; 1 -> 学生; 2 -> 教师; 3 -> 管理员
-func ReleaseToken(ID uint, authority uint) (string, error) {
+func ReleaseToken(ID int64, authority int64) (string, error) {
 	expirationTime := time.Now().Add(7 * 24 * time.Hour)
 	claims := &Claims{
 		UserId:   ID,

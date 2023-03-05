@@ -9,8 +9,8 @@ import (
 )
 
 type ExerciseTable struct {
-	ID               uint `gorm:"primary_key"`
-	PublishID        uint
+	ID               int64 `gorm:"primary_key"`
+	PublishID        int64
 	Name             string
 	Description      string
 	AssociationCount int
@@ -33,7 +33,7 @@ func NewExerciseTableFlow() *ExerciseTableFlow {
 	return exerciseTableFlow
 }
 
-func (*ExerciseTableFlow) InsertExerciseTable(publishID uint, name, description string) error {
+func (*ExerciseTableFlow) InsertExerciseTable(publishID int64, name, description string) error {
 	exerciseTableDAO := &ExerciseTable{
 		PublishID:   publishID,
 		Name:        name,
@@ -62,7 +62,7 @@ func (*ExerciseTableFlow) QueryExerciseTableExist(name string) (bool, error) {
 }
 
 // IncreaseExerciseTableAssociationCount 自增exercise_tables中的association_count
-func (*ExerciseTableFlow) IncreaseExerciseTableAssociationCount(tableIDList []uint) error {
+func (*ExerciseTableFlow) IncreaseExerciseTableAssociationCount(tableIDList []int64) error {
 	var errReturn error
 	for _, tableID := range tableIDList {
 		if err := GetSysDB().Transaction(func(tx *gorm.DB) error {

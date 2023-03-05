@@ -10,7 +10,7 @@ import (
 )
 
 func UploadTableHandle(context *gin.Context) {
-	userID, ok := context.MustGet("user_id").(uint)
+	userID, ok := context.MustGet("user_id").(int64)
 	if !ok {
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, "解析用户id错误"))
 		return

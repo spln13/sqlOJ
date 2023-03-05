@@ -31,7 +31,7 @@ func StudentLoginHandle(context *gin.Context) {
 	}
 
 	var (
-		userID        uint
+		userID        int64
 		passwordQuery string
 	)
 	if code == 1 { // 使用用户名登录

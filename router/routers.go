@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"sqlOJ/cache"
 	"sqlOJ/controller/admin_account"
+	"sqlOJ/controller/class"
 	"sqlOJ/controller/exercise"
 	"sqlOJ/controller/student_account"
 	"sqlOJ/controller/teacher_account"
@@ -53,10 +54,15 @@ func InitServer() *gin.Engine {
 		studentGroup.POST("/change-password/", middlewares.StudentJWTMiddleware(), middlewares.TwoPasswordEncryptionMiddleware(), student_account.StudentChangePasswordHandle) // 学生改密码接口
 		studentGroup.POST("/email/send-code/", student_account.SendCodeHandle)
 	}
+	classGroup := server.Group("/api/class")
+	{
+		classGroup.POST("/create/", middlewares.TeacherJWTMiddleware(), class.CreateClassHandle)            // 教师&管理员添加班级接口
+		classGroup.POST("/add-student/", middlewares.TeacherJWTMiddleware(), class.AddStudentToClassHandle) // 教师添加学生进入班级接口
+	}
 	exerciseGroup := server.Group("/api/exercise")
 	{
-		exerciseGroup.POST("/publish/exercise", middlewares.TeacherJWTMiddleware(), exercise.PublishExerciseHandle)
-		exerciseGroup.POST("/upload/table", middlewares.TeacherJWTMiddleware(), exercise.UploadTableHandle)
+		exerciseGroup.POST("/publish/exercise", middlewares.TeacherJWTMiddleware(), exercise.PublishExerciseHandle) // 发布练习接口
+		exerciseGroup.POST("/upload/table", middlewares.TeacherJWTMiddleware(), exercise.UploadTableHandle)         // 发布练习表单接口
 	}
 	return server
 }

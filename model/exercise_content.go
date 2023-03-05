@@ -9,8 +9,8 @@ import (
 )
 
 type ExerciseContent struct {
-	ID          uint `gorm:"primary_key"`
-	PublishID   uint
+	ID          int64 `gorm:"primary_key"`
+	PublishID   int64
 	Name        string
 	Grade       int
 	Answer      string
@@ -37,7 +37,7 @@ func NewExerciseContentFlow() *ExerciseContentFlow {
 	return exerciseContentFlow
 }
 
-func (*ExerciseContentFlow) InsertExerciseContent(publishID uint, name string, answer string, description string, grade int, visitable int) (uint, error) {
+func (*ExerciseContentFlow) InsertExerciseContent(publishID int64, name string, answer string, description string, grade int, visitable int) (int64, error) {
 	exerciseContentDAO := &ExerciseContent{
 		PublishID:   publishID,
 		Name:        name,

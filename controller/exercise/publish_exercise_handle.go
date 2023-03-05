@@ -8,16 +8,16 @@ import (
 )
 
 type PublishExerciseData struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Answer      string `json:"answer"`
-	Grade       int    `json:"grade"`
-	TableIDList []uint `json:"table_id_list"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Answer      string  `json:"answer"`
+	Grade       int     `json:"grade"`
+	TableIDList []int64 `json:"table_id_list"`
 }
 
 // PublishExerciseHandle 完成发布题目功能
 func PublishExerciseHandle(context *gin.Context) {
-	publisherID, ok := context.MustGet("user_id").(uint) // 获取又JWT设置的user_id
+	publisherID, ok := context.MustGet("user_id").(int64) // 获取又JWT设置的user_id
 	if !ok {
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, "解析用户token错误"))
 		return
@@ -29,9 +29,9 @@ func PublishExerciseHandle(context *gin.Context) {
 	grade := int((*jsonMap)["grade"].(float64))
 	visitable := int((*jsonMap)["grade"].(float64))
 	tableIDInterfaceList := (*jsonMap)["table_id_list"].([]interface{})
-	var tableIDList []uint
+	var tableIDList []int64
 	for _, tableID := range tableIDInterfaceList {
-		id := uint(tableID.(float64))
+		id := int64(tableID.(float64))
 		tableIDList = append(tableIDList, id)
 	}
 	exerciseID, err := model.NewExerciseContentFlow().InsertExerciseContent(publisherID, name, answer, description, grade, visitable)

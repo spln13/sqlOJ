@@ -9,8 +9,9 @@ import (
 )
 
 type TeacherAccount struct {
-	ID        uint `gorm:"primary_key"`
-	Username  string
+	ID        int64  `gorm:"primary_key"`
+	Username  string // 此为教师职工号
+	RealName  string
 	Password  string
 	CreatedAt time.Time
 	UpdatedAt time.Time
@@ -43,19 +44,19 @@ func (*TeacherAccountFlow) QueryTeacherExistByUsername(username string) (bool, e
 	return false, nil
 }
 
-func (*TeacherAccountFlow) InsertTeacherAccount(username, password string) error {
-	teacherAccountDAO := &TeacherAccount{Username: username, Password: password}
+func (*TeacherAccountFlow) InsertTeacherAccount(username, password, realName string) error {
+	teacherAccountDAO := &TeacherAccount{Username: username, Password: password, RealName: realName}
 	if err := GetSysDB().Transaction(func(tx *gorm.DB) error {
 		return tx.Create(teacherAccountDAO).Error
 	}); err != nil {
 		log.Println(err.Error())
-		return errors.New("保存用户信息错误")
+		return errors.New("保存教师信息错误")
 	}
 	return nil
 }
 
 // QueryTeacherPasswordByUsername 通过用户名查询教师密码
-func (*TeacherAccountFlow) QueryTeacherPasswordByUsername(username string) (uint, string, error) {
+func (*TeacherAccountFlow) QueryTeacherPasswordByUsername(username string) (int64, string, error) {
 	var teacherAccountDAO TeacherAccount
 	if err := GetSysDB().Select("id", "password").Where("username = ?", username).Find(&teacherAccountDAO).Error; err != nil {
 		log.Println(err)
@@ -68,7 +69,7 @@ func (*TeacherAccountFlow) QueryTeacherPasswordByUsername(username string) (uint
 
 }
 
-func (*TeacherAccountFlow) QueryTeacherPasswordByUserID(userID uint) (string, error) {
+func (*TeacherAccountFlow) QueryTeacherPasswordByUserID(userID int64) (string, error) {
 	var teacherAccountDAO TeacherAccount
 	if err := GetSysDB().Select("password").Where("id = ?", userID).Find(&teacherAccountDAO).Error; err != nil {
 		log.Println(err)
@@ -77,7 +78,7 @@ func (*TeacherAccountFlow) QueryTeacherPasswordByUserID(userID uint) (string, er
 	return teacherAccountDAO.Password, nil
 }
 
-func (*TeacherAccountFlow) UpdateTeacherPasswordByUserID(userID uint, password string) error {
+func (*TeacherAccountFlow) UpdateTeacherPasswordByUserID(userID int64, password string) error {
 	teacherAccountDAO := &TeacherAccount{ID: userID, Password: password}
 	if err := GetSysDB().Transaction(func(tx *gorm.DB) error {
 		return tx.Model(teacherAccountDAO).Update("password", password).Error
@@ -86,4 +87,13 @@ func (*TeacherAccountFlow) UpdateTeacherPasswordByUserID(userID uint, password s
 		return errors.New("更新密码错误")
 	}
 	return nil
+}
+
+func (*TeacherAccountFlow) QueryTeacherRealNameByUsername(username string) (string, error) {
+	var teacherAccountDAO TeacherAccount
+	if err := GetSysDB().Select("username").Where("username = ?", username).Find(&teacherAccountDAO).Error; err != nil {
+		log.Println(err)
+		return "", errors.New("查询教师姓名错误")
+	}
+	return teacherAccountDAO.RealName, nil
 }

@@ -9,7 +9,7 @@ import (
 )
 
 type AdminAccount struct {
-	ID        uint `gorm:"primary_key"`
+	ID        int64 `gorm:"primary_key"`
 	Username  string
 	Password  string
 	CreatedAt time.Time
@@ -32,7 +32,7 @@ func NewAdminAccountFlow() *AdminAccountFlow {
 }
 
 // QueryAdminPasswordByUsername 根据管理员用户名查询管理员密码以及ID, ID用来颁发token
-func (*AdminAccountFlow) QueryAdminPasswordByUsername(username string) (uint, string, error) {
+func (*AdminAccountFlow) QueryAdminPasswordByUsername(username string) (int64, string, error) {
 	var adminDAO AdminAccount
 	if err := GetSysDB().Select("id", "password").Where("username = ?", username).Find(&adminDAO).Error; err != nil {
 		log.Println(err)
@@ -42,7 +42,7 @@ func (*AdminAccountFlow) QueryAdminPasswordByUsername(username string) (uint, st
 }
 
 // QueryAdminPasswordByUserID  根据管理员用户id查询管理员密码
-func (*AdminAccountFlow) QueryAdminPasswordByUserID(userID uint) (string, error) {
+func (*AdminAccountFlow) QueryAdminPasswordByUserID(userID int64) (string, error) {
 	var adminDAO AdminAccount
 	if err := GetSysDB().Select("password").Where("id = ?", userID).Find(&adminDAO).Error; err != nil {
 		log.Println(err)
@@ -79,7 +79,7 @@ func (*AdminAccountFlow) InsertAdminAccount(username, password string) error {
 	return nil
 }
 
-func (*AdminAccountFlow) UpdateAdminPassword(userID uint, newPassword string) error {
+func (*AdminAccountFlow) UpdateAdminPassword(userID int64, newPassword string) error {
 	adminDAO := &AdminAccount{
 		ID:       userID,
 		Password: newPassword,

@@ -9,9 +9,9 @@ import (
 )
 
 type StudentAccount struct {
-	ID        uint   `gorm:"primary_key"`
+	ID        int64  `gorm:"primary_key"`
 	Number    string `gorm:"primary_key"`
-	ClassID   uint
+	ClassID   int64
 	Username  string
 	Email     string
 	Password  string
@@ -35,7 +35,7 @@ func NewStudentAccountFlow() *StudentAccountFlow {
 	return studentAccountFlow
 }
 
-func (*StudentAccountFlow) InsertStudentAccount(username, password, number, realName, email string) (uint, error) {
+func (*StudentAccountFlow) InsertStudentAccount(username, password, number, realName, email string) (int64, error) {
 	studentAccountDAO := &StudentAccount{
 		Number:   number,
 		Username: username,
@@ -52,7 +52,7 @@ func (*StudentAccountFlow) InsertStudentAccount(username, password, number, real
 	return studentAccountDAO.ID, nil
 }
 
-func (*StudentAccountFlow) QueryStudentPasswordByUsername(username string) (uint, string, error) {
+func (*StudentAccountFlow) QueryStudentPasswordByUsername(username string) (int64, string, error) {
 	var studentAccountDAO StudentAccount
 	if err := GetSysDB().Select("id", "password").Where("username = ?", username).Find(&studentAccountDAO).Error; err != nil {
 		log.Println(err)
@@ -61,7 +61,7 @@ func (*StudentAccountFlow) QueryStudentPasswordByUsername(username string) (uint
 	return studentAccountDAO.ID, studentAccountDAO.Password, nil
 }
 
-func (*StudentAccountFlow) QueryStudentPasswordByEmail(email string) (uint, string, error) {
+func (*StudentAccountFlow) QueryStudentPasswordByEmail(email string) (int64, string, error) {
 	var studentAccountDAO StudentAccount
 	if err := GetSysDB().Select("id", "password").Where("email = ?", email).Find(&studentAccountDAO).Error; err != nil {
 		log.Println(err)
@@ -70,7 +70,7 @@ func (*StudentAccountFlow) QueryStudentPasswordByEmail(email string) (uint, stri
 	return studentAccountDAO.ID, studentAccountDAO.Password, nil
 }
 
-func (*StudentAccountFlow) QueryStudentPasswordByUserID(userID uint) (string, error) {
+func (*StudentAccountFlow) QueryStudentPasswordByUserID(userID int64) (string, error) {
 	var studentAccountDAO StudentAccount
 	if err := GetSysDB().Select("password").Where("id = ?", userID).Find(&studentAccountDAO).Error; err != nil {
 		log.Println(err)
@@ -79,7 +79,7 @@ func (*StudentAccountFlow) QueryStudentPasswordByUserID(userID uint) (string, er
 	return studentAccountDAO.Password, nil
 }
 
-func (*StudentAccountFlow) UpdateStudentPasswordByUserID(userID uint, password string) error {
+func (*StudentAccountFlow) UpdateStudentPasswordByUserID(userID int64, password string) error {
 	studentAccountDAO := &StudentAccount{ID: userID, Password: password}
 	if err := GetSysDB().Transaction(func(tx *gorm.DB) error {
 		return tx.Model(&studentAccountDAO).Update("password", password).Error
