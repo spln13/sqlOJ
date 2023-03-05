@@ -113,3 +113,14 @@ func (*StudentAccountFlow) QueryStudentExistByEmail(email string) (bool, error) 
 	}
 	return false, nil
 }
+
+// UpdateStudentsClass 传入一个学生id列表，将学生的班级更新为 className
+func (*StudentAccountFlow) UpdateStudentsClass(classID int64, studentIDList []int64) error {
+	if err := GetSysDB().Transaction(func(tx *gorm.DB) error {
+		return tx.Model(&StudentAccount{}).Where("id in ?", studentIDList).Update("class_id", classID).Error
+	}); err != nil {
+		log.Println(err)
+		return errors.New("更新学生班级属性错误")
+	}
+	return nil
+}

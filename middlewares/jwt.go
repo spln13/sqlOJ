@@ -92,6 +92,7 @@ func StudentJWTMiddleware() gin.HandlerFunc {
 			return
 		}
 		c.Set("user_id", tokenStruck.UserId)
+		c.Set("user_type", tokenStruck.UserType)
 		c.Next()
 	}
 }
@@ -139,6 +140,7 @@ func TeacherJWTMiddleware() gin.HandlerFunc {
 			return
 		}
 		c.Set("user_id", tokenStruck.UserId)
+		c.Set("user_type", tokenStruck.UserType)
 		c.Next()
 	}
 }
@@ -186,6 +188,7 @@ func AdminJWTMiddleware() gin.HandlerFunc {
 			return
 		}
 		c.Set("user_id", tokenStruck.UserId)
+		c.Set("user_type", tokenStruck.UserType)
 		c.Next()
 	}
 }

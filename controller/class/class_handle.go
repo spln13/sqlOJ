@@ -2,6 +2,7 @@ package class
 
 import (
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"sqlOJ/common"
 	"sqlOJ/model"
@@ -30,22 +31,25 @@ func CreateClassHandle(context *gin.Context) {
 }
 
 func AddStudentToClassHandle(context *gin.Context) {
-	userID, ok := context.MustGet("user_id").(int64)
-	if !ok {
-		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, "解析用户信息错误"))
-		return
+	studentIDStringArray := context.PostFormArray("student_id_list")
+	var studentIDList []int64
+	for _, val := range studentIDStringArray {
+		intVal, err := strconv.ParseInt(val, 10, 64)
+		if err != nil {
+			log.Println(err)
+		}
+		studentIDList = append(studentIDList, intVal)
 	}
-	studentIDList := context.PostForm("student_id_list")
 	classIDStr := context.PostForm("class_id")
 	classID, err := strconv.ParseInt(classIDStr, 10, 64)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, "获取classID"))
 		return
 	}
-	className, err := model.NewClassFlow().QueryClassNameByClassID(classID)
-	if err != nil {
+	// 将班级班级信息更新到学生表中
+	if err := model.NewStudentAccountFlow().UpdateStudentsClass(classID, studentIDList); err != nil {
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, err.Error()))
 		return
 	}
-	// 将班级名插入学生信息表中
+
 }
