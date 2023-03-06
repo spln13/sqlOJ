@@ -63,7 +63,7 @@ func InitServer() *gin.Engine {
 	{
 		exerciseGroup.POST("/publish/exercise", middlewares.TeacherJWTMiddleware(), exercise.PublishExerciseHandle) // 发布练习接口
 		exerciseGroup.POST("/upload/table", middlewares.TeacherJWTMiddleware(), exercise.UploadTableHandle)         // 发布练习表单接口
-		exerciseGroup.POST("/submit/", middlewares.StudentJWTMiddleware())
+		exerciseGroup.POST("/submit/", middlewares.StudentJWTMiddleware(), exercise.SubmitHandle)                   // 处理提交习题接口
 	}
 	return server
 }
