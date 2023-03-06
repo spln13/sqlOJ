@@ -60,6 +60,6 @@ func WriteMessage(userID, userType, exerciseID int64, answer, userAgent string) 
 		SubmitTime: time.Now(),
 	}
 	JudgeQueue <- message // 将判题数据写入channel
-	err := cache.SetJudgeStatusInQueue(userID, userType, exerciseID, answer, time.Now())
+	err := cache.SetJudgeStatusPending(userID, userType, exerciseID, answer, time.Now())
 	return err
 }

@@ -19,6 +19,7 @@ type ExerciseContent struct {
 	SubmitCount   int
 	PassCount     int
 	Visitable     int
+	Type          int
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }
@@ -55,4 +56,16 @@ func (*ExerciseContentFlow) InsertExerciseContent(publisherID int64, publisherTy
 		return 0, errors.New("保存记录错误")
 	}
 	return exerciseContentDAO.ID, nil
+}
+
+// QueryAnswerTypeByExerciseID 根据题目ID查询答案
+func (*ExerciseContentFlow) QueryAnswerTypeByExerciseID(exerciseID int64) (string, int) {
+	var exerciseContentDAO ExerciseContent
+	if err := GetSysDB().Select("id", "type", "answer").Where("id = ?", exerciseID).Find(&exerciseContentDAO); err != nil {
+		log.Println(err)
+	}
+	if exerciseContentDAO.ID == 0 {
+		log.Println("error: 未找到对应题目答案")
+	}
+	return exerciseContentDAO.Answer, exerciseContentDAO.Type
 }
