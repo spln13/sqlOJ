@@ -15,12 +15,12 @@ func judge() {
 		userID := message.UserID
 		userType := message.UserType
 		exerciseID := message.ExerciseID
-		var wg sync.WaitGroup                                             // 获取 SetJudgeStatusJudging 协程的完成信息
-		go cache.SetJudgeStatusJudging(userID, userType, exerciseID, &wg) // 设置cache中的判题状态
+		submitTime := message.SubmitTime
+		var wg sync.WaitGroup                                                         // 获取 SetJudgeStatusJudging 协程的完成信息
+		go cache.SetJudgeStatusJudging(userID, userType, exerciseID, submitTime, &wg) // 设置cache中的判题状态
 		wg.Add(1)
 		answer := message.Answer
 		userAgent := message.UserAgent
-		submitTime := message.SubmitTime
 		expectedAnswer, expectedType := model.NewExerciseContentFlow().QueryAnswerTypeByExerciseID(exerciseID)
 		// 获取参数
 
@@ -31,7 +31,7 @@ func judge() {
 			model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, submitTime)
 
 			wg.Wait() // 等待修改cache中状态的goroutine先完成，否则记录将不会被删去
-			cache.DeleteSubmitStatus(userID, userType, exerciseID)
+			cache.DeleteSubmitStatus(userID, userType, exerciseID, submitTime)
 			continue
 		}
 		if getType != expectedType { // sql语句类型不等，返回错误
@@ -39,20 +39,20 @@ func judge() {
 			model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, submitTime)
 
 			wg.Wait() // 等待修改cache中状态的goroutine先完成，否则记录将不会被删去
-			cache.DeleteSubmitStatus(userID, userType, exerciseID)
+			cache.DeleteSubmitStatus(userID, userType, exerciseID, submitTime)
 			continue
 		}
-
+		var status int
 		if getType == 1 {
-			selectJudge(exerciseID, answer, expectedAnswer)
+			status = selectJudge(exerciseID, answer, expectedAnswer)
 		} else {
-			modifyJudge(exerciseID, answer, expectedAnswer)
+			status = modifyJudge(exerciseID, answer, expectedAnswer)
 		}
 
 		// TODO:将判题记录写入数据库
-
+		model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, submitTime)
 		wg.Wait()
-		cache.DeleteSubmitStatus(userID, userType, exerciseID)
+		cache.DeleteSubmitStatus(userID, userType, exerciseID, submitTime)
 	}
 }
 

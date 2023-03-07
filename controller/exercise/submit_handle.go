@@ -36,7 +36,7 @@ func SubmitHandle(context *gin.Context) {
 	}
 	answer := context.PostForm("answer")
 	userAgent := context.Request.UserAgent()
-	// TODO: 判断距离上次提交是否距离5秒
+	// FIXME: 判断距离上次提交是否距离5秒
 	ok, err := cache.CheckSubmitTimeValid(userID, userType, exerciseID)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, err.Error()))
@@ -66,6 +66,6 @@ func WriteMessage(userID, userType, exerciseID int64, answer, userAgent string) 
 		SubmitTime: time.Now(),
 	}
 	JudgeQueue <- message // 将判题数据写入channel
-	err := cache.SetJudgeStatusPending(userID, userType, exerciseID, answer, time.Now())
+	err := cache.SetJudgeStatusPending(userID, userType, exerciseID, time.Now())
 	return err
 }

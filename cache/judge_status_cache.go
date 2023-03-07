@@ -9,16 +9,19 @@ import (
 )
 
 // SetJudgeStatusPending 将当前InQueue状态写入cache
-func SetJudgeStatusPending(userID, userType, exerciseID int64, answer string, submitTime time.Time) error {
+func SetJudgeStatusPending(userID, userType, exerciseID int64, submitTime time.Time) error {
 	statusHashMap := map[string]interface{}{
-		"status":              1,
-		"answer":              answer,
-		"submitTime":          submitTime.Unix(),
-		"validNextSubmitTime": submitTime.Add(5 * time.Second).Unix(),
+		"status": 1,
 	}
-
-	key := fmt.Sprintf("%d:%d:%d", userID, userType, exerciseID)
-	err := rdb.HMSet(ctx, key, statusHashMap).Err()
+	// 设置下次合法提交时间为5秒后
+	nextSubmitTimeKey := fmt.Sprintf("%d:%d:%d_next_submit_time", userID, userType, exerciseID)
+	err := rdb.Set(ctx, nextSubmitTimeKey, submitTime.Add(5*time.Second).Unix(), time.Duration(5)*time.Second).Err()
+	if err != nil {
+		log.Println(err)
+		return errors.New("缓存提交时间错误")
+	}
+	hashKey := fmt.Sprintf("%d:%d:%d:%d", userID, userType, exerciseID, submitTime.Unix())
+	err = rdb.HMSet(ctx, hashKey, statusHashMap).Err()
 	if err != nil {
 		log.Println(err)
 		return errors.New("判题状态写入缓存错误")
@@ -27,8 +30,8 @@ func SetJudgeStatusPending(userID, userType, exerciseID int64, answer string, su
 }
 
 // SetJudgeStatusJudging 将cache对应Hash表项中的status设置为2(judging)
-func SetJudgeStatusJudging(userID, userType, exerciseID int64, wg *sync.WaitGroup) {
-	key := fmt.Sprintf("%d:%d:%d", userID, userType, exerciseID)
+func SetJudgeStatusJudging(userID, userType, exerciseID int64, submitTime time.Time, wg *sync.WaitGroup) {
+	key := fmt.Sprintf("%d:%d:%d:%d", userID, userType, exerciseID, submitTime.Unix())
 	err := rdb.HSet(ctx, key, "status", 2).Err()
 	if err != nil {
 		log.Println(err)
@@ -38,16 +41,16 @@ func SetJudgeStatusJudging(userID, userType, exerciseID int64, wg *sync.WaitGrou
 
 // CheckSubmitTimeValid 检查同一个用户在同一个题目的提交间隔是否合法
 func CheckSubmitTimeValid(userID, userType, exerciseID int64) (bool, error) {
-	key := fmt.Sprintf("%d:%d:%d", userID, userType, exerciseID)
-	exists, err := rdb.HExists(ctx, key, "submitTime").Result()
+	key := fmt.Sprintf("%d:%d:%d_next_submit_time", userID, userType, exerciseID)
+	exists, err := rdb.Exists(ctx, key).Result()
 	if err != nil {
 		log.Println(err)
 		return false, errors.New("查询缓存key错误")
 	}
-	if !exists {
+	if exists == 0 {
 		return true, nil
 	}
-	validNextSubmitTime, err := rdb.HGet(ctx, key, "validNextSubmitTime").Int64()
+	validNextSubmitTime, err := rdb.Get(ctx, key).Int64()
 	if err != nil {
 		log.Println(err)
 		return false, errors.New("检查上次提交时间错误")
@@ -60,9 +63,9 @@ func CheckSubmitTimeValid(userID, userType, exerciseID int64) (bool, error) {
 }
 
 // DeleteSubmitStatus 删除cache中对应的Status记录
-func DeleteSubmitStatus(userID, userType, exerciseID int64) {
-	key := fmt.Sprintf("%d:%d:%d", userID, userType, exerciseID)
-	err := rdb.HDel(ctx, key, "status", "answer", "submitTime", "validNextSubmitTime").Err()
+func DeleteSubmitStatus(userID, userType, exerciseID int64, submitTime time.Time) {
+	key := fmt.Sprintf("%d:%d:%d:%d", userID, userType, exerciseID, submitTime.Unix())
+	err := rdb.HDel(ctx, key, "status").Err()
 	if err != nil {
 		log.Println(err)
 	}
