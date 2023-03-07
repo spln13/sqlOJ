@@ -36,7 +36,6 @@ func SubmitHandle(context *gin.Context) {
 	}
 	answer := context.PostForm("answer")
 	userAgent := context.Request.UserAgent()
-	// FIXME: 判断距离上次提交是否距离5秒
 	ok, err := cache.CheckSubmitTimeValid(userID, userType, exerciseID)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, err.Error()))

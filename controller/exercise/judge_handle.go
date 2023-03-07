@@ -49,7 +49,6 @@ func judge() {
 			status = modifyJudge(exerciseID, answer, expectedAnswer)
 		}
 
-		// TODO:将判题记录写入数据库
 		model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, submitTime)
 		wg.Wait()
 		cache.DeleteSubmitStatus(userID, userType, exerciseID, submitTime)
@@ -58,12 +57,14 @@ func judge() {
 
 // modifyJudge 负责评判 update, insert, delete 类型语句
 func modifyJudge(exerciseID int64, userAnswer, expectedAnswer string) int {
-
+	// TODO: 判题逻辑
+	return 0
 }
 
 // selectJudge 负责评判 select 类型数据
 func selectJudge(exerciseID int64, userAnswer, expectedAnswer string) int {
-
+	// TODO: 判题逻辑
+	return 0
 }
 
 // checkSqlSyntax 检查用户提交的sql语句语法是否正确，并于标准答案(同样经过Parse)比对
