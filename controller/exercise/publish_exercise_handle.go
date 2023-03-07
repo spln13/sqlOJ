@@ -43,7 +43,10 @@ func PublishExerciseHandle(context *gin.Context) {
 		context.JSON(http.StatusOK, common.NewCommonResponse(1, err.Error()))
 		return
 	}
-
+	if exeType == 0 {
+		context.JSON(http.StatusOK, common.NewCommonResponse(1, "答案不合法"))
+		return
+	}
 	exerciseID, err := model.NewExerciseContentFlow().InsertExerciseContent(publisherID, publisherType, name, answer, description, exeType, grade, visitable)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, err.Error()))
