@@ -53,7 +53,7 @@ func SubmitHandle(context *gin.Context) {
 	context.JSON(http.StatusOK, common.NewCommonResponse(0, "")) // 提交成功
 }
 
-var JudgeQueue = make(chan SubmitMessage, 2000)
+var JudgeQueue = make(chan SubmitMessage, 2000) // 判题队列 缓冲区大小2000
 
 // WriteMessage 将做题数据写入channel，并且在cache中保存当前提交的判题状态
 func WriteMessage(userID, userType, exerciseID int64, answer, userAgent string) error {

@@ -22,6 +22,8 @@ func judge() {
 		userAgent := message.UserAgent
 		submitTime := message.SubmitTime
 		expectedAnswer, expectedType := model.NewExerciseContentFlow().QueryAnswerTypeByExerciseID(exerciseID)
+		// 获取参数
+
 		equal, getType := checkSqlSyntax(answer, expectedAnswer)
 		if equal { // 和标准答案相等，返回正确
 			status := 0 // 答案正确
@@ -41,11 +43,27 @@ func judge() {
 			continue
 		}
 
-		// TODO: 进行判题, 典急孝绷乐
+		if getType == 1 {
+			selectJudge(exerciseID, answer, expectedAnswer)
+		} else {
+			modifyJudge(exerciseID, answer, expectedAnswer)
+		}
+
+		// TODO:将判题记录写入数据库
 
 		wg.Wait()
-
+		cache.DeleteSubmitStatus(userID, userType, exerciseID)
 	}
+}
+
+// modifyJudge 负责评判 update, insert, delete 类型语句
+func modifyJudge(exerciseID int64, userAnswer, expectedAnswer string) int {
+
+}
+
+// selectJudge 负责评判 select 类型数据
+func selectJudge(exerciseID int64, userAnswer, expectedAnswer string) int {
+
 }
 
 // checkSqlSyntax 检查用户提交的sql语句语法是否正确，并于标准答案(同样经过Parse)比对
