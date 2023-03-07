@@ -36,11 +36,17 @@ func SubmitHandle(context *gin.Context) {
 	}
 	answer := context.PostForm("answer")
 	userAgent := context.Request.UserAgent()
-	if err := WriteMessage(userID, userType, exerciseID, answer, userAgent); err != nil {
-		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, "提交错误"))
-	}
+	// TODO: 判断距离上次提交是否距离5秒
+	ok, err := cache.CheckSubmitTimeValid(userID, userType, exerciseID)
 	if err != nil {
-		log.Println(err)
+		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, err.Error()))
+		return
+	}
+	if !ok { // 与上次发送未间隔5s
+		context.JSON(http.StatusOK, common.NewCommonResponse(1, "请勿频繁发送"))
+		return
+	}
+	if err := WriteMessage(userID, userType, exerciseID, answer, userAgent); err != nil {
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, "提交错误"))
 		return
 	}

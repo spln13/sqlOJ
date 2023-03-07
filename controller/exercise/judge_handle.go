@@ -7,7 +7,7 @@ import (
 	"sync"
 )
 
-// Judge 负责从channel中读取SubmitMessage并进行判题处理
+// judge 负责从channel中读取SubmitMessage并进行判题处理
 func judge() {
 	for {
 		message := <-JudgeQueue // 从判题队列中读取提交数据
@@ -15,7 +15,7 @@ func judge() {
 		userID := message.UserID
 		userType := message.UserType
 		exerciseID := message.ExerciseID
-		var wg sync.WaitGroup
+		var wg sync.WaitGroup                                             // 获取 SetJudgeStatusJudging 协程的完成信息
 		go cache.SetJudgeStatusJudging(userID, userType, exerciseID, &wg) // 设置cache中的判题状态
 		wg.Add(1)
 		answer := message.Answer
@@ -24,16 +24,27 @@ func judge() {
 		expectedAnswer, expectedType := model.NewExerciseContentFlow().QueryAnswerTypeByExerciseID(exerciseID)
 		equal, getType := checkSqlSyntax(answer, expectedAnswer)
 		if equal { // 和标准答案相等，返回正确
-			// TODO: 删除cache中对应的判题状态，并将判题数据转入数据库
+			status := 0 // 答案正确
+			// 插入做题记录表
+			model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, submitTime)
+
+			wg.Wait() // 等待修改cache中状态的goroutine先完成，否则记录将不会被删去
+			cache.DeleteSubmitStatus(userID, userType, exerciseID)
 			continue
 		}
 		if getType != expectedType { // sql语句类型不等，返回错误
-			// TODO: 删除cache中对应的判题状态，并将判题数据转入数据库
+			status := 1 // 答案错误
+			model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, submitTime)
+
+			wg.Wait() // 等待修改cache中状态的goroutine先完成，否则记录将不会被删去
+			cache.DeleteSubmitStatus(userID, userType, exerciseID)
 			continue
 		}
 
-		wg.Wait() // 若cache中状态修改还未完成则等待完成，避免出错
-		// TODO: 删除cache中对应的判题状态，并将判题数据转入数据库
+		// TODO: 进行判题, 典急孝绷乐
+
+		wg.Wait()
+
 	}
 }
 

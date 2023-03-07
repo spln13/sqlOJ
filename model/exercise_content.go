@@ -39,7 +39,7 @@ func NewExerciseContentFlow() *ExerciseContentFlow {
 	return exerciseContentFlow
 }
 
-func (*ExerciseContentFlow) InsertExerciseContent(publisherID int64, publisherType int64, name string, answer string, description string, grade int, visitable int) (int64, error) {
+func (*ExerciseContentFlow) InsertExerciseContent(publisherID int64, publisherType int64, name string, answer string, description string, exeType, grade, visitable int) (int64, error) {
 	exerciseContentDAO := &ExerciseContent{
 		PublisherID:   publisherID,
 		PublisherType: publisherType,
@@ -48,6 +48,7 @@ func (*ExerciseContentFlow) InsertExerciseContent(publisherID int64, publisherTy
 		Answer:        answer,
 		Description:   description,
 		Visitable:     visitable,
+		Type:          exeType,
 	}
 	if err := GetSysDB().Transaction(func(tx *gorm.DB) error {
 		return tx.Create(exerciseContentDAO).Error

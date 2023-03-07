@@ -1,7 +1,10 @@
 package exercise
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/xwb1989/sqlparser"
+	"log"
 	"net/http"
 	"sqlOJ/common"
 	"sqlOJ/model"
@@ -25,7 +28,7 @@ func PublishExerciseHandle(context *gin.Context) {
 	}
 	jsonMap := context.MustGet("jsonMap").(*map[string]interface{})
 	name := (*jsonMap)["name"].(string)
-	answer := (*jsonMap)["answer"].(string)
+	answer := (*jsonMap)["answer"].(string) // answer待处理
 	description := (*jsonMap)["description"].(string)
 	grade := int((*jsonMap)["grade"].(float64))
 	visitable := int((*jsonMap)["grade"].(float64))
@@ -35,7 +38,13 @@ func PublishExerciseHandle(context *gin.Context) {
 		id := int64(tableID.(float64))
 		tableIDList = append(tableIDList, id)
 	}
-	exerciseID, err := model.NewExerciseContentFlow().InsertExerciseContent(publisherID, publisherType, name, answer, description, grade, visitable)
+	exeType, err := parseAnswer(answer)
+	if err != nil {
+		context.JSON(http.StatusOK, common.NewCommonResponse(1, err.Error()))
+		return
+	}
+
+	exerciseID, err := model.NewExerciseContentFlow().InsertExerciseContent(publisherID, publisherType, name, answer, description, exeType, grade, visitable)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, err.Error()))
 		return
@@ -51,4 +60,28 @@ func PublishExerciseHandle(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, common.NewCommonResponse(0, ""))
 	return
+}
+
+// parseAnswer 处理答案sql语句，判断其是否有语法错误, 并返回其类型
+func parseAnswer(answer string) (int, error) {
+	answerStmt, err := sqlparser.Parse(answer)
+	if err != nil {
+		log.Println(err)
+		return 0, errors.New("答案语法错误")
+	}
+	var code int
+	switch stmt := answerStmt.(type) {
+	case *sqlparser.Select:
+		code = 1
+		_ = stmt
+	case *sqlparser.Insert:
+		code = 2
+	case *sqlparser.Update:
+		code = 3
+	case *sqlparser.Delete:
+		code = 4
+	default:
+		code = 0
+	}
+	return code, nil
 }
