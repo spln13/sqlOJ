@@ -4,49 +4,19 @@
 `userID_ExerciseID_submitTime`
 
 ## Step2. 创建临时表
-使用gorm
-```go
-var tableName string = "source_table"
-var newTableName string = "new_table"
-result := db.Exec("CREATE TABLE " + newTableName + " LIKE " + tableName)
-if result.Error != nil {
-    panic(result.Error)
-}
-```
-
 ## Step3. 开启事务, 执行用户SQL
-```go
-func main() {
-    db, err := gorm.Open("mysql", "user:password@tcp(host:port)/database")
-    if err != nil {
-        panic(err)
-    }
-    defer db.Close()
 
-    // 开启事务
-    tx := db.Begin()
-
-    // 执行用户 SQL 语句
-    result := tx.Exec("INSERT INTO users (name, age) VALUES (?, ?)", "user1", 20)
-    if result.Error != nil {
-        // 发生错误，回滚事务
-        tx.Rollback()
-        panic(result.Error)
-    }
-
-    // 回滚事务
-    tx.Rollback()
-}
-```
-
-## Step3. 开启事务，执行答案sql
+## Step4. 开启事务，执行答案sql
 > 优化方案: 将答案sql执行结果`[]map[string]interface{}`类型存于cache中设置5分钟过期时间，
 > 执行答案sql前可查询cache，若未命中则执行sql
+>
+做毕设就是要突出一个炫技, 就算优化方案性能提升微乎其微, 但是就是要告诉老师自己做出了优化
 ### 常规方案
 同Step2
 ### 优化方案
 
-```go
+
+```
 package main
 
 import (
