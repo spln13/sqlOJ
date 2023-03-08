@@ -2,6 +2,7 @@ package exercise
 
 import (
 	"github.com/xwb1989/sqlparser"
+	"reflect"
 	"sqlOJ/cache"
 	"sqlOJ/model"
 	"sync"
@@ -44,9 +45,10 @@ func judge() {
 		}
 		var status int
 		if getType == 1 {
-			status = selectJudge(exerciseID, answer, expectedAnswer)
+			status = selectJudge(answer, expectedAnswer)
+			// 后续处理
 		} else {
-			status = modifyJudge(exerciseID, answer, expectedAnswer)
+			status = modifyJudge(answer, expectedAnswer)
 		}
 
 		model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, submitTime)
@@ -55,16 +57,28 @@ func judge() {
 	}
 }
 
-// modifyJudge 负责评判 update, insert, delete 类型语句
-func modifyJudge(exerciseID int64, userAnswer, expectedAnswer string) int {
+// modifyJudge 负责评判 update, insert, delete 类型语句, 返回状态码 1->AC, 2->WA, 3->RE
+func modifyJudge(userAnswer, expectedAnswer string) int {
 	// TODO: 判题逻辑
 	return 0
 }
 
-// selectJudge 负责评判 select 类型数据
-func selectJudge(exerciseID int64, userAnswer, expectedAnswer string) int {
-	// TODO: 判题逻辑
-	return 0
+// selectJudge 负责评判 select 类型数据, 返回状态码 1->AC, 2->WA, 3->RE
+func selectJudge(userAnswer, expectedAnswer string) int {
+	userResult, err := model.ExecuteRawSql(userAnswer)
+	if err != nil {
+		return 3 // RE
+	}
+	expectedResult, err := model.ExecuteRawSql(expectedAnswer)
+	if err != nil {
+		return 3 // RE
+	}
+	if reflect.DeepEqual(userResult, expectedResult) { // 判断二者查询结果是否相等
+		// 相等
+		return 1
+	}
+	// 不等
+	return 2
 }
 
 // checkSqlSyntax 检查用户提交的sql语句语法是否正确，并于标准答案(同样经过Parse)比对
