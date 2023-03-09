@@ -60,10 +60,9 @@ func judge() {
 // modifyJudge 负责评判 update, insert, delete 类型语句, 返回状态码 1->AC, 2->WA, 3->RE
 // 执行答案sql语句之前先查询cache中是否有对应缓存，若有则不执行答案sql; 若没有则执行答案sql, 并将结果写入cache
 func modifyJudge(userID int64, exerciseID int64, submitTime time.Time, userAnswer, expectedAnswer string, getType int) int {
-	userTempTableName := fmt.Sprintf("user_%d_%d_%d", userID, exerciseID, submitTime.Unix())                           // 生成用户临时表名
-	answerTempTableName := fmt.Sprintf("answer_%d_%d_%d", userID, exerciseID, submitTime.Unix())                       // 生成答案临时表名
-	modifiedUserSql, originUserTableName := replaceTableName(userAnswer, userTempTableName, getType)                   // 将用户sql语句中的表名替换
-	modifiedExpectedSql, originExpectedUserTableName := replaceTableName(expectedAnswer, answerTempTableName, getType) // 将答案sql语句中的表名替换
+	tempTableName := fmt.Sprintf("%d_%d_%d", userID, exerciseID, submitTime.Unix())                              // 生成用户临时表名
+	modifiedUserSql, originUserTableName := replaceTableName(userAnswer, tempTableName, getType)                 // 将用户sql语句中的表名替换
+	modifiedExpectedSql, originExpectedUserTableName := replaceTableName(expectedAnswer, tempTableName, getType) // 将答案sql语句中的表名替换
 	if originUserTableName != originExpectedUserTableName {
 		// 用户提交的答案修改的表名与标准答案表名不一样，直接返回错误
 		return 2
@@ -71,11 +70,14 @@ func modifyJudge(userID int64, exerciseID int64, submitTime time.Time, userAnswe
 	// 对比答案sql语句和用户sql语句，并将答案sql语句执行结果写入cache
 	cacheResult, ok := cache.GetExpectedResult(exerciseID)
 	if ok { // 缓存中存在答案
-		statusCode := model.CompareModifySqlResultWithCache(modifiedUserSql, originExpectedUserTableName, userTempTableName, cacheResult)
+		statusCode := model.CompareModifySqlResultWithCache(modifiedUserSql, originExpectedUserTableName, tempTableName, cacheResult)
 		return statusCode
 	}
-	expectResult, statusCode := model.CompareModifySqlResultWithoutCache(modifiedUserSql, modifiedExpectedSql, originExpectedUserTableName, userTempTableName, answerTempTableName)
-	cache.ExpectedResultCache(exerciseID, expectResult) // 将答案sql语句执行结果写入cache
+	// 缓存中无答案
+	expectResult, statusCode := model.CompareModifySqlResultWithoutCache(modifiedUserSql, modifiedExpectedSql, originExpectedUserTableName, tempTableName)
+	if statusCode != 3 { // 若不发生错误
+		cache.ExpectedResultCache(exerciseID, expectResult) // 将答案sql语句执行结果写入cache]
+	}
 	return statusCode
 }
 
