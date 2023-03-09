@@ -26,7 +26,7 @@ func GetExpectedResult(exerciseID int64) ([]map[string]interface{}, bool) {
 	exists, err := rdb.Exists(ctx, cacheKey).Result()
 	if err != nil {
 		log.Println(err)
-		return nil, false // 空结果，不存在
+		return nil, false // 错误
 	}
 	if exists == 0 { // 该key不存在
 		return nil, false
