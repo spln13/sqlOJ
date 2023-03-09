@@ -45,7 +45,16 @@ func EmailCodeCache(email string, code int, expire int) error {
 	return nil
 }
 
+// VerifyEmailCode 验证邮箱验证码
 func VerifyEmailCode(email string, code string) (bool, error) {
+	exists, err := rdb.Exists(ctx, email).Result()
+	if err != nil {
+		log.Println(err)
+		return false, errors.New("查询缓存时间错误")
+	}
+	if exists == 0 {
+		return false, errors.New("验证码已过期或不存在")
+	}
 	cachedCode, err := rdb.Get(ctx, email).Result()
 	if err != nil {
 		log.Println(err)
