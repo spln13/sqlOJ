@@ -6,7 +6,7 @@
 ## Step2. 创建临时表
 ## Step3. 开启事务, 执行用户SQL
 
-## Step4. 开启事务，执行答案sql
+## Step4. 开启事务，执行答案SQL
 > 优化方案: 将答案sql执行结果`[]map[string]interface{}`类型存于cache中设置5分钟过期时间，
 > 执行答案sql前可查询cache，若未命中则执行sql
 >
