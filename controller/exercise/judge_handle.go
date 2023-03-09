@@ -32,7 +32,6 @@ func judge() {
 			status := 0 // 答案正确
 			// 插入做题记录表
 			model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, submitTime)
-
 			wg.Wait() // 等待修改cache中状态的goroutine先完成，否则记录将不会被删去
 			cache.DeleteSubmitStatus(userID, userType, exerciseID, submitTime)
 			continue
@@ -46,7 +45,7 @@ func judge() {
 		}
 		var status int
 		if getType == 1 {
-			status = selectJudge(answer, expectedAnswer)
+			status = selectJudge(answer, expectedAnswer, exerciseID)
 
 		} else {
 			status = modifyJudge(userID, exerciseID, submitTime, answer, expectedAnswer, getType)
@@ -59,27 +58,41 @@ func judge() {
 }
 
 // modifyJudge 负责评判 update, insert, delete 类型语句, 返回状态码 1->AC, 2->WA, 3->RE
+// 执行答案sql语句之前先查询cache中是否有对应缓存，若有则不执行答案sql; 若没有则执行答案sql, 并将结果写入cache
 func modifyJudge(userID int64, exerciseID int64, submitTime time.Time, userAnswer, expectedAnswer string, getType int) int {
-	tempTableName := fmt.Sprintf("%d_%d_%d", userID, exerciseID, submitTime.Unix()) // 生成临时表名
-	modifiedUserSql, originUserTableName := replaceTableName(userAnswer, tempTableName, getType)
-	modifiedExpectedSql, originExpectedUserTableName := replaceTableName(expectedAnswer, tempTableName, getType)
+	userTempTableName := fmt.Sprintf("user_%d_%d_%d", userID, exerciseID, submitTime.Unix())                           // 生成用户临时表名
+	answerTempTableName := fmt.Sprintf("answer_%d_%d_%d", userID, exerciseID, submitTime.Unix())                       // 生成答案临时表名
+	modifiedUserSql, originUserTableName := replaceTableName(userAnswer, userTempTableName, getType)                   // 将用户sql语句中的表名替换
+	modifiedExpectedSql, originExpectedUserTableName := replaceTableName(expectedAnswer, answerTempTableName, getType) // 将答案sql语句中的表名替换
 	if originUserTableName != originExpectedUserTableName {
 		// 用户提交的答案修改的表名与标准答案表名不一样，直接返回错误
 		return 2
 	}
-	statusCode := model.CompareModifySqlResult(modifiedUserSql, modifiedExpectedSql, originExpectedUserTableName, tempTableName)
+	// 对比答案sql语句和用户sql语句，并将答案sql语句执行结果写入cache
+	cacheResult, ok := cache.GetExpectedResult(exerciseID)
+	if ok { // 缓存中存在答案
+		statusCode := model.CompareModifySqlResultWithCache(modifiedUserSql, originExpectedUserTableName, userTempTableName, cacheResult)
+		return statusCode
+	}
+	expectResult, statusCode := model.CompareModifySqlResultWithoutCache(modifiedUserSql, modifiedExpectedSql, originExpectedUserTableName, userTempTableName, answerTempTableName)
+	cache.ExpectedResultCache(exerciseID, expectResult) // 将答案sql语句执行结果写入cache
 	return statusCode
 }
 
 // selectJudge 负责评判 select 类型数据, 返回状态码 1->AC, 2->WA, 3->RE
-func selectJudge(userAnswer, expectedAnswer string) int {
+// 执行答案sql语句之前先查询cache中是否有对应缓存，若有则不执行sql; 若没有则执行sql, 并将结果写入cache
+func selectJudge(userAnswer, expectedAnswer string, exerciseID int64) int {
 	userResult, err := model.ExecuteRawSql(userAnswer)
 	if err != nil {
 		return 3 // RE
 	}
-	expectedResult, err := model.ExecuteRawSql(expectedAnswer)
-	if err != nil {
-		return 3 // RE
+	expectedResult, ok := cache.GetExpectedResult(exerciseID)
+	if !ok { // 如果在cache中没有查到
+		expectedResult, err = model.ExecuteRawSql(expectedAnswer) // 执行sql语句得到查询结果
+		if err != nil {
+			return 3 // RE
+		}
+		cache.ExpectedResultCache(exerciseID, expectedResult) // 缓存查询结果
 	}
 	if reflect.DeepEqual(userResult, expectedResult) { // 判断二者查询结果是否相等
 		// 相等
