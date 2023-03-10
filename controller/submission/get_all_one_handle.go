@@ -3,12 +3,12 @@ package submission
 import "github.com/gin-gonic/gin"
 
 type AllOneResponse struct {
-	List       []AllOneList `json:"list"`
-	StatusCode int64        `json:"status_code"`
-	StatusMsg  string       `json:"status_msg"`
+	List       []AllOne `json:"list"`
+	StatusCode int64    `json:"status_code"`
+	StatusMsg  string   `json:"status_msg"`
 }
 
-type AllOneList struct {
+type AllOne struct {
 	Answer     string `json:"answer"`
 	Status     int64  `json:"status"`
 	SubmitTime string `json:"submit_time"`

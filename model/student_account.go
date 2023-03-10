@@ -124,3 +124,11 @@ func (*StudentAccountFlow) UpdateStudentsClass(classID int64, studentIDList []in
 	}
 	return nil
 }
+
+func (*StudentAccountFlow) QueryStudentUsernameByUserID(userID int64) string {
+	var studentAccountDAO StudentAccount
+	if err := GetSysDB().Select("username").Where("id = ?", userID).Find(&studentAccountDAO).Error; err != nil {
+		log.Println(err)
+	}
+	return studentAccountDAO.Username
+}

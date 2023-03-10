@@ -11,7 +11,7 @@ import (
 // SetJudgeStatusPending 将当前InQueue状态写入cache
 func SetJudgeStatusPending(userID, userType, exerciseID int64, submitTime time.Time) error {
 	statusHashMap := map[string]interface{}{
-		"status": 1,
+		"status": 4, // 在队列中状态码是4
 	}
 	// 设置下次合法提交时间为5秒后
 	nextSubmitTimeKey := fmt.Sprintf("%d:%d:%d_next_submit_time", userID, userType, exerciseID)
@@ -21,7 +21,7 @@ func SetJudgeStatusPending(userID, userType, exerciseID int64, submitTime time.T
 		return errors.New("缓存提交时间错误")
 	}
 	hashKey := fmt.Sprintf("%d:%d:%d:%d", userID, userType, exerciseID, submitTime.Unix())
-	err = rdb.HMSet(ctx, hashKey, statusHashMap).Err()
+	err = rdb.HSet(ctx, hashKey, statusHashMap).Err()
 	if err != nil {
 		log.Println(err)
 		return errors.New("判题状态写入缓存错误")
@@ -32,7 +32,7 @@ func SetJudgeStatusPending(userID, userType, exerciseID int64, submitTime time.T
 // SetJudgeStatusJudging 将cache对应Hash表项中的status设置为2(judging)
 func SetJudgeStatusJudging(userID, userType, exerciseID int64, submitTime time.Time, wg *sync.WaitGroup) {
 	key := fmt.Sprintf("%d:%d:%d:%d", userID, userType, exerciseID, submitTime.Unix())
-	err := rdb.HSet(ctx, key, "status", 2).Err()
+	err := rdb.HSet(ctx, key, "status", 5).Err() // judging中状态码是5
 	if err != nil {
 		log.Println(err)
 	}
@@ -59,7 +59,6 @@ func CheckSubmitTimeValid(userID, userType, exerciseID int64) (bool, error) {
 		return false, nil
 	}
 	return true, nil
-
 }
 
 // DeleteSubmitStatus 删除cache中对应的Status记录
@@ -69,4 +68,43 @@ func DeleteSubmitStatus(userID, userType, exerciseID int64, submitTime time.Time
 	if err != nil {
 		log.Println(err)
 	}
+}
+
+// GetUserJudgeStatus 获得指定userID与userType与exerciseID的redis结果
+func GetUserJudgeStatus(userID int64, userType int64, exerciseID int64) (map[string]string, error) {
+	pattern := fmt.Sprintf("%d:%d:%d:*", userID, userType, exerciseID)
+	keys, err := rdb.Keys(ctx, pattern).Result()
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	kvMap := make(map[string]string)
+	for _, key := range keys {
+		value, err := rdb.HGet(ctx, key, "status").Result()
+		if err != nil {
+			log.Println(err)
+			return nil, errors.New("查询提交状态缓存错误")
+		}
+		kvMap[key] = value
+	}
+	return kvMap, nil
+}
+
+// GetAllKeyValue 获取缓存中所有的key-value返回map[string]string
+func GetAllKeyValue() (map[string]string, error) {
+	keys, err := rdb.Keys(ctx, "*").Result()
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	kvMap := make(map[string]string)
+	for _, key := range keys {
+		value, err := rdb.HGet(ctx, key, "status").Result()
+		if err != nil {
+			log.Println(err)
+			return nil, errors.New("查询提交状态缓存错误")
+		}
+		kvMap[key] = value
+	}
+	return kvMap, nil
 }

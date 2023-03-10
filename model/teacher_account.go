@@ -97,3 +97,11 @@ func (*TeacherAccountFlow) QueryTeacherRealNameByUsername(username string) (stri
 	}
 	return teacherAccountDAO.RealName, nil
 }
+
+func (*TeacherAccountFlow) QueryTeacherUsernameByUserID(userID int64) string {
+	var teacherAccountDAO TeacherAccount
+	if err := GetSysDB().Select("username").Where("id = ?", userID).Find(&teacherAccountDAO).Error; err != nil {
+		log.Println(err)
+	}
+	return teacherAccountDAO.Username
+}

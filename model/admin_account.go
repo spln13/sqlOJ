@@ -93,3 +93,11 @@ func (*AdminAccountFlow) UpdateAdminPassword(userID int64, newPassword string) e
 	}
 	return nil
 }
+
+func (*AdminAccountFlow) QueryAdminUsernameByUserID(userID int64) string {
+	var adminAccountDAO AdminAccount
+	if err := GetSysDB().Select("username").Where("id = ?", userID).Find(&adminAccountDAO).Error; err != nil {
+		log.Println(err)
+	}
+	return adminAccountDAO.Username
+}

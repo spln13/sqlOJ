@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"gorm.io/gorm"
 	"log"
 	"sync"
@@ -50,4 +51,24 @@ func (*SubmitHistoryFlow) InsertSubmitHistory(userID, exerciseID, userType int64
 	}); err != nil {
 		log.Println(err)
 	}
+}
+
+// QueryAllSubmitHistory 查询所有的提交记录
+func QueryAllSubmitHistory() ([]SubmitHistory, error) {
+	var submitHistory []SubmitHistory
+	if err := GetSysDB().Model(&SubmitHistory{}).Omit("create_at", "update_at").Find(&submitHistory).Error; err != nil {
+		log.Println(err)
+		return nil, errors.New("查询提交记录错误")
+	}
+	return submitHistory, nil
+}
+
+// QueryThisExerciseSubmitHistory 查询当前习题所有的提交记录
+func QueryThisExerciseSubmitHistory(exerciseID int64) ([]SubmitHistory, error) {
+	var submitHistory []SubmitHistory
+	if err := GetSysDB().Model(&SubmitHistory{}).Where("exercise_id = ?", exerciseID).Omit("create_at", "update_at", "exercise_id").Find(&submitHistory).Error; err != nil {
+		log.Println(err)
+		return nil, errors.New("查询提交记录错误")
+	}
+	return submitHistory, nil
 }
