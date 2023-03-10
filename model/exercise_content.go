@@ -70,3 +70,11 @@ func (*ExerciseContentFlow) QueryAnswerTypeByExerciseID(exerciseID int64) (strin
 	}
 	return exerciseContentDAO.Answer, exerciseContentDAO.Type
 }
+
+func (*ExerciseContentFlow) QueryExerciseNameByExerciseID(exerciseID int64) string {
+	var exerciseContentDAO ExerciseContent
+	if err := GetSysDB().Select("name").Where("id = ?", exerciseID).Find(&exerciseContentDAO).Error; err != nil {
+		log.Println(err)
+	}
+	return exerciseContentDAO.Name
+}

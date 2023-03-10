@@ -22,6 +22,7 @@ type AllOne struct {
 	UserID     int64     `json:"user_id"`
 	UserType   int64     `json:"user_type"`
 	Username   string    `json:"username"`
+	UserAgent  string    `json:"user_agent"`
 }
 
 // GetAllOneHandle 获取当前题目所有用户的提交
@@ -56,6 +57,7 @@ func GetAllOneHandle(context *gin.Context) {
 			UserID:     userID,
 			UserType:   userType,
 			Username:   username,
+			UserAgent:  submitHistory.UserAgent,
 		}
 		AllOneList = append(AllOneList, allOne)
 	}
