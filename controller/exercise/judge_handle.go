@@ -1,6 +1,7 @@
 package exercise
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"reflect"
@@ -48,7 +49,7 @@ func judge() {
 		}
 		var status int
 		if getType == 1 {
-			status = selectJudge(answer, expectedAnswer)
+			status = selectJudge(answer, expectedAnswer, exerciseID)
 
 		} else {
 			status = modifyJudge(userID, exerciseID, submitTime, answer, expectedAnswer, getType)
@@ -70,22 +71,44 @@ func modifyJudge(userID int64, exerciseID int64, submitTime time.Time, userAnswe
 		return 2
 	}
 	// 对比答案sql语句和用户sql语句
-	statusCode := model.CompareModifySqlResult(modifiedUserSql, modifiedExpectedSql, originExpectedUserTableName, tempTableName)
+	cacheResultBytes, ok := cache.GetExpectedResultBytes(exerciseID)
+	if ok { // 缓存中存在答案
+		statusCode := model.CompareModifySqlResultWithCache(modifiedUserSql, originExpectedUserTableName, tempTableName, cacheResultBytes)
+		return statusCode
+	}
+	expectedResult, statusCode := model.CompareModifySqlResultWithoutCache(modifiedUserSql, modifiedExpectedSql, originExpectedUserTableName, tempTableName)
+	if statusCode != 3 { // 若不发生错误
+		cache.ExpectedResultCache(exerciseID, expectedResult) // 将答案sql语句执行结果写入cache]
+	}
 	return statusCode
 }
 
 // selectJudge 负责评判 select 类型数据, 返回状态码 1->AC, 2->WA, 3->RE
 // 执行答案sql语句之前先查询cache中是否有对应缓存，若有则不执行sql; 若没有则执行sql, 并将结果写入cache
-func selectJudge(userAnswer, expectedAnswer string) int {
+func selectJudge(userAnswer, expectedAnswer string, exerciseID int64) int {
 	userResult, err := model.ExecuteRawSql(userAnswer)
+	userResultBytes, err := json.Marshal(userResult)
+	if err != nil {
+		log.Println(err)
+		return 3
+	}
 	if err != nil {
 		return 3 // RE
 	}
-	expectedResult, err := model.ExecuteRawSql(expectedAnswer) // 执行sql语句得到查询结果
-	if err != nil {
-		return 3 // RE
+	expectedResultBytes, ok := cache.GetExpectedResultBytes(exerciseID)
+	if !ok { // 在cache中没有查找到
+		expectedResult, err := model.ExecuteRawSql(expectedAnswer) // 执行sql语句得到查询结果
+		if err != nil {
+			return 3 // RE
+		}
+		cache.ExpectedResultCache(exerciseID, expectedResult) // 缓存查询结果
+		expectedResultBytes, err = json.Marshal(expectedResult)
+		if err != nil {
+			log.Println(err)
+			return 3
+		}
 	}
-	if reflect.DeepEqual(userResult, expectedResult) { // 判断二者查询结果是否相等
+	if reflect.DeepEqual(userResultBytes, expectedResultBytes) { // 判断二者查询结果是否相等
 		// 相等
 		fmt.Println("相等")
 		return 1
