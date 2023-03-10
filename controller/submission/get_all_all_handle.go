@@ -24,7 +24,7 @@ type AllAll struct {
 
 // GetAllAllHandle 获取所有的提交记录, 包括在cache中的
 func GetAllAllHandle(context *gin.Context) {
-	allSubmitHistory, err := model.QueryAllSubmitHistory()
+	allSubmitHistory, err := model.NewSubmitHistoryFlow().QueryAllSubmitHistory()
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, AllAllResponse{
 			List:     nil,
