@@ -87,7 +87,7 @@ func modifyJudge(userID int64, exerciseID int64, submitTime time.Time, userAnswe
 // 执行答案sql语句之前先查询cache中是否有对应缓存，若有则不执行sql; 若没有则执行sql, 并将结果写入cache
 func selectJudge(userAnswer, expectedAnswer string, exerciseID int64) int {
 	userResult, err := model.ExecuteRawSql(userAnswer)
-	userResultBytes, err := json.Marshal(userResult)
+	userResultBytes, err := json.Marshal(userResult) // 将查询结果转换成[]byte,与缓存中对应
 	if err != nil {
 		log.Println(err)
 		return 3
@@ -101,8 +101,8 @@ func selectJudge(userAnswer, expectedAnswer string, exerciseID int64) int {
 		if err != nil {
 			return 3 // RE
 		}
-		cache.ExpectedResultCache(exerciseID, expectedResult) // 缓存查询结果
-		expectedResultBytes, err = json.Marshal(expectedResult)
+		cache.ExpectedResultCache(exerciseID, expectedResult)   // 缓存查询结果
+		expectedResultBytes, err = json.Marshal(expectedResult) // 将查询结果转换成[]byte,与缓存中对应
 		if err != nil {
 			log.Println(err)
 			return 3
