@@ -7,6 +7,7 @@ import (
 	"sqlOJ/controller/class"
 	"sqlOJ/controller/exercise"
 	"sqlOJ/controller/student_account"
+	"sqlOJ/controller/submission"
 	"sqlOJ/controller/teacher_account"
 	"sqlOJ/middlewares"
 	"sqlOJ/model"
@@ -64,6 +65,13 @@ func InitServer() *gin.Engine {
 		exerciseGroup.POST("/publish/exercise", middlewares.TeacherJWTMiddleware(), exercise.PublishExerciseHandle) // 发布练习接口
 		exerciseGroup.POST("/upload/table", middlewares.TeacherJWTMiddleware(), exercise.UploadTableHandle)         // 发布练习表单接口
 		exerciseGroup.POST("/submit/", middlewares.StudentJWTMiddleware(), exercise.SubmitHandle)                   // 处理提交习题接口
+	}
+	submissionGroup := server.Group("/api/submission")
+	{
+		submissionGroup.GET("/api/submission/get/one-one/", middlewares.StudentJWTMiddleware(), submission.GetOneOneHandle) // 查询当前用户当前题目提交记录
+		submissionGroup.GET("/api/submission/get/one-all/", middlewares.StudentJWTMiddleware(), submission.GetOneAllHandle) // 查询当前用户所有提交记录
+		submissionGroup.GET("/api/submission/get/all-all/", middlewares.TeacherJWTMiddleware(), submission.GetAllAllHandle) // 获取所有提交记录
+		submissionGroup.GET("/api/submission/get/all-one/", middlewares.TeacherJWTMiddleware(), submission.GetAllOneHandle) // 获取当前题目所有用户的提交
 	}
 	return server
 }
