@@ -45,15 +45,7 @@ func replaceTableName(sql string, tempTableName string, getType int) (string, st
 				break
 			}
 		}
-	} else if getType == 3 { // Delete
-		for idx, str := range sqlSplit {
-			if str == "from" {
-				originTableName = sqlSplit[idx+1]
-				sqlSplit[idx+1] = tempTableName
-				break
-			}
-		}
-	} else { // Update
+	} else if getType == 3 { // Update
 		for idx, str := range sqlSplit {
 			if str == "update" {
 				originTableName = sqlSplit[idx+1]
@@ -61,7 +53,15 @@ func replaceTableName(sql string, tempTableName string, getType int) (string, st
 				break
 			}
 		}
+	} else { // Delete
+		for idx, str := range sqlSplit {
+			if str == "from" {
+				originTableName = sqlSplit[idx+1]
+				sqlSplit[idx+1] = tempTableName
+				break
+			}
+		}
 	}
-	modifiedSql := strings.Join(sqlSplit, "")
+	modifiedSql := strings.Join(sqlSplit, " ")
 	return modifiedSql, originTableName
 }

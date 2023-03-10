@@ -34,7 +34,7 @@ func InitSysDB() {
 		panic(err)
 	}
 	// create tables in database
-	err = sysDB.AutoMigrate(&AdminAccount{}, &TeacherAccount{}, &StudentAccount{}, &ExerciseAssociation{}, &ExerciseTable{}, &ExerciseContent{})
+	err = sysDB.AutoMigrate(&AdminAccount{}, &TeacherAccount{}, &StudentAccount{}, &ExerciseAssociation{}, &ExerciseTable{}, &ExerciseContent{}, &SubmitHistory{})
 	if err != nil {
 		panic(err)
 	}
@@ -52,9 +52,9 @@ func InitExeDB() {
 	password := config.Password
 	host := config.Host
 	port := config.Port
-	SysDBName := config.SysDBName
+	ExeDBName := config.ExeDBName
 	//dsn := "root:spln13spln@tcp(127.0.0.1:3306)/gorm?charset=utf8mb4&parseTime=True&loc=Local"
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", username, password, host, port, SysDBName)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", username, password, host, port, ExeDBName)
 	var err error
 	exeDB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info), // print sql sentences
