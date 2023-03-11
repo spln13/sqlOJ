@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"sqlOJ/common"
 	"sqlOJ/model"
+	"time"
 )
 
 type PublishExerciseData struct {
@@ -32,6 +33,15 @@ func PublishExerciseHandle(context *gin.Context) {
 	description := (*jsonMap)["description"].(string)
 	grade := int((*jsonMap)["grade"].(float64))
 	visitable := int((*jsonMap)["grade"].(float64))
+	showAtStr := (*jsonMap)["show_at"].(string)
+	// 时间格式
+	layout := "2006-01-02 15:04:05"
+
+	showAt, err := time.Parse(layout, showAtStr)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, "解析公布时间错误"))
+		return
+	}
 	tableIDInterfaceList := (*jsonMap)["table_id_list"].([]interface{})
 	var tableIDList []int64
 	for _, tableID := range tableIDInterfaceList {
@@ -47,7 +57,7 @@ func PublishExerciseHandle(context *gin.Context) {
 		context.JSON(http.StatusOK, common.NewCommonResponse(1, "答案不合法"))
 		return
 	}
-	exerciseID, err := model.NewExerciseContentFlow().InsertExerciseContent(publisherID, publisherType, name, answer, description, exeType, grade, visitable)
+	exerciseID, err := model.NewExerciseContentFlow().InsertExerciseContent(publisherID, publisherType, name, answer, description, exeType, grade, visitable, showAt)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, err.Error()))
 		return

@@ -65,6 +65,7 @@ func InitServer() *gin.Engine {
 		exerciseGroup.POST("/publish/exercise", middlewares.TeacherJWTMiddleware(), exercise.PublishExerciseHandle) // 发布练习接口
 		exerciseGroup.POST("/upload/table", middlewares.TeacherJWTMiddleware(), exercise.UploadTableHandle)         // 发布练习表单接口
 		exerciseGroup.POST("/submit/", middlewares.StudentJWTMiddleware(), exercise.SubmitHandle)                   // 处理提交习题接口
+		exerciseGroup.GET("/get/all/", exercise.GetAllExerciseHandle)                                               // 获取题库中所有可见的题目条目
 	}
 	submissionGroup := server.Group("/api/submission")
 	{

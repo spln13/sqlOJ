@@ -20,6 +20,7 @@ type ExerciseContent struct {
 	PassCount     int
 	Visitable     int
 	Type          int
+	ShowAt        time.Time // 在何时公布
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }
@@ -39,7 +40,7 @@ func NewExerciseContentFlow() *ExerciseContentFlow {
 	return exerciseContentFlow
 }
 
-func (*ExerciseContentFlow) InsertExerciseContent(publisherID int64, publisherType int64, name string, answer string, description string, exeType, grade, visitable int) (int64, error) {
+func (*ExerciseContentFlow) InsertExerciseContent(publisherID int64, publisherType int64, name string, answer string, description string, exeType, grade, visitable int, showAt time.Time) (int64, error) {
 	exerciseContentDAO := &ExerciseContent{
 		PublisherID:   publisherID,
 		PublisherType: publisherType,
@@ -49,6 +50,7 @@ func (*ExerciseContentFlow) InsertExerciseContent(publisherID int64, publisherTy
 		Description:   description,
 		Visitable:     visitable,
 		Type:          exeType,
+		ShowAt:        showAt,
 	}
 	if err := GetSysDB().Transaction(func(tx *gorm.DB) error {
 		return tx.Create(exerciseContentDAO).Error
@@ -77,4 +79,16 @@ func (*ExerciseContentFlow) QueryExerciseNameByExerciseID(exerciseID int64) stri
 		log.Println(err)
 	}
 	return exerciseContentDAO.Name
+}
+
+// GetAllVisitableExercise 获取当前数据库中所有可见的题目
+func (*ExerciseContentFlow) GetAllVisitableExercise() ([]ExerciseContent, error) {
+	nowTime := time.Now()
+	var exerciseContentArray []ExerciseContent
+	err := GetSysDB().Select("id, publisher_id", "publisher_type", "name", "grade", "submit_count", "pass_count", "type").Where("visitable = 1 or show_at > ?", nowTime).Find(&exerciseContentArray).Error
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	return exerciseContentArray, nil
 }
