@@ -33,6 +33,7 @@ func judge() {
 			status := 1 // 答案正确
 			// 插入做题记录表
 			model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, submitTime)
+			model.NewExerciseContentFlow().IncrPassCountSubmitCount(exerciseID)
 			wg.Wait() // 等待修改cache中状态的goroutine先完成，否则记录将不会被删去
 			cache.DeleteSubmitStatus(userID, userType, exerciseID, submitTime)
 			continue
@@ -43,6 +44,7 @@ func judge() {
 			fmt.Println("getType != expectedType")
 			status := 2 // 答案错误
 			model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, submitTime)
+			model.NewExerciseContentFlow().IncrSubmitCount(exerciseID)
 			wg.Wait() // 等待修改cache中状态的goroutine先完成，否则记录将不会被删去
 			cache.DeleteSubmitStatus(userID, userType, exerciseID, submitTime)
 			continue
@@ -54,8 +56,12 @@ func judge() {
 		} else {
 			status = modifyJudge(userID, exerciseID, submitTime, answer, expectedAnswer, getType)
 		}
-
 		model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, submitTime)
+		if status == 1 { // 答案正确
+			model.NewExerciseContentFlow().IncrPassCountSubmitCount(exerciseID) // 自增提交总数和通过总数
+		} else { // 答案错误
+			model.NewExerciseContentFlow().IncrSubmitCount(exerciseID) // 自增提交总数
+		}
 		wg.Wait()
 		cache.DeleteSubmitStatus(userID, userType, exerciseID, submitTime)
 	}

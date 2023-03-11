@@ -92,3 +92,28 @@ func (*ExerciseContentFlow) GetAllVisitableExercise() ([]ExerciseContent, error)
 	}
 	return exerciseContentArray, nil
 }
+
+// IncrPassCountSubmitCount 答案正确时调用，将提交总数和通过总数自增
+func (*ExerciseContentFlow) IncrPassCountSubmitCount(exerciseID int64) {
+	err := GetSysDB().Transaction(func(tx *gorm.DB) error {
+		err := tx.Model(&ExerciseContent{}).Where("id = ?", exerciseID).Updates(map[string]interface{}{
+			"submit_count": gorm.Expr("submit_count + ?", 1),
+			"pass_count":   gorm.Expr("pass_count + ?", 1),
+		}).Error
+		return err
+	})
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+// IncrSubmitCount 提交答案未通过时调用，将提交总数自增
+func (*ExerciseContentFlow) IncrSubmitCount(exerciseID int64) {
+	err := GetSysDB().Transaction(func(tx *gorm.DB) error {
+		err := tx.Model(&ExerciseContent{}).Where("id = ?", exerciseID).Update("submit_count", gorm.Expr("submit_count + 1")).Error
+		return err
+	})
+	if err != nil {
+		log.Println(err)
+	}
+}
