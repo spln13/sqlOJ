@@ -39,14 +39,7 @@ func GetAllAllHandle(context *gin.Context) {
 	for _, submitHistory := range allSubmitHistory {
 		userID := submitHistory.UserID
 		userType := submitHistory.UserType
-		var username string // 获取用户名
-		if userType == 1 {  // 学生
-			username = model.NewStudentAccountFlow().QueryStudentUsernameByUserID(userID)
-		} else if userType == 2 { // 教师
-			username = model.NewTeacherAccountFlow().QueryTeacherUsernameByUserID(userID)
-		} else { // 管理员
-			username = model.NewAdminAccountFlow().QueryAdminUsernameByUserID(userID)
-		}
+		username := common.QueryUsername(userID, userType)
 		exerciseID := submitHistory.ExerciseID
 		exerciseName := model.NewExerciseContentFlow().QueryExerciseNameByExerciseID(exerciseID)
 		allAll := AllAll{

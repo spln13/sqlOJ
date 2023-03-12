@@ -36,15 +36,7 @@ func GetAllExerciseHandle(context *gin.Context) {
 	for _, exerciseContent := range exerciseContentArray {
 		publisherID := exerciseContent.PublisherID
 		publisherType := exerciseContent.PublisherType
-		// 根据publisherID和publisherType查询publisherName
-		var publisherName string // 获取发布者用户名
-		if publisherType == 1 {  // 学生
-			publisherName = model.NewStudentAccountFlow().QueryStudentUsernameByUserID(publisherID)
-		} else if publisherType == 2 { // 教师
-			publisherName = model.NewTeacherAccountFlow().QueryTeacherUsernameByUserID(publisherID)
-		} else { // 管理员
-			publisherName = model.NewAdminAccountFlow().QueryAdminUsernameByUserID(publisherID)
-		}
+		publisherName := common.QueryUsername(publisherID, publisherType)
 		allExercise := AllExercise{
 			ExerciseID:    exerciseContent.ID,
 			ExerciseName:  exerciseContent.Name,

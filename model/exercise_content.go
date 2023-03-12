@@ -88,9 +88,18 @@ func (*ExerciseContentFlow) GetAllVisitableExercise() ([]ExerciseContent, error)
 	err := GetSysDB().Select("id, publisher_id", "publisher_type", "name", "grade", "submit_count", "pass_count", "type").Where("visitable = 1 or show_at > ?", nowTime).Find(&exerciseContentArray).Error
 	if err != nil {
 		log.Println(err)
-		return nil, err
+		return nil, errors.New("获取题库数据错误")
 	}
 	return exerciseContentArray, nil
+}
+
+func (*ExerciseContentFlow) GetOneExercise(exerciseID int64) (ExerciseContent, error) {
+	var exerciseContent ExerciseContent
+	if err := GetSysDB().Select("publisher_id", "publisher_type", "name", "grade", "description", "submit_count", "pass_count", "created_at").Where("id = ?", exerciseID).Find(&exerciseContent).Error; err != nil {
+		log.Println(err)
+		return exerciseContent, errors.New("查询题目信息错误")
+	}
+	return exerciseContent, nil
 }
 
 // IncrPassCountSubmitCount 答案正确时调用，将提交总数和通过总数自增
