@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
+	"net/http"
 	"sqlOJ/cache"
 	"sqlOJ/controller/admin_account"
 	"sqlOJ/controller/class"
@@ -22,16 +23,28 @@ func InitServer() *gin.Engine {
 
 	// 返回HTML页面
 	server.GET("/login/", func(context *gin.Context) {
-		context.HTML(200, "login.html", "")
+		context.HTML(http.StatusOK, "login.html", "")
+	})
+	server.GET("/", func(context *gin.Context) {
+		context.HTML(http.StatusOK, "home.html", "")
+	})
+	server.GET("/exercise/", func(context *gin.Context) {
+		context.HTML(http.StatusOK, "exercise.html", "")
+	})
+	server.GET("/contest/", func(context *gin.Context) {
+		context.HTML(http.StatusOK, "contest.html", "")
+	})
+	server.GET("/ranking/", func(context *gin.Context) {
+		context.HTML(http.StatusOK, "ranking.html", "")
 	})
 	server.GET("/register/", func(context *gin.Context) {
-		context.HTML(200, "register.html", "")
+		context.HTML(http.StatusOK, "register.html", "")
 	})
 	server.GET("/admin/login/", func(context *gin.Context) {
-		context.HTML(200, "admin-login.html", "")
+		context.HTML(http.StatusOK, "admin-login.html", "")
 	})
 	server.GET("/teacher/login/", func(context *gin.Context) {
-		context.HTML(200, "teacher-login.html", "")
+		context.HTML(http.StatusOK, "teacher-login.html", "")
 	})
 
 	// api接口
