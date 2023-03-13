@@ -1,7 +1,6 @@
 package student_account
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"sqlOJ/common"
@@ -59,10 +58,9 @@ func StudentLoginHandle(context *gin.Context) {
 		return
 	}
 	// 设置cookie过期时间
-	expires := time.Now().Add(5 * 24 * time.Hour)
-	fmt.Println(username, token, expires)
+	expires := time.Now().Add(7 * 24 * time.Hour)
 	// 设置cookie
-	context.SetCookie("token", token, int(expires.Unix()), "/", "localhost:8080", false, false)
-	context.SetCookie("username", username, int(expires.Unix()), "/", "localhost:8080", false, false)
+	context.SetCookie("token", token, int(expires.Unix()), "/", "localhost:8080", true, false)
+	context.SetCookie("username", username, int(expires.Unix()), "/", "localhost:8080", true, false)
 	context.JSON(http.StatusOK, common.NewCommonResponse(0, ""))
 }

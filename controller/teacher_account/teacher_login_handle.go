@@ -33,27 +33,10 @@ func TeacherLoginHandle(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, "token颁发错误"))
 		return
 	}
-	expires := time.Now().Add(24 * time.Hour) // 设置过期时间为 24 小时后
-	// 设置第一个 cookie，名称为 "username"
-	cookie1 := http.Cookie{
-		Name:     "username",
-		Value:    username,
-		Expires:  expires,
-		Path:     "/",
-		HttpOnly: true,                    // 禁止通过 JavaScript 访问 cookie
-		SameSite: http.SameSiteStrictMode, // 禁止跨站点请求伪造攻击
-	}
-	http.SetCookie(context.Writer, &cookie1)
-
-	// 设置第二个 cookie，名称为 "token"
-	cookie2 := http.Cookie{
-		Name:     "token",
-		Value:    token,
-		Expires:  expires,
-		Path:     "/",
-		HttpOnly: true,
-		SameSite: http.SameSiteStrictMode,
-	}
-	http.SetCookie(context.Writer, &cookie2)
+	// 设置cookie过期时间
+	expires := time.Now().Add(7 * 24 * time.Hour)
+	// 设置cookie
+	context.SetCookie("token", token, int(expires.Unix()), "/", "localhost:8080", true, false)
+	context.SetCookie("username", username, int(expires.Unix()), "/", "localhost:8080", true, false)
 	context.JSON(http.StatusOK, common.NewCommonResponse(0, ""))
 }
