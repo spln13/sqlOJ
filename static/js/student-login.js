@@ -33,7 +33,7 @@ window.onload = () => {
                     alert(status_msg)
                 }
                 else {
-                    alert("成功")
+                    window.location = '/';
                 }
             })
             .catch(error => console.error(error));

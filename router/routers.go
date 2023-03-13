@@ -46,6 +46,11 @@ func InitServer() *gin.Engine {
 	server.GET("/teacher/login/", func(context *gin.Context) {
 		context.HTML(http.StatusOK, "teacher-login.html", "")
 	})
+	server.GET("/logout/", func(context *gin.Context) {
+		context.SetCookie("token", "", -1, "/", "127.0.0.1:8080", true, false)
+		context.SetCookie("username", "", -1, "/", "127.0.0.1:8080", true, false)
+		context.Redirect(http.StatusFound, "/")
+	})
 
 	// api接口
 	adminGroup := server.Group("/api/admin")

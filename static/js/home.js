@@ -14,7 +14,7 @@ getCookie = (cname) => {
     return "";
 }
 window.onload = () => {
-    // 查看登 录状态，获取用户名
+    // 查看登录状态，获取用户名
     // 获取所有cookie
     const username = getCookie("username");
     if (username !== "") {

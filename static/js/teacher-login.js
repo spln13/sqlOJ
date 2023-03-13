@@ -10,7 +10,7 @@ window.onload = () => {
             alert("请正确输入信息")
             return;
         }
-        const url = 'http://127.0.0.1:8080/api/teacher/login/?username=' + username + '&password=' + password;
+        const url = '/api/teacher/login/?username=' + username + '&password=' + password;
         fetch(url, {
             method: 'POST',
             headers: {
@@ -25,7 +25,7 @@ window.onload = () => {
                     alert(status_msg)
                 }
                 else {
-                    alert("成功")
+                    window.location = '/';
                 }
             })
             .catch(error => console.error(error));

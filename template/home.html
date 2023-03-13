@@ -5,15 +5,15 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HOME BUCT-SQLOJ</title>
+    <title>主页 BUCT-SQLOJ</title>
     <link rel="stylesheet" href="/static/semantic/semantic.min.css">
     <link href="/static/icon/favicon.ico" rel="shortcut icon">
     <script src="/static/semantic/semantic.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="/static/js/exercise.js"></script>
 </head>
-
 <body>
-<div class="ui large menu">
+<div class="ui top fixed menu">
     <div class="item" style="font-size: 18px">
         BUCT SQL OJ
     </div>
@@ -33,17 +33,125 @@
         <img src="../static/icon/排行榜.svg" style="height: 15px;" alt="">
         排行榜
     </a>
-    <div class="right menu">
+    <div class="right menu" style="margin-right: 100px">
         <div class="item">
             <div class="ui icon input">
                 <input type="text" placeholder="搜索...">
             </div>
         </div>
-        <div class="item">
+        <div class="item" id="button_username">
             <div class="ui primary button" onclick="location.href='/login/'">登入</div>
         </div>
     </div>
 </div>
+<div id="blank"></div>
+<div class="ui grid">
+    <div class="one wide column"></div>
+    <div class="eight wide column">
+        <div class="ui piled segment announcement">
+            <h2 class="ui header">公告</h2>
+            <h4>发布者: Genesis</h4>
+            <h5>发布时间: 2023-3-13 15:00</h5>
+            <p>Te eum doming eirmod, nominati pertinacia argumentum ad his. Ex eam alia facete scriptorem, est autem
+                aliquip
+                detraxit at. Usu ocurreret referrentur at, cu epicurei appellantur vix. Cum ea laoreet recteque
+                electram,
+                eos choro alterum definiebas in. Vim dolorum definiebas an. Mei ex natum rebum iisque.</p>
+            <p>Audiam quaerendum eu sea, pro omittam definiebas ex. Te est latine definitiones. Quot wisi nulla ex duo.
+                Vis
+                sint solet expetenda ne, his te phaedrum referrentur consectetuer. Id vix fabulas oporteat, ei quo vide
+                phaedrum, vim vivendum maiestatis in.</p>
+            <p>Eu quo homero blandit intellegebat. Incorrupte consequuntur mei id. Mei ut facer dolores adolescens, no
+                illum
+                aperiri quo, usu odio brute at. Qui te porro electram, ea dico facete utroque quo. Populo quodsi te eam,
+                wisi everti eos ex, eum elitr altera utamur at. Quodsi convenire mnesarchum eu per, quas minimum
+                postulant
+                per id.</p>
+        </div>
+        <div class="ui piled segment announcement">
+            <h2 class="ui header">公告</h2>
+            <h4>发布者: Genesis</h4>
+            <h5>发布时间: 2023-3-13 15:00</h5>
+            <p>Te eum doming eirmod, nominati pertinacia argumentum ad his. Ex eam alia facete scriptorem, est autem
+                aliquip
+                detraxit at. Usu ocurreret referrentur at, cu epicurei appellantur vix. Cum ea laoreet recteque
+                electram,
+                eos choro alterum definiebas in. Vim dolorum definiebas an. Mei ex natum rebum iisque.</p>
+            <p>Audiam quaerendum eu sea, pro omittam definiebas ex. Te est latine definitiones. Quot wisi nulla ex duo.
+                Vis
+                sint solet expetenda ne, his te phaedrum referrentur consectetuer. Id vix fabulas oporteat, ei quo vide
+                phaedrum, vim vivendum maiestatis in.</p>
+            <p>Eu quo homero blandit intellegebat. Incorrupte consequuntur mei id. Mei ut facer dolores adolescens, no
+                illum
+                aperiri quo, usu odio brute at. Qui te porro electram, ea dico facete utroque quo. Populo quodsi te eam,
+                wisi everti eos ex, eum elitr altera utamur at. Quodsi convenire mnesarchum eu per, quas minimum
+                postulant
+                per id.</p>
+        </div>
+    </div>
+    <div class="five wide column">
+        <div class="ui fluid card">
+            <div class="content">
+                <div class="header">排行榜</div>
+            </div>
+            <div class="content">
+                <table class="ui very basic celled very compact center aligned table">
+                    <thead>
+                    <tr>
+                        <th class="ten wide">用户名</th>
+                        <th class="six wide">积分</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr>
+                        <td><a style="display: inline-block" class="user text semi-bold"
+                               href="/profile/30057/">spln13 </a></td>
+                        <td><a href="/contest/rating/?q=30057">785231</a></td>
+                    </tr>
+
+                    <tr>
+                        <td><a style="display: inline-block" class="user text semi-bold"
+                               href="/profile/31501/">tisfy </a></td>
+                        <td><a href="/contest/rating/?q=31501">218424</a></td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="extra content right aligned">
+                <a href="/ranking/">
+                    查看排行榜
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 </body>
+
+<style>
+    #blank {
+        width: 100%;
+        height: 70px;
+    }
+
+    #button_username {
+        padding: 0;
+    }
+
+    #announcement_list {
+        width: 60%;
+    }
+
+    .announcement {
+        margin: 100px;
+    }
+
+    p {
+        font-size: 17px;
+    }
+</style>
 
 </html>

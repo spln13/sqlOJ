@@ -10,7 +10,7 @@ window.onload = () => {
             alert("请正确输入信息")
             return;
         }
-        const url = 'http://127.0.0.1:8080/api/admin/login/?username=' + username + '&password=' + password;
+        const url = '/api/admin/login/?username=' + username + '&password=' + password;
         fetch(url, {
             method: 'POST',
             headers: {
@@ -22,10 +22,10 @@ window.onload = () => {
                 const status_code = data['status_code'];
                 const status_msg = data['status_msg'];
                 if (status_code === 1) {
-                    alert(status_msg)
+                    alert(status_msg);
                 }
                 else {
-                    alert("成功")
+                    window.location = '/';
                 }
             })
             .catch(error => console.error(error));
