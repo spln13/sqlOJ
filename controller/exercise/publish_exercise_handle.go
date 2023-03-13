@@ -12,11 +12,13 @@ import (
 )
 
 type PublishExerciseData struct {
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
 	Answer      string  `json:"answer"`
+	Description string  `json:"description"`
 	Grade       int     `json:"grade"`
+	Name        string  `json:"name"`
+	ShowAt      string  `json:"show_at"`
 	TableIDList []int64 `json:"table_id_list"`
+	Visitable   int     `json:"visitable"`
 }
 
 // PublishExerciseHandle 完成发布题目功能
@@ -27,13 +29,18 @@ func PublishExerciseHandle(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, "解析用户token错误"))
 		return
 	}
-	jsonMap := context.MustGet("jsonMap").(*map[string]interface{})
-	name := (*jsonMap)["name"].(string)
-	answer := (*jsonMap)["answer"].(string) // answer待处理
-	description := (*jsonMap)["description"].(string)
-	grade := int((*jsonMap)["grade"].(float64))
-	visitable := int((*jsonMap)["grade"].(float64))
-	showAtStr := (*jsonMap)["show_at"].(string)
+	var publishExerciseData PublishExerciseData
+	if err := context.ShouldBindJSON(&publishExerciseData); err != nil {
+		context.JSON(http.StatusBadRequest, common.NewCommonResponse(1, "请求参数错"))
+		return
+	}
+	answer := publishExerciseData.Answer
+	description := publishExerciseData.Description
+	showAtStr := publishExerciseData.ShowAt
+	tableIDList := publishExerciseData.TableIDList
+	visitable := publishExerciseData.Visitable
+	name := publishExerciseData.Name
+	grade := publishExerciseData.Grade
 	// 时间格式
 	layout := "2006-01-02 15:04:05"
 
@@ -41,12 +48,6 @@ func PublishExerciseHandle(context *gin.Context) {
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, "解析公布时间错误"))
 		return
-	}
-	tableIDInterfaceList := (*jsonMap)["table_id_list"].([]interface{})
-	var tableIDList []int64
-	for _, tableID := range tableIDInterfaceList {
-		id := int64(tableID.(float64))
-		tableIDList = append(tableIDList, id)
 	}
 	exeType, err := parseAnswer(answer)
 	if err != nil {
