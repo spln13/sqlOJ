@@ -57,25 +57,10 @@ func ParseToken(tokenString string) (*Claims, bool) {
 
 func StudentJWTMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tokenStr := c.Query("token") // token通过Query传递
-		if tokenStr == "" {          // token通过Form传递
-			tokenStr = c.PostForm("token")
-		}
-		if tokenStr == "" { // token通过json传递
-			var jsonMap map[string]interface{}
-			if err := c.BindJSON(&jsonMap); err != nil {
-				// 处理解析错误
-				c.AbortWithStatusJSON(http.StatusBadRequest, common.NewCommonResponse(400, "解析错误"))
-				c.Abort()
-				return
-			}
-			tokenStr = jsonMap["token"].(string)
-			c.Set("jsonMap", &jsonMap)
-		}
-		//用户不存在
-		if tokenStr == "" {
-			c.JSON(http.StatusBadRequest, common.NewCommonResponse(401, "用户不存在"))
-			c.Abort() //阻止执行
+		tokenStr, err := c.Cookie("token")
+		if err != nil {
+			c.JSON(http.StatusBadRequest, common.NewCommonResponse(402, "token不存在"))
+			c.Abort()
 			return
 		}
 		//验证token
@@ -99,26 +84,10 @@ func StudentJWTMiddleware() gin.HandlerFunc {
 
 func TeacherJWTMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tokenStr := c.Query("token")
-		if tokenStr == "" {
-			tokenStr = c.PostForm("token")
-		}
-		if tokenStr == "" { // token通过json传递
-			var jsonMap map[string]interface{}
-			if err := c.BindJSON(&jsonMap); err != nil {
-				// 处理解析错误
-				c.AbortWithStatusJSON(http.StatusBadRequest, common.NewCommonResponse(400, "解析错误"))
-				c.Abort()
-				return
-			}
-			tokenStr = jsonMap["token"].(string)
-			c.Set("jsonMap", &jsonMap)
-		}
-		//用户不存在
-		if tokenStr == "" {
-			c.JSON(http.StatusBadRequest, common.NewCommonResponse(401, "用户不存在"))
-			c.Abort() //阻止执行
-
+		tokenStr, err := c.Cookie("token")
+		if err != nil {
+			c.JSON(http.StatusBadRequest, common.NewCommonResponse(402, "token不存在"))
+			c.Abort()
 			return
 		}
 		//验证token
@@ -147,26 +116,10 @@ func TeacherJWTMiddleware() gin.HandlerFunc {
 
 func AdminJWTMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tokenStr := c.Query("token")
-		if tokenStr == "" {
-			tokenStr = c.PostForm("token")
-		}
-		if tokenStr == "" { // token通过json传递
-			var jsonMap map[string]interface{}
-			if err := c.BindJSON(&jsonMap); err != nil {
-				// 处理解析错误
-				c.AbortWithStatusJSON(http.StatusBadRequest, common.NewCommonResponse(400, "解析错误"))
-				c.Abort()
-				return
-			}
-			tokenStr = jsonMap["token"].(string)
-			c.Set("jsonMap", &jsonMap)
-		}
-		//用户不存在
-		if tokenStr == "" {
-			c.JSON(http.StatusBadRequest, common.NewCommonResponse(401, "用户不存在"))
-			c.Abort() //阻止执行
-
+		tokenStr, err := c.Cookie("token")
+		if err != nil {
+			c.JSON(http.StatusBadRequest, common.NewCommonResponse(402, "token不存在"))
+			c.Abort()
 			return
 		}
 		//验证token
