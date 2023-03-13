@@ -61,13 +61,13 @@ func (*StudentAccountFlow) QueryStudentPasswordByUsername(username string) (int6
 	return studentAccountDAO.ID, studentAccountDAO.Password, nil
 }
 
-func (*StudentAccountFlow) QueryStudentPasswordByEmail(email string) (int64, string, error) {
+func (*StudentAccountFlow) QueryStudentPasswordByEmail(email string) (int64, string, string, error) {
 	var studentAccountDAO StudentAccount
-	if err := GetSysDB().Select("id", "password").Where("email = ?", email).Find(&studentAccountDAO).Error; err != nil {
+	if err := GetSysDB().Select("id", "password", "username").Where("email = ?", email).Find(&studentAccountDAO).Error; err != nil {
 		log.Println(err)
-		return 0, "", errors.New("查询用户密码错误")
+		return 0, "", "", errors.New("查询用户密码错误")
 	}
-	return studentAccountDAO.ID, studentAccountDAO.Password, nil
+	return studentAccountDAO.ID, studentAccountDAO.Password, studentAccountDAO.Username, nil
 }
 
 func (*StudentAccountFlow) QueryStudentPasswordByUserID(userID int64) (string, error) {

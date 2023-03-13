@@ -11,8 +11,3 @@ func NewCommonResponse(statusCode int, statusMsg string) Response {
 		StatusMsg:  statusMsg,
 	}
 }
-
-type LoginResponse struct {
-	Token string `json:"token"`
-	Response
-}

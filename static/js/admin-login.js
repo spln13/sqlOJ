@@ -21,14 +21,10 @@ window.onload = () => {
             .then(data => {
                 const status_code = data['status_code'];
                 const status_msg = data['status_msg'];
-                const token = data['token']
                 if (status_code === 1) {
                     alert(status_msg)
                 }
                 else {
-                    const expires = new Date();
-                    expires.setDate(expires.getDate() + 1); // 管理员设置token过期时间为1天
-                    document.cookie = `token=${token}; expires=${expires.toUTCString()}`;   // 设置token
                     alert("成功")
                 }
             })
