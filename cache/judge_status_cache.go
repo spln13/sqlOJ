@@ -13,9 +13,9 @@ func SetJudgeStatusPending(userID, userType, exerciseID int64, submitTime time.T
 	statusHashMap := map[string]interface{}{
 		"status": 4, // 在队列中状态码是4
 	}
-	// 设置下次合法提交时间为5秒后
+	// 设置下次合法提交时间为3秒后
 	nextSubmitTimeKey := fmt.Sprintf("%d:%d:%d_next_submit_time", userID, userType, exerciseID)
-	err := rdb.Set(ctx, nextSubmitTimeKey, submitTime.Add(5*time.Second).Unix(), time.Duration(5)*time.Second).Err()
+	err := rdb.Set(ctx, nextSubmitTimeKey, submitTime.Add(5*time.Second).Unix(), time.Duration(3)*time.Second).Err()
 	if err != nil {
 		log.Println(err)
 		return errors.New("缓存提交时间错误")

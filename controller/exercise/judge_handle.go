@@ -98,9 +98,6 @@ func selectJudge(userAnswer, expectedAnswer string, exerciseID int64) int {
 		log.Println(err)
 		return 3
 	}
-	if err != nil {
-		return 3 // RE
-	}
 	expectedResultBytes, ok := cache.GetExpectedResultBytes(exerciseID)
 	if !ok { // 在cache中没有查找到
 		expectedResult, err := model.ExecuteRawSql(expectedAnswer) // 执行sql语句得到查询结果

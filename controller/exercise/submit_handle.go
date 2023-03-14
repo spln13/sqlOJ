@@ -41,7 +41,7 @@ func SubmitHandle(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, err.Error()))
 		return
 	}
-	if !ok { // 与上次发送未间隔5s
+	if !ok { // 与上次发送未间隔3s
 		context.JSON(http.StatusOK, common.NewCommonResponse(1, "请勿频繁发送"))
 		return
 	}
