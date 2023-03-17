@@ -7,10 +7,12 @@ import (
 	"time"
 )
 
+// UserProblemStatus 表示用户与对应题目的做题数据
 type UserProblemStatus struct {
 	ID         int64 `gorm:"primary_key"`
 	UserID     int64
 	ExerciseID int64
+	UserType   int64
 	Status     int
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
@@ -31,7 +33,7 @@ func NewUserProblemStatusFlow() *UserProblemStatusFlow {
 	return userProblemStatusFlow
 }
 
-func (*UserProblemStatusFlow) ModifyUserProblemStatus(userID, exerciseID int64, status int) {
+func (*UserProblemStatusFlow) ModifyUserProblemStatus(userID, exerciseID, userType int64, status int) {
 	var userProblemStatusDAO UserProblemStatus
 	if err := GetSysDB().Select("ID").Where("user_id = ? and exercise_id = ?", userID, exerciseID).Find(&userProblemStatusDAO).Error; err != nil {
 		log.Println(err)
@@ -40,6 +42,7 @@ func (*UserProblemStatusFlow) ModifyUserProblemStatus(userID, exerciseID int64, 
 		userProblemStatusDAO := &UserProblemStatus{
 			UserID:     userID,
 			ExerciseID: exerciseID,
+			UserType:   userType,
 			Status:     status,
 		}
 		if err := GetSysDB().Transaction(func(tx *gorm.DB) error {
@@ -49,7 +52,7 @@ func (*UserProblemStatusFlow) ModifyUserProblemStatus(userID, exerciseID int64, 
 		}
 	} else {
 		if err := GetSysDB().Transaction(func(tx *gorm.DB) error {
-			return tx.Where("user_id = ? and exercise_id = ?", userID, exerciseID).Update("status", status).Error
+			return tx.Where("user_id = ? and exercise_id = ? and user_type = ?", userID, exerciseID, userType).Update("status", status).Error
 		}); err != nil {
 			log.Println(err)
 		}

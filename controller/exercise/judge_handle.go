@@ -62,6 +62,7 @@ func judge() {
 		} else { // 答案错误
 			model.NewExerciseContentFlow().IncrSubmitCount(exerciseID) // 自增提交总数
 		}
+		model.NewUserProblemStatusFlow().ModifyUserProblemStatus(userID, exerciseID, userType, status) // 将用户做题数据写入用户做题表
 		wg.Wait()
 		cache.DeleteSubmitStatus(userID, userType, exerciseID, submitTime)
 	}

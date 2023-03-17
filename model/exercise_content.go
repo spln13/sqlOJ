@@ -12,6 +12,7 @@ type ExerciseContent struct {
 	ID            int64 `gorm:"primary_key"`
 	PublisherID   int64
 	PublisherType int64
+	PublisherName string
 	Name          string
 	Grade         int
 	Answer        string

@@ -14,6 +14,8 @@ type SubmitHistory struct {
 	ExerciseID    int64
 	UserType      int64
 	Status        int
+	Username      string
+	ExerciseName  string
 	StudentAnswer string
 	UserAgent     string
 	SubmitTime    time.Time
