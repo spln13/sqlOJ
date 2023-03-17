@@ -13,6 +13,50 @@ getCookie = (cname) => {
     }
     return "";
 }
+
+
+function generatePage(dataArray, currentPage) {
+    let itemsPerPage = 10;  // 每页显示10条数据
+    let startIndex = (currentPage - 1) * itemsPerPage;
+    let endIndex = startIndex + itemsPerPage;
+
+    let pageData = dataArray.slice(startIndex, endIndex);
+
+    // 渲染页面
+    renderPage(pageData);
+
+    // 生成分页按钮
+    let totalPages = Math.ceil(dataArray.length / itemsPerPage);
+    renderPagination(totalPages, currentPage);
+}
+
+
+
+
+const createBox = (exercise_id, exercise_name, grade, pass_count, submit_count, publisher_name, publisher_type, status) => {
+    let mother_box = document.querySelector("#exercises");
+    let box = document.createElement('tr');
+    mother_box.appendChild(box);
+    let grade_type;
+    if (grade === 1) {
+        grade_type = "easy";
+    }
+    else if (grade === 2) {
+        grade_type = "medium";
+    }
+    else {
+        grade_type = "hard";
+    }
+    const publisher_class = "publisher_" + publisher_type;
+    const grade_class = "grade_" + grade_type;
+    const status_class = "status_" + status;
+    let pass_rate = pass_count / submit_count;
+    pass_rate = pass_rate.toFixed(2);
+    box.innerHTML = '<tr><td>' + exercise_id + '</td><td>' + exercise_name + '</td><td class=' + grade_class + '>'
+        + grade_type + '</td><td class=' + publisher_class + '>' + publisher_name + '</td><td>' + pass_rate
+        + '</td><td class=' + status_class + '>' + pass_count + '</td></tr>';
+}
+
 window.onload = () => {
     // 查看登 录状态，获取用户名
     // 获取所有cookie
@@ -29,9 +73,37 @@ window.onload = () => {
             '        <a class="item" href="/logout/">登出</a>' +
             '      </div>' +
             '    </div>';
-    } else {
-        // 用户未登录，不需要显示用户名
-
     }
+    // 获取所有题目信息
+    const url = '/api/exercise/get/all/';
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+        .then(response => response.json())
+        .then(data => {
+            const status_code = data['status_code'];
+            const status_msg = data['status_msg'];
+            if (status_code === 1) {
+                alert(status_msg);
+                return
+            }
+            const list = data['list'];
+            for (let i = 0; i < list.length; i++) {
+                const exercise_id = list[i]['exercise_id'];
+                const exercise_name = list[i]['exercise_name'];
+                const grade = list[i]['grade'];
+                const pass_count = list[i]['pass_count']
+                const submit_count = list[i]['submit_count']
+                const publisher_name = list[i]['publisher_name']
+                const publisher_type = list[i]['publisher_type'] // 根据不同的发布者类型渲染不同颜色
+                // const status = list[i]['status']
+                const status = 1
+                createBox(exercise_id, exercise_name,grade, pass_count, submit_count, publisher_name, publisher_type, status);
+            }
+        })
+        .catch(error => console.error(error));
 }
 
