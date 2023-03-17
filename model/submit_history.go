@@ -38,12 +38,14 @@ func NewSubmitHistoryFlow() *SubmitHistoryFlow {
 	return submitHistoryFlow
 }
 
-func (*SubmitHistoryFlow) InsertSubmitHistory(userID, exerciseID, userType int64, status int, studentAnswer, userAgent string, submitTime time.Time) {
+func (*SubmitHistoryFlow) InsertSubmitHistory(userID, exerciseID, userType int64, status int, studentAnswer, userAgent, username, exerciseName string, submitTime time.Time) {
 	submitHistoryDAO := &SubmitHistory{
 		UserID:        userID,
 		ExerciseID:    exerciseID,
 		UserType:      userType,
 		Status:        status,
+		Username:      username,
+		ExerciseName:  exerciseName,
 		UserAgent:     userAgent,
 		StudentAnswer: studentAnswer,
 		SubmitTime:    submitTime,

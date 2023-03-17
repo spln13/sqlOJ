@@ -6,6 +6,7 @@ import (
 	"log"
 	"reflect"
 	"sqlOJ/cache"
+	"sqlOJ/common"
 	"sqlOJ/model"
 	"sync"
 	"time"
@@ -28,11 +29,14 @@ func judge() {
 		expectedAnswer, expectedType := model.NewExerciseContentFlow().QueryAnswerTypeByExerciseID(exerciseID)
 		// 获取参数
 
+		// 获取用户名与题目名
+		username := common.QueryUsername(userID, userType)
+		exerciseName := model.NewExerciseContentFlow().QueryExerciseNameByExerciseID(exerciseID)
 		equal, getType := checkSqlSyntax(answer, expectedAnswer)
 		if equal { // 和标准答案相等，返回正确
 			status := 1 // 答案正确
 			// 插入做题记录表
-			model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, submitTime)
+			model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, username, exerciseName, submitTime)
 			model.NewExerciseContentFlow().IncrPassCountSubmitCount(exerciseID)
 			wg.Wait() // 等待修改cache中状态的goroutine先完成，否则记录将不会被删去
 			cache.DeleteSubmitStatus(userID, userType, exerciseID, submitTime)
@@ -43,7 +47,7 @@ func judge() {
 			fmt.Println("expectedType:", expectedType)
 			fmt.Println("getType != expectedType")
 			status := 2 // 答案错误
-			model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, submitTime)
+			model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, username, exerciseName, submitTime)
 			model.NewExerciseContentFlow().IncrSubmitCount(exerciseID)
 			wg.Wait() // 等待修改cache中状态的goroutine先完成，否则记录将不会被删去
 			cache.DeleteSubmitStatus(userID, userType, exerciseID, submitTime)
@@ -56,7 +60,7 @@ func judge() {
 		} else {
 			status = modifyJudge(userID, exerciseID, submitTime, answer, expectedAnswer, getType)
 		}
-		model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, submitTime)
+		model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, username, exerciseName, submitTime)
 		if status == 1 { // 答案正确
 			model.NewExerciseContentFlow().IncrPassCountSubmitCount(exerciseID) // 自增提交总数和通过总数
 		} else { // 答案错误

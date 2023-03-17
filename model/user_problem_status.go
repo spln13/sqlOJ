@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"gorm.io/gorm"
 	"log"
 	"sync"
@@ -13,9 +14,14 @@ type UserProblemStatus struct {
 	UserID     int64
 	ExerciseID int64
 	UserType   int64
-	Status     int
+	Status     int // 1->ac; 2->wa
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
+}
+
+type UserProblemStatusMin struct {
+	ExerciseID int64
+	Status     int
 }
 
 type UserProblemStatusFlow struct {
@@ -57,4 +63,19 @@ func (*UserProblemStatusFlow) ModifyUserProblemStatus(userID, exerciseID, userTy
 			log.Println(err)
 		}
 	}
+}
+
+// QueryUserProblemStatus 查询用户对应所有的做过的题以及状态
+func (*UserProblemStatusFlow) QueryUserProblemStatus(userID, userType int64) (map[int64]int, error) {
+	var userProblemStatusMinList []UserProblemStatusMin
+	err := GetSysDB().Where("user_id = ? and user_type = ?", userID, userType).Find(&userProblemStatusMinList).Error
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("查询用户做题数据错误")
+	}
+	problemStatusMap := make(map[int64]int)
+	for _, userProblemStatusMin := range userProblemStatusMinList {
+		problemStatusMap[userProblemStatusMin.ExerciseID] = userProblemStatusMin.Status
+	}
+	return problemStatusMap, nil
 }
