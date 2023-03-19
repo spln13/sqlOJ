@@ -103,8 +103,8 @@ func (*ExerciseContentFlow) GetOneExercise(exerciseID int64) (ExerciseContent, e
 	return exerciseContent, nil
 }
 
-// IncrPassCountSubmitCount 答案正确时调用，将提交总数和通过总数自增
-func (*ExerciseContentFlow) IncrPassCountSubmitCount(exerciseID int64) {
+// IncreasePassCountSubmitCount 答案正确时调用，将提交总数和通过总数自增
+func (*ExerciseContentFlow) IncreasePassCountSubmitCount(exerciseID int64) {
 	err := GetSysDB().Transaction(func(tx *gorm.DB) error {
 		err := tx.Model(&ExerciseContent{}).Where("id = ?", exerciseID).Updates(map[string]interface{}{
 			"submit_count": gorm.Expr("submit_count + ?", 1),
@@ -117,8 +117,8 @@ func (*ExerciseContentFlow) IncrPassCountSubmitCount(exerciseID int64) {
 	}
 }
 
-// IncrSubmitCount 提交答案未通过时调用，将提交总数自增
-func (*ExerciseContentFlow) IncrSubmitCount(exerciseID int64) {
+// IncreaseSubmitCount 提交答案未通过时调用，将提交总数自增
+func (*ExerciseContentFlow) IncreaseSubmitCount(exerciseID int64) {
 	err := GetSysDB().Transaction(func(tx *gorm.DB) error {
 		err := tx.Model(&ExerciseContent{}).Where("id = ?", exerciseID).Update("submit_count", gorm.Expr("submit_count + 1")).Error
 		return err
@@ -126,4 +126,14 @@ func (*ExerciseContentFlow) IncrSubmitCount(exerciseID int64) {
 	if err != nil {
 		log.Println(err)
 	}
+}
+
+// QueryExerciseGrade 查询对应题目的难度等级
+func (*ExerciseContentFlow) QueryExerciseGrade(exerciseID int64) int {
+	var exerciseContentDAO ExerciseContent
+	err := GetSysDB().Select("grade").Where("id = ?", exerciseID).Find(&exerciseContentDAO).Error
+	if err != nil {
+		log.Println(err)
+	}
+	return exerciseContentDAO.Grade
 }
