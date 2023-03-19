@@ -26,8 +26,14 @@ func TeacherAddHandle(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, common.NewCommonResponse(1, "职工号已存在"))
 		return
 	}
-	if err := model.NewTeacherAccountFlow().InsertTeacherAccount(username, password, realName); err != nil {
+	userID, err := model.NewTeacherAccountFlow().InsertTeacherAccount(username, password, realName)
+	if err != nil {
 		log.Println(err)
+		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, err.Error()))
+		return
+	}
+	err = model.NewScoreRecordFlow().InsertScoreRecord(userID, 2, username)
+	if err != nil {
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, err.Error()))
 		return
 	}

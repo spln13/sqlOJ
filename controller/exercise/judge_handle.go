@@ -63,6 +63,8 @@ func judge() {
 		model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, username, exerciseName, submitTime)
 		if status == 1 { // 答案正确
 			model.NewExerciseContentFlow().IncreasePassCountSubmitCount(exerciseID) // 自增提交总数和通过总数
+			grade := model.NewExerciseContentFlow().QueryExerciseGrade(exerciseID)  // 获取当前习题的难度
+			model.NewScoreRecordFlow().IncreaseScore(userID, userType, grade)       // 增加用户的积分
 		} else { // 答案错误
 			model.NewExerciseContentFlow().IncreaseSubmitCount(exerciseID) // 自增提交总数
 		}

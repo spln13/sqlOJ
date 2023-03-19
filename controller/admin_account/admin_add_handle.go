@@ -25,7 +25,13 @@ func AdminAddHandle(context *gin.Context) {
 		context.JSON(http.StatusOK, common.NewCommonResponse(1, "用户名已存在"))
 		return
 	}
-	if err := model.NewAdminAccountFlow().InsertAdminAccount(username, password); err != nil {
+	userID, err := model.NewAdminAccountFlow().InsertAdminAccount(username, password)
+	if err != nil {
+		log.Println(err)
+		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, err.Error()))
+		return
+	}
+	if err := model.NewScoreRecordFlow().InsertScoreRecord(userID, 3, username); err != nil {
 		log.Println(err)
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, err.Error()))
 		return

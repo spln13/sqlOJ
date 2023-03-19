@@ -34,7 +34,8 @@ func StudentRegisterHandle(context *gin.Context) {
 		context.JSON(http.StatusOK, common.NewCommonResponse(1, err.Error()))
 		return
 	}
-	_, err = model.NewStudentAccountFlow().InsertStudentAccount(username, password, number, realName, email)
+	userID, err := model.NewStudentAccountFlow().InsertStudentAccount(username, password, number, realName, email)
+	err = model.NewScoreRecordFlow().InsertScoreRecord(userID, 1, username)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, err.Error()))
 		return

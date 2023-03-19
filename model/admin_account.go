@@ -64,7 +64,7 @@ func (*AdminAccountFlow) QueryAdminExistByUsername(username string) (bool, error
 	return false, nil
 }
 
-func (*AdminAccountFlow) InsertAdminAccount(username, password string) error {
+func (*AdminAccountFlow) InsertAdminAccount(username, password string) (int64, error) {
 	adminDAO := &AdminAccount{
 		Username: username,
 		Password: password,
@@ -74,9 +74,9 @@ func (*AdminAccountFlow) InsertAdminAccount(username, password string) error {
 	})
 	if err != nil {
 		log.Println(err)
-		return errors.New("插入用户错误")
+		return 0, errors.New("插入用户错误")
 	}
-	return nil
+	return adminDAO.ID, nil
 }
 
 func (*AdminAccountFlow) UpdateAdminPassword(userID int64, newPassword string) error {

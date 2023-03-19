@@ -44,15 +44,15 @@ func (*TeacherAccountFlow) QueryTeacherExistByUsername(username string) (bool, e
 	return false, nil
 }
 
-func (*TeacherAccountFlow) InsertTeacherAccount(username, password, realName string) error {
+func (*TeacherAccountFlow) InsertTeacherAccount(username, password, realName string) (int64, error) {
 	teacherAccountDAO := &TeacherAccount{Username: username, Password: password, RealName: realName}
 	if err := GetSysDB().Transaction(func(tx *gorm.DB) error {
 		return tx.Create(teacherAccountDAO).Error
 	}); err != nil {
 		log.Println(err.Error())
-		return errors.New("保存教师信息错误")
+		return 0, errors.New("保存教师信息错误")
 	}
-	return nil
+	return teacherAccountDAO.ID, nil
 }
 
 // QueryTeacherPasswordByUsername 通过用户名查询教师密码

@@ -32,7 +32,7 @@ var (
 	scoreTableOnce sync.Once
 )
 
-func NewScoreTableFlow() *ScoreRecordFlow {
+func NewScoreRecordFlow() *ScoreRecordFlow {
 	scoreTableOnce.Do(func() {
 		scoreTableFlow = new(ScoreRecordFlow)
 	})
@@ -55,7 +55,17 @@ func (*ScoreRecordFlow) InsertScoreRecord(userID, userType int64, username strin
 	return nil
 }
 
-func (*ScoreRecordFlow) IncreaseScore(userID, userType, score int64) {
+func (*ScoreRecordFlow) IncreaseScore(userID, userType int64, grade int) {
+	var score int64
+	if grade == 1 { // easy
+		score = 3
+	} else if grade == 2 { // medium
+		score = 7
+	} else if grade == 3 { // hard
+		score = 15
+	} else {
+		score = 0
+	}
 	if err := GetSysDB().Transaction(func(tx *gorm.DB) error {
 		return tx.Model(ExerciseTable{}).Where("user_id = ? and user_type = ?", userID, userType).Update("score", gorm.Expr("score + ?", score)).Error
 	}); err != nil {
