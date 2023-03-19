@@ -7,6 +7,7 @@ import (
 	"sqlOJ/controller/admin_account"
 	"sqlOJ/controller/class"
 	"sqlOJ/controller/exercise"
+	"sqlOJ/controller/ranking"
 	"sqlOJ/controller/student_account"
 	"sqlOJ/controller/submission"
 	"sqlOJ/controller/teacher_account"
@@ -93,6 +94,10 @@ func InitServer() *gin.Engine {
 		submissionGroup.GET("/get/one-all/", middlewares.StudentJWTMiddleware(), submission.GetOneAllHandle) // 查询当前用户所有提交记录
 		submissionGroup.GET("/get/all-all/", middlewares.TeacherJWTMiddleware(), submission.GetAllAllHandle) // 获取所有提交记录
 		submissionGroup.GET("/get/all-one/", middlewares.TeacherJWTMiddleware(), submission.GetAllOneHandle) // 获取当前题目所有用户的提交
+	}
+	rankingGroup := server.Group("/api/ranking")
+	{
+		rankingGroup.GET("/get/list/", ranking.GetRankingHandle) // 获取排行榜信息
 	}
 	return server
 }
