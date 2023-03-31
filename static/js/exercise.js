@@ -15,22 +15,6 @@ getCookie = (cname) => {
 }
 
 
-function generatePage(dataArray, currentPage) {
-    let itemsPerPage = 10;  // 每页显示10条数据
-    let startIndex = (currentPage - 1) * itemsPerPage;
-    let endIndex = startIndex + itemsPerPage;
-
-    let pageData = dataArray.slice(startIndex, endIndex);
-
-    // 渲染页面
-    renderPage(pageData);
-
-    // 生成分页按钮
-    let totalPages = Math.ceil(dataArray.length / itemsPerPage);
-    renderPagination(totalPages, currentPage);
-}
-
-
 
 
 const createBox = (exercise_id, exercise_name, grade, pass_count, submit_count, publisher_name, publisher_type, status) => {
@@ -61,6 +45,7 @@ window.onload = () => {
     // 查看登 录状态，获取用户名
     // 获取所有cookie
     const username = getCookie("username");
+    let url = '/api/exercise/get/all/without-token';
     if (username !== "") {
         // 用户已登录，将用户名显示在页面右上角
         document.getElementById("button_username").innerHTML = '<div class="ui dropdown simple item">\n' +
@@ -73,9 +58,9 @@ window.onload = () => {
             '        <a class="item" href="/logout/">登出</a>' +
             '      </div>' +
             '    </div>';
+        url = '/api/exercise/get/all/with-token';
     }
     // 获取所有题目信息
-    const url = '/api/exercise/get/all/';
     fetch(url, {
         method: 'GET',
         headers: {

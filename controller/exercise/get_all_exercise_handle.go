@@ -8,26 +8,16 @@ import (
 )
 
 type AllExerciseResponseWithoutToken struct {
-	List []AllExerciseWithoutToken `json:"list"`
+	List []AllExercise `json:"list"`
 	common.Response
 }
 
 type AllExerciseResponseWithToken struct {
-	List []AllExerciseWithToken `json:"list"`
+	List []AllExercise `json:"list"`
 	common.Response
 }
 
-type AllExerciseWithoutToken struct {
-	ExerciseID    int64  `json:"exercise_id"`
-	ExerciseName  string `json:"exercise_name"`
-	Grade         int    `json:"grade"`
-	PassCount     int    `json:"pass_count"`
-	PublisherName string `json:"publisher_name"`
-	PublisherType int64  `json:"publisher_type"`
-	SubmitCount   int    `json:"submit_count"`
-}
-
-type AllExerciseWithToken struct {
+type AllExercise struct {
 	ExerciseID    int64  `json:"exercise_id"`
 	ExerciseName  string `json:"exercise_name"`
 	Grade         int    `json:"grade"`
@@ -48,10 +38,10 @@ func GetAllExerciseWithoutTokenHandle(context *gin.Context) {
 		})
 		return
 	}
-	var AllExerciseList []AllExerciseWithoutToken
+	var AllExerciseList []AllExercise
 	for _, exerciseContent := range exerciseContentArray {
 		publisherType := exerciseContent.PublisherType
-		allExercise := AllExerciseWithoutToken{
+		allExercise := AllExercise{
 			ExerciseID:    exerciseContent.ID,
 			ExerciseName:  exerciseContent.Name,
 			Grade:         exerciseContent.Grade,
@@ -59,6 +49,7 @@ func GetAllExerciseWithoutTokenHandle(context *gin.Context) {
 			PublisherName: exerciseContent.PublisherName,
 			PublisherType: publisherType,
 			SubmitCount:   exerciseContent.SubmitCount,
+			Status:        0, // 未登录状态题目显示未通过
 		}
 		AllExerciseList = append(AllExerciseList, allExercise)
 	}
@@ -86,7 +77,7 @@ func GetAllExerciseWithTokenHandle(context *gin.Context) {
 		})
 		return
 	}
-	var AllExerciseWithTokenList []AllExerciseWithToken
+	var AllExerciseWithTokenList []AllExercise
 	problemStatusMap, err := model.NewUserProblemStatusFlow().QueryUserProblemStatus(userID, userType)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, AllExerciseResponseWithToken{
@@ -98,7 +89,7 @@ func GetAllExerciseWithTokenHandle(context *gin.Context) {
 	for _, exerciseContent := range exerciseContentArray {
 		exerciseID := exerciseContent.ID
 		status := problemStatusMap[exerciseID]
-		allExerciseWithToken := AllExerciseWithToken{
+		allExerciseWithToken := AllExercise{
 			ExerciseID:    exerciseID,
 			ExerciseName:  exerciseContent.Name,
 			Grade:         exerciseContent.Grade,

@@ -68,7 +68,7 @@ func (*UserProblemStatusFlow) ModifyUserProblemStatus(userID, exerciseID, userTy
 // QueryUserProblemStatus 查询用户对应所有的做过的题以及状态
 func (*UserProblemStatusFlow) QueryUserProblemStatus(userID, userType int64) (map[int64]int, error) {
 	var userProblemStatusMinList []UserProblemStatusMin
-	err := GetSysDB().Where("user_id = ? and user_type = ?", userID, userType).Find(&userProblemStatusMinList).Error
+	err := GetSysDB().Model(&UserProblemStatus{}).Where("user_id = ? and user_type = ?", userID, userType).Find(&userProblemStatusMinList).Error
 	if err != nil {
 		log.Println(err)
 		return nil, errors.New("查询用户做题数据错误")
