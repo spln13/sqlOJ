@@ -10,7 +10,7 @@ import (
 func AdminAddDebugHandle(context *gin.Context) {
 	username := context.Query("username")
 	password, _ := context.MustGet("password_sha256").(string)
-	if err := model.NewAdminAccountFlow().InsertAdminAccount(username, password); err != nil {
+	if _, err := model.NewAdminAccountFlow().InsertAdminAccount(username, password); err != nil {
 		log.Println(err)
 		context.JSON(http.StatusInternalServerError, gin.H{
 			"status_code": 1,
