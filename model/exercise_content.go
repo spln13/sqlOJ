@@ -86,7 +86,7 @@ func (*ExerciseContentFlow) QueryExerciseNameByExerciseID(exerciseID int64) stri
 func (*ExerciseContentFlow) GetAllVisitableExercise() ([]ExerciseContent, error) {
 	nowTime := time.Now()
 	var exerciseContentArray []ExerciseContent
-	err := GetSysDB().Select("id, publisher_id", "publisher_type", "name", "grade", "submit_count", "pass_count", "type").Where("visitable = 1 or show_at > ?", nowTime).Find(&exerciseContentArray).Error
+	err := GetSysDB().Select("id, publisher_id", "publisher_type", "publisher_name", "name", "grade", "submit_count", "pass_count", "type").Where("visitable = 1 or show_at < ?", nowTime).Find(&exerciseContentArray).Error
 	if err != nil {
 		log.Println(err)
 		return nil, errors.New("获取题库数据错误")

@@ -39,12 +39,13 @@ func NewUserProblemStatusFlow() *UserProblemStatusFlow {
 	return userProblemStatusFlow
 }
 
+// ModifyUserProblemStatus 修改user_problem_statuses表中用户与题目对应的数据
 func (*UserProblemStatusFlow) ModifyUserProblemStatus(userID, exerciseID, userType int64, status int) {
 	var userProblemStatusDAO UserProblemStatus
 	if err := GetSysDB().Select("ID").Where("user_id = ? and exercise_id = ?", userID, exerciseID).Find(&userProblemStatusDAO).Error; err != nil {
 		log.Println(err)
 	}
-	if userProblemStatusDAO.ID == 0 { // 其中没有记录
+	if userProblemStatusDAO.ID == 0 { // 其中没有记录，插入数据
 		userProblemStatusDAO := &UserProblemStatus{
 			UserID:     userID,
 			ExerciseID: exerciseID,

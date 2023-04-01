@@ -7,12 +7,7 @@ import (
 	"sqlOJ/model"
 )
 
-type AllExerciseResponseWithoutToken struct {
-	List []AllExercise `json:"list"`
-	common.Response
-}
-
-type AllExerciseResponseWithToken struct {
+type AllExerciseResponse struct {
 	List []AllExercise `json:"list"`
 	common.Response
 }
@@ -32,7 +27,7 @@ type AllExercise struct {
 func GetAllExerciseWithoutTokenHandle(context *gin.Context) {
 	exerciseContentArray, err := model.NewExerciseContentFlow().GetAllVisitableExercise()
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, AllExerciseResponseWithoutToken{
+		context.JSON(http.StatusInternalServerError, AllExerciseResponse{
 			List:     nil,
 			Response: common.NewCommonResponse(1, "查询题库出错"),
 		})
@@ -49,11 +44,11 @@ func GetAllExerciseWithoutTokenHandle(context *gin.Context) {
 			PublisherName: exerciseContent.PublisherName,
 			PublisherType: publisherType,
 			SubmitCount:   exerciseContent.SubmitCount,
-			Status:        0, // 未登录状态题目显示未通过
+			Status:        0, // 未登录状态题目显示没有提交过
 		}
 		AllExerciseList = append(AllExerciseList, allExercise)
 	}
-	context.JSON(http.StatusOK, AllExerciseResponseWithoutToken{
+	context.JSON(http.StatusOK, AllExerciseResponse{
 		List:     AllExerciseList,
 		Response: common.NewCommonResponse(0, ""),
 	})
@@ -64,14 +59,14 @@ func GetAllExerciseWithTokenHandle(context *gin.Context) {
 	userID, ok1 := context.MustGet("user_id").(int64)
 	userType, ok2 := context.MustGet("user_type").(int64)
 	if !ok1 || !ok2 {
-		context.JSON(http.StatusInternalServerError, AllExerciseResponseWithToken{
+		context.JSON(http.StatusInternalServerError, AllExerciseResponse{
 			Response: common.NewCommonResponse(1, "解析用户参数错误"),
 		})
 		return
 	}
 	exerciseContentArray, err := model.NewExerciseContentFlow().GetAllVisitableExercise()
-	if err != nil {
-		context.JSON(http.StatusInternalServerError, AllExerciseResponseWithoutToken{
+	if err != nil { // 获取所有可见的题目错误
+		context.JSON(http.StatusInternalServerError, AllExerciseResponse{
 			List:     nil,
 			Response: common.NewCommonResponse(1, err.Error()),
 		})
@@ -79,8 +74,9 @@ func GetAllExerciseWithTokenHandle(context *gin.Context) {
 	}
 	var AllExerciseWithTokenList []AllExercise
 	problemStatusMap, err := model.NewUserProblemStatusFlow().QueryUserProblemStatus(userID, userType)
+	// 获取用户所有提交过题目的状态
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, AllExerciseResponseWithToken{
+		context.JSON(http.StatusInternalServerError, AllExerciseResponse{
 			List:     nil,
 			Response: common.NewCommonResponse(1, err.Error()),
 		})
@@ -88,7 +84,10 @@ func GetAllExerciseWithTokenHandle(context *gin.Context) {
 	}
 	for _, exerciseContent := range exerciseContentArray {
 		exerciseID := exerciseContent.ID
-		status := problemStatusMap[exerciseID]
+		status, ok := problemStatusMap[exerciseID]
+		if !ok {
+			status = 0 // 没有做过这一题
+		}
 		allExerciseWithToken := AllExercise{
 			ExerciseID:    exerciseID,
 			ExerciseName:  exerciseContent.Name,
@@ -101,7 +100,7 @@ func GetAllExerciseWithTokenHandle(context *gin.Context) {
 		}
 		AllExerciseWithTokenList = append(AllExerciseWithTokenList, allExerciseWithToken)
 	}
-	context.JSON(http.StatusOK, AllExerciseResponseWithToken{
+	context.JSON(http.StatusOK, AllExerciseResponse{
 		List:     AllExerciseWithTokenList,
 		Response: common.NewCommonResponse(0, ""),
 	})

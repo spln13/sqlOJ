@@ -84,8 +84,7 @@ window.onload = () => {
                 const submit_count = list[i]['submit_count']
                 const publisher_name = list[i]['publisher_name']
                 const publisher_type = list[i]['publisher_type'] // 根据不同的发布者类型渲染不同颜色
-                // const status = list[i]['status']
-                const status = 1
+                const status = list[i]['status']
                 createBox(exercise_id, exercise_name,grade, pass_count, submit_count, publisher_name, publisher_type, status);
             }
         })

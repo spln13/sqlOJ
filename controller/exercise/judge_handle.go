@@ -38,7 +38,8 @@ func judge() {
 			// 插入做题记录表
 			model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, username, exerciseName, submitTime)
 			model.NewExerciseContentFlow().IncreasePassCountSubmitCount(exerciseID)
-			wg.Wait() // 等待修改cache中状态的goroutine先完成，否则记录将不会被删去
+			model.NewUserProblemStatusFlow().ModifyUserProblemStatus(userID, exerciseID, userType, status) // 将用户题目提交状态表中的状态设置为正确
+			wg.Wait()                                                                                      // 等待修改cache中状态的goroutine先完成，否则记录将不会被删去
 			cache.DeleteSubmitStatus(userID, userType, exerciseID, submitTime)
 			continue
 		}
@@ -49,7 +50,8 @@ func judge() {
 			status := 2 // 答案错误
 			model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, username, exerciseName, submitTime)
 			model.NewExerciseContentFlow().IncreaseSubmitCount(exerciseID)
-			wg.Wait() // 等待修改cache中状态的goroutine先完成，否则记录将不会被删去
+			model.NewUserProblemStatusFlow().ModifyUserProblemStatus(userID, exerciseID, userType, status) // 将用户题目提交状态表中的状态设置为错误
+			wg.Wait()                                                                                      // 等待修改cache中状态的goroutine先完成，否则记录将不会被删去
 			cache.DeleteSubmitStatus(userID, userType, exerciseID, submitTime)
 			continue
 		}
