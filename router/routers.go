@@ -52,7 +52,9 @@ func InitServer() *gin.Engine {
 		context.SetCookie("username", "", -1, "/", "127.0.0.1:8080", true, false)
 		context.Redirect(http.StatusFound, "/")
 	})
-
+	server.GET("/problem/:exercise_id", func(context *gin.Context) {
+		context.HTML(http.StatusOK, "problem.html", "")
+	})
 	// api接口
 	adminGroup := server.Group("/api/admin")
 	{
