@@ -6,6 +6,7 @@ import (
 	"sqlOJ/cache"
 	"sqlOJ/controller/admin_account"
 	"sqlOJ/controller/class"
+	"sqlOJ/controller/contest"
 	"sqlOJ/controller/exercise"
 	"sqlOJ/controller/ranking"
 	"sqlOJ/controller/student_account"
@@ -100,6 +101,11 @@ func InitServer() *gin.Engine {
 	rankingGroup := server.Group("/api/ranking")
 	{
 		rankingGroup.GET("/get/list/", ranking.GetRankingHandle) // 获取排行榜信息
+	}
+	contestGroup := server.Group("/api/contest")
+	{
+		contestGroup.POST("/create/", middlewares.TeacherJWTMiddleware(), contest.CreateContestHandle) // 创建竞赛接口
+
 	}
 	return server
 }

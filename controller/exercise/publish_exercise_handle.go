@@ -23,7 +23,7 @@ type PublishExerciseData struct {
 
 // PublishExerciseHandle 完成发布题目功能
 func PublishExerciseHandle(context *gin.Context) {
-	publisherID, ok1 := context.MustGet("user_id").(int64) // 获取又JWT设置的user_id
+	publisherID, ok1 := context.MustGet("user_id").(int64) // 获取由JWT设置的user_id
 	publisherType, ok2 := context.MustGet("user_type").(int64)
 	if !ok1 || !ok2 {
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, "解析用户token错误"))

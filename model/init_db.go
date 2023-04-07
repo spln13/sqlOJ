@@ -35,7 +35,8 @@ func InitSysDB() {
 	}
 	// create tables in database
 	err = sysDB.AutoMigrate(&AdminAccount{}, &TeacherAccount{}, &StudentAccount{}, &ExerciseAssociation{},
-		&ExerciseTable{}, &ExerciseContent{}, &SubmitHistory{}, &UserProblemStatus{})
+		&ExerciseTable{}, &ExerciseContent{}, &SubmitHistory{}, &UserProblemStatus{}, &Contest{},
+		&ContestClassAssociation{}, &ContestExerciseAssociation{})
 	if err != nil {
 		panic(err)
 	}
