@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ .title }} BUCT-SQLOJ</title>
+    <title>题目 BUCT-SQLOJ</title>
     <link rel="stylesheet" href="/static/semantic/semantic.min.css">
+    <link href="/static/icon/favicon.ico" rel="shortcut icon">
     <script src="/static/semantic/semantic.min.js"></script>
     <script src="/static/js/problem.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -49,20 +50,41 @@
     <div id="blank"></div>
 
     <div class="ui main container">
-        <h1 class="ui header">1. 测试题目</h1>
+        <h1 class="ui header" id="title">1. 测试题目</h1>
         <div class="ui text stackable menu">
             <a class="active item" href="#">题面</a>
             <a class="item" href="#">我的提交</a>
             <a class="item" href="#">所有提交</a>
         </div>
-        <div class="passage" id="content">
-        </div>
-        <div class="code">
-            <h3>MySQL代码</h3>
-            <textarea id="sql-input"></textarea>
-            <div class="ui animated fade button" tabindex="0" id="submit_button">
-                <div class="visible content">提交!</div>
-                <div class="hidden content">GO!</div>
+        <div class="ui grid">
+            <div class="eleven wide column">
+                <div class="passage" id="content">
+                </div>
+                <div class="code">
+                    <h3>MySQL代码</h3>
+                    <textarea id="sql-input"></textarea>
+                    <div class="ui animated fade button" tabindex="0" id="submit_button">
+                        <div class="visible content">提交!</div>
+                        <div class="hidden content">GO!</div>
+                    </div>
+                </div>
+            </div>
+            <div class="five wide column">
+                <div class="ui fluid card">
+                    <div class="content">
+                        <div class="description" id="card_top">
+                            <p><b>503 份提交通过</b>，共有 4344 份提交。</p>
+                            <p><b>4.0</b> 积分奖励。</p>
+                            <p><b>难度</b>: medium。</p>
+                        </div>
+                    </div>
+                    <div class="content">
+                        <div class="description" id="card_bottom">
+                            <p><b>创建于</b>: 2023年4月7日。</p>
+                            <p><b>出题人</b>: Genesis。</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -76,7 +98,7 @@
         mode: "text/x-mysql",
         lineNumbers: true
     });
-    document.getElementById('content').innerHTML = marked.parse('# Marked in browser\n\nRendered by **marked**.');
+
 </script>
 
 </html>
@@ -104,6 +126,28 @@
     }
     #button_username {
         padding: 0;
+    }
+    .publisher_3 {
+        /*管理员*/
+        color: red;
+    }
+
+    .publisher_2 {
+        color: purple;
+    }
+    .publisher_1 {
+        color: #0d6efd;
+    }
+    .grade_easy {
+        color: #52B5A3;
+    }
+
+    .grade_medium {
+        color: #F5C349;
+    }
+
+    .grade_hard {
+        color: #EB4B63;
     }
 
 </style>

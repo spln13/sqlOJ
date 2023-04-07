@@ -30,5 +30,54 @@ window.onload = () => {
             '      </div>' +
             '    </div>';
     }
+    // 获取当前页面的路径
+    const path = window.location.pathname;
+    // 分割路径并获取最后一个部分
+    const parts = path.split('/');
+    const param = parts[parts.length - 1]; // param即exercise_id
+    const url = '/api/exercise/get/one?exercise_id=' + param;
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+        .then(response => response.json())
+        .then(data => {
+            const status_code = data['status_code'];
+            const status_msg = data['status_msg'];
+            if (status_code === 1) {
+                alert(status_msg)
+            }
+            else {
+                const name = data['name'];  // string
+                const grade = data['grade'] // int
+                const description = data['description'] // string
+                const publisher_name = data['publisher_name'] // string
+                const publisher_type = data['publisher_type'] // int
+                const submit_count = data['submit_count'] // int
+                const pass_count = data['pass_count'] // int
+                let grade_str;
+                if (grade === 1) {
+                    grade_str = 'easy';
+                }
+                else if (grade === 2) {
+                    grade_str = 'medium';
+                }
+                else {
+                    grade_str = 'hard';
+                }
+
+                const grade_class = 'grade_' + grade_str;
+                const publisher_class = 'publisher_' + publisher_type.toString();
+                document.getElementById('card_top').innerHTML = '<p><b>' + pass_count.toString() + '份提交通过</b>, 共有' + submit_count.toString() + '份提交。</p>' +
+                    '<p><b>难度</b>: <b class="' + grade_class + '">' + grade_str + '</b>。</p>';
+                document.getElementById('card_bottom').innerHTML = '<p><b>出题人</b>: <b class="' + publisher_class + '">' + publisher_name + "</b>。</p>"
+                document.getElementById('title').innerHTML = param + '. ' + name;
+                document.getElementById('content').innerHTML = marked.parse(description);
+            }
+        })
+        .catch(error => console.error(error));
+
 }
 
