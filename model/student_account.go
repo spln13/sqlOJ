@@ -132,3 +132,22 @@ func (*StudentAccountFlow) QueryStudentUsernameByUserID(userID int64) string {
 	}
 	return studentAccountDAO.Username
 }
+
+type StudentClassAPI struct {
+	ID int64
+}
+
+// QueryStudentIDByClassID 通过ClassIDList查询所有classID在其中的学生ID
+func (*StudentAccountFlow) QueryStudentIDByClassID(classIDList []int64) ([]int64, error) {
+	var studentClassAPIList []StudentClassAPI
+	err := GetSysDB().Model(&StudentAccount{}).Where("class_id in ?", classIDList).Find(&studentClassAPIList)
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("查询学生ID错误")
+	}
+	var studentIDList []int64
+	for _, studentClassAPI := range studentClassAPIList {
+		studentIDList = append(studentIDList, studentClassAPI.ID)
+	}
+	return studentIDList, nil
+}
