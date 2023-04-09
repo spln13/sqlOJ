@@ -26,7 +26,7 @@ func CreateContestHandle(context *gin.Context) {
 		return
 	}
 	var createContestData CreateContestData
-	if err := context.ShouldBindJSON(&createContestData); err != nil {
+	if err := context.ShouldBindJSON(&createContestData); err != nil { // 解析请求参数
 		log.Println(err)
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, "解析请求参数错误"))
 		return
@@ -60,5 +60,18 @@ func CreateContestHandle(context *gin.Context) {
 	if err := cache.ContestForbidStudentCache(contestID, studentIDList, createContestData.BeginAt, createContestData.EndAt); err != nil {
 		return
 	}
-	// TODO:需要更新权限设置方案
+	// 缓存引用题目的竞赛IDList
+	for _, exerciseID := range createContestData.ExerciseIDList {
+		if err := cache.ExerciseContestCache(contestID, exerciseID); err != nil {
+			context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, err.Error()))
+			return
+		}
+	}
+	// 创建副本表，写入MySQL
+	err = model.NewContestExerciseFlow().InsertContestExercise(contestID, createContestData.ExerciseIDList, createContestData.EndAt)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, err.Error()))
+		return
+	}
+	context.JSON(http.StatusInternalServerError, common.NewCommonResponse(0, ""))
 }

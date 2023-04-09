@@ -38,3 +38,15 @@ func ContestForbidStudentCache(contestID int64, studentIDList []int64, beginAt, 
 	}
 	return nil
 }
+
+// ExerciseContestCache 向exerciseID的Set中插入contestID
+// 该Set不设置过期时间
+func ExerciseContestCache(contestID, exerciseID int64) error {
+	exerciseIDStr := strconv.FormatInt(exerciseID, 10)
+	setName := "exercise_contest:" + exerciseIDStr
+	if err := rdb.SAdd(ctx, setName, contestID).Err(); err != nil {
+		log.Println(err)
+		return errors.New("缓存引用竞赛的题目时错误")
+	}
+	return nil
+}
