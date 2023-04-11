@@ -105,7 +105,7 @@ func InitServer() *gin.Engine {
 	contestGroup := server.Group("/api/contest")
 	{
 		contestGroup.POST("/create/", middlewares.TeacherJWTMiddleware(), contest.CreateContestHandle) // 创建竞赛接口
-
+		contestGroup.Group("/get/all/", contest.GetAllContestHandle)                                   // 获取所有竞赛
 	}
 	return server
 }

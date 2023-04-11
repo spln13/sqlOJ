@@ -13,8 +13,8 @@ type Contest struct {
 	PublisherID   int64
 	PublisherType int64
 	PublisherName string
-	BeginTime     time.Time
-	EndTime       time.Time
+	BeginAt       time.Time
+	EndAt         time.Time
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }
@@ -40,12 +40,23 @@ func (*ContestFlow) CreateContest(name, publisherName string, publisherID, publi
 		PublisherID:   publisherID,
 		PublisherType: publisherType,
 		PublisherName: publisherName,
-		BeginTime:     beginAt,
-		EndTime:       endAt,
+		BeginAt:       beginAt,
+		EndAt:         endAt,
 	}
 	if err := GetSysDB().Create(contestDAO).Error; err != nil {
 		log.Println(err)
 		return 0, errors.New("创建竞赛错误")
 	}
 	return contestDAO.ID, nil
+}
+
+// GetAllContest 获取所有竞赛，按照开始时间降序
+func (*ContestFlow) GetAllContest() ([]Contest, error) {
+	var contestList []Contest
+	err := GetSysDB().Model(&Contest{}).Select("id", "name", "publisher_name", "publisher_type", "begin_at", "end_at").Order("begin_at desc").Find(&contestList).Error
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("获取竞赛错误")
+	}
+	return contestList, nil
 }
