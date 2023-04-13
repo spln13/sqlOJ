@@ -9,11 +9,11 @@ import (
 )
 
 type Response struct {
-	List []SignalContest `json:"list"`
+	List []SingleContest `json:"list"`
 	common.Response
 }
 
-type SignalContest struct {
+type SingleContest struct {
 	ContestID     int64     `json:"contest_id"`
 	ContestName   string    `json:"contest_name"`
 	PublisherName string    `json:"publisher_name"`
@@ -32,9 +32,9 @@ func GetAllContestHandle(context *gin.Context) {
 		})
 		return
 	}
-	var contestList []SignalContest
+	var contestList []SingleContest
 	for _, signalContest := range contestDAOList {
-		signalContest := SignalContest{
+		singleContest := SingleContest{
 			BeginAt:       signalContest.BeginAt,
 			ContestID:     signalContest.ID,
 			ContestName:   signalContest.Name,
@@ -42,7 +42,7 @@ func GetAllContestHandle(context *gin.Context) {
 			PublisherName: signalContest.PublisherName,
 			PublisherType: signalContest.PublisherType,
 		}
-		contestList = append(contestList, signalContest)
+		contestList = append(contestList, singleContest)
 	}
 	context.JSON(http.StatusOK, Response{
 		List:     contestList,
