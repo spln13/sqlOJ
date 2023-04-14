@@ -14,7 +14,7 @@ type UserProblemStatus struct {
 	UserID     int64
 	ExerciseID int64
 	UserType   int64
-	Status     int // 1->ac; 2->wa
+	Status     int // 1->ac; 2->wa; 3->re
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
 }
