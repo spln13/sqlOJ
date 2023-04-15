@@ -104,8 +104,10 @@ func InitServer() *gin.Engine {
 	}
 	contestGroup := server.Group("/api/contest")
 	{
-		contestGroup.POST("/create/", middlewares.TeacherJWTMiddleware(), contest.CreateContestHandle) // 创建竞赛接口
-		contestGroup.Group("/get/all/", contest.GetAllContestHandle)                                   // 获取所有竞赛接口
+		contestGroup.POST("/create/", middlewares.TeacherJWTMiddleware(), contest.CreateContestHandle)                                                // 创建竞赛接口
+		contestGroup.GET("/get/all/", contest.GetAllContestHandle)                                                                                    // 获取所有竞赛接口
+		contestGroup.POST("/submit/", middlewares.StudentJWTMiddleware(), middlewares.CheckContestAuthority(), exercise.ContestSubmitHandle)          // 竞赛提交接口
+		contestGroup.GET("/get/all-exercise/", middlewares.StudentJWTMiddleware(), middlewares.CheckContestAuthority(), contest.GetAllExerciseHandle) // 获取竞赛中所有的题目
 	}
 	return server
 }

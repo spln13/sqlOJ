@@ -61,7 +61,10 @@ func CheckContestAuthority() gin.HandlerFunc {
 			context.Abort()
 			return
 		}
-		exerciseIDStr := context.Query("contest")
+		exerciseIDStr := context.Query("contest_id")
+		if exerciseIDStr == "" {
+			exerciseIDStr = context.PostForm("contest_id")
+		}
 		code, err := cache.CheckUserIDInContest(userID, exerciseIDStr)
 		if err != nil {
 			context.JSON(http.StatusInternalServerError, common.NewCommonResponse(403, err.Error()))

@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"gorm.io/gorm"
 	"log"
 	"sync"
@@ -62,5 +63,24 @@ func (*ContestExerciseStatusFlow) ModifyContestExerciseStatus(userID, userType, 
 	}); err != nil {
 		log.Println(err)
 	}
+}
 
+type ContestExerciseStatusMin struct {
+	ExerciseID int64
+	Status     int
+}
+
+// QueryContestExerciseStatus 查询用户对应所有的做过的题以及状态
+func (*ContestExerciseStatusFlow) QueryContestExerciseStatus(userID, userType, contestID int64) (map[int64]int, error) {
+	var contestExerciseStatusMinList []ContestExerciseStatusMin
+	err := GetSysDB().Model(&ContestExerciseStatus{}).Where("user_id = ? and user_type = ? and contest_id = ?", userID, userType, contestID).Find(&contestExerciseStatusMinList).Error
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("查询用户做题数据错误")
+	}
+	problemStatusMap := make(map[int64]int)
+	for _, contestExerciseStatusMin := range contestExerciseStatusMinList {
+		problemStatusMap[contestExerciseStatusMin.ExerciseID] = contestExerciseStatusMin.Status
+	}
+	return problemStatusMap, nil
 }

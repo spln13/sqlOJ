@@ -40,3 +40,17 @@ func (*ContestExerciseAssociationFlow) InsertContestExerciseAssociation(contestI
 	}
 	return nil
 }
+
+func (*ContestExerciseAssociationFlow) GetExerciseIDListByContestID(contestID int64) ([]int64, error) {
+	var contestExerciseAssociationList []ContestExerciseAssociation
+	err := GetSysDB().Select("exercise_id").Where("contest_id = ?", contestID).Find(&contestExerciseAssociationList).Error
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("查询竞赛中题目时错误")
+	}
+	exerciseIDList := make([]int64, len(contestExerciseAssociationList))
+	for idx, contestExerciseAssociation := range contestExerciseAssociationList {
+		exerciseIDList[idx] = contestExerciseAssociation.ExerciseID
+	}
+	return exerciseIDList, nil
+}
