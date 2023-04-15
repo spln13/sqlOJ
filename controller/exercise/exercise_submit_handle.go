@@ -16,6 +16,8 @@ type SubmitMessage struct {
 	ExerciseID int64
 	Answer     string
 	UserAgent  string
+	IsContest  bool
+	ContestID  int64
 	SubmitTime time.Time
 }
 
@@ -45,7 +47,7 @@ func SubmitHandle(context *gin.Context) {
 		context.JSON(http.StatusOK, common.NewCommonResponse(1, "请勿频繁发送"))
 		return
 	}
-	if err := WriteMessage(userID, userType, exerciseID, answer, userAgent); err != nil {
+	if err := WriteExerciseMessage(userID, userType, exerciseID, answer, userAgent); err != nil {
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, "提交错误"))
 		return
 	}
@@ -54,17 +56,18 @@ func SubmitHandle(context *gin.Context) {
 
 var JudgeQueue = make(chan SubmitMessage, 2000) // 判题队列 缓冲区大小2000
 
-// WriteMessage 将做题数据写入channel，并且在cache中保存当前提交的判题状态
-func WriteMessage(userID, userType, exerciseID int64, answer, userAgent string) error {
+// WriteExerciseMessage 将做题数据写入channel，并且在cache中保存当前提交的判题状态
+func WriteExerciseMessage(userID, userType, exerciseID int64, answer, userAgent string) error {
 	message := SubmitMessage{
 		UserID:     userID,
 		UserType:   userType,
 		ExerciseID: exerciseID,
 		Answer:     answer,
 		UserAgent:  userAgent,
+		IsContest:  false,
 		SubmitTime: time.Now(),
 	}
 	JudgeQueue <- message // 将判题数据写入channel
-	err := cache.SetJudgeStatusPending(userID, userType, exerciseID, time.Now())
+	err := cache.SetExerciseJudgeStatusPending(userID, userType, exerciseID, time.Now())
 	return err
 }

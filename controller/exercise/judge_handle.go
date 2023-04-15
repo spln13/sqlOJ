@@ -21,59 +21,128 @@ func judge() {
 		userType := message.UserType
 		exerciseID := message.ExerciseID
 		submitTime := message.SubmitTime
-		var wg sync.WaitGroup                                                         // 获取 SetJudgeStatusJudging 协程的完成信息
-		go cache.SetJudgeStatusJudging(userID, userType, exerciseID, submitTime, &wg) // 设置cache中的判题状态
-		wg.Add(1)
 		answer := message.Answer
 		userAgent := message.UserAgent
-		expectedAnswer, expectedType := model.NewExerciseContentFlow().QueryAnswerTypeByExerciseID(exerciseID)
-		// 获取参数
-
-		// 获取用户名与题目名
-		username := common.QueryUsername(userID, userType)
-		exerciseName := model.NewExerciseContentFlow().QueryExerciseNameByExerciseID(exerciseID)
-		equal, getType := checkSqlSyntax(answer, expectedAnswer)
-		if equal { // 和标准答案相等，返回正确
-			status := 1 // 答案正确
-			// 插入做题记录表
-			model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, username, exerciseName, submitTime)
-			model.NewExerciseContentFlow().IncreasePassCountSubmitCount(exerciseID)
-			model.NewUserProblemStatusFlow().ModifyUserProblemStatus(userID, exerciseID, userType, status) // 将用户题目提交状态表中的状态设置为正确
-			wg.Wait()                                                                                      // 等待修改cache中状态的goroutine先完成，否则记录将不会被删去
-			cache.DeleteSubmitStatus(userID, userType, exerciseID, submitTime)
-			continue
-		}
-		if getType != expectedType { // sql语句类型不等，返回错误
-			fmt.Println("getType:", getType)
-			fmt.Println("expectedType:", expectedType)
-			fmt.Println("getType != expectedType")
-			status := 2 // 答案错误
-			model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, username, exerciseName, submitTime)
-			model.NewExerciseContentFlow().IncreaseSubmitCount(exerciseID)
-			model.NewUserProblemStatusFlow().ModifyUserProblemStatus(userID, exerciseID, userType, status) // 将用户题目提交状态表中的状态设置为错误
-			wg.Wait()                                                                                      // 等待修改cache中状态的goroutine先完成，否则记录将不会被删去
-			cache.DeleteSubmitStatus(userID, userType, exerciseID, submitTime)
-			continue
-		}
-		var status int
-		if getType == 1 {
-			status = selectJudge(answer, expectedAnswer, exerciseID)
-
+		isContest := message.IsContest // 是否是竞赛判题
+		if isContest {
+			contestID := message.ContestID
+			contestJudge(userID, userType, exerciseID, contestID, submitTime, answer, userAgent)
 		} else {
-			status = modifyJudge(userID, exerciseID, submitTime, answer, expectedAnswer, getType)
+			exerciseJudge(userID, userType, exerciseID, submitTime, answer, userAgent)
 		}
-		model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, username, exerciseName, submitTime)
-		if status == 1 { // 答案正确
-			model.NewExerciseContentFlow().IncreasePassCountSubmitCount(exerciseID) // 自增提交总数和通过总数
-			grade := model.NewExerciseContentFlow().QueryExerciseGrade(exerciseID)  // 获取当前习题的难度
-			model.NewScoreRecordFlow().IncreaseScore(userID, userType, grade)       // 增加用户的积分
-		} else { // 答案错误
-			model.NewExerciseContentFlow().IncreaseSubmitCount(exerciseID) // 自增提交总数
-		}
-		model.NewUserProblemStatusFlow().ModifyUserProblemStatus(userID, exerciseID, userType, status) // 将用户做题数据写入用户做题表
-		wg.Wait()
-		cache.DeleteSubmitStatus(userID, userType, exerciseID, submitTime)
+
 	}
+}
+
+// exerciseJudge 用于评测题库中提交的题目
+func exerciseJudge(userID, userType, exerciseID int64, submitTime time.Time, answer, userAgent string) {
+	var wg sync.WaitGroup                                                                 // 获取 SetExerciseJudgeStatusJudging 协程的完成信息
+	go cache.SetExerciseJudgeStatusJudging(userID, userType, exerciseID, submitTime, &wg) // 设置cache中的判题状态
+	wg.Add(1)
+
+	expectedAnswer, expectedType := model.NewExerciseContentFlow().QueryAnswerTypeByExerciseID(exerciseID)
+	// 获取参数
+
+	// 获取用户名与题目名
+	username := common.QueryUsername(userID, userType)
+	exerciseName := model.NewExerciseContentFlow().QueryExerciseNameByExerciseID(exerciseID)
+	equal, getType := checkSqlSyntax(answer, expectedAnswer)
+	if equal { // 和标准答案相等，返回正确
+		status := 1 // 答案正确
+		// 插入做题记录表
+		model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, username, exerciseName, submitTime)
+		model.NewExerciseContentFlow().IncreasePassCountSubmitCount(exerciseID)
+		model.NewUserProblemStatusFlow().ModifyUserProblemStatus(userID, exerciseID, userType, status) // 将用户题目提交状态表中的状态设置为正确
+		wg.Wait()                                                                                      // 等待修改cache中状态的goroutine先完成，否则记录将不会被删去
+		cache.DeleteExerciseSubmitStatus(userID, userType, exerciseID, submitTime)
+		return
+	}
+	if getType != expectedType { // sql语句类型不等，返回错误
+		//fmt.Println("getType:", getType)
+		//fmt.Println("expectedType:", expectedType)
+		//fmt.Println("getType != expectedType")
+		status := 2 // 答案错误
+		model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, username, exerciseName, submitTime)
+		model.NewExerciseContentFlow().IncreaseSubmitCount(exerciseID)
+		model.NewUserProblemStatusFlow().ModifyUserProblemStatus(userID, exerciseID, userType, status) // 将用户题目提交状态表中的状态设置为错误
+		wg.Wait()                                                                                      // 等待修改cache中状态的goroutine先完成，否则记录将不会被删去
+		cache.DeleteExerciseSubmitStatus(userID, userType, exerciseID, submitTime)
+		return
+	}
+	var status int
+	if getType == 1 {
+		status = selectJudge(answer, expectedAnswer, exerciseID)
+
+	} else {
+		status = modifyJudge(userID, exerciseID, submitTime, answer, expectedAnswer, getType)
+	}
+	model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, username, exerciseName, submitTime)
+	if status == 1 { // 答案正确
+		model.NewExerciseContentFlow().IncreasePassCountSubmitCount(exerciseID) // 自增提交总数和通过总数
+		grade := model.NewExerciseContentFlow().QueryExerciseGrade(exerciseID)  // 获取当前习题的难度
+		model.NewScoreRecordFlow().IncreaseScore(userID, userType, grade)       // 增加用户的积分
+	} else { // 答案错误
+		model.NewExerciseContentFlow().IncreaseSubmitCount(exerciseID) // 自增提交总数
+	}
+	model.NewUserProblemStatusFlow().ModifyUserProblemStatus(userID, exerciseID, userType, status) // 将用户做题数据写入用户做题表
+	wg.Wait()
+	cache.DeleteExerciseSubmitStatus(userID, userType, exerciseID, submitTime)
+}
+
+// contestJudge 用于评测竞赛中的题目
+func contestJudge(userID, userType, exerciseID, contestID int64, submitTime time.Time, answer, userAgent string) {
+	var wg sync.WaitGroup
+	go cache.SetContestJudgeStatusJudging(userID, userType, exerciseID, contestID, submitTime, &wg)
+	wg.Add(1)
+	expectedAnswer, expectedType := model.NewExerciseContentFlow().QueryAnswerTypeByExerciseID(exerciseID)
+	// 获取参数
+
+	// 获取用户名, 题目名, 竞赛名
+	username := common.QueryUsername(userID, userType)
+	exerciseName := model.NewExerciseContentFlow().QueryExerciseNameByExerciseID(exerciseID)
+	contestName := model.NewContestFlow().GetContestNameByID(contestID)
+	equal, getType := checkSqlSyntax(answer, expectedAnswer)
+	if equal { // 和标准答案相等，返回正确
+		status := 1 // 答案正确
+		// 插入做题记录表
+		model.NewContestSubmissionFlow().InsertContestSubmission(contestID, exerciseID, userID, userType, username, answer, exerciseName, userAgent, contestName, status, submitTime)
+		model.NewExerciseContentFlow().IncreasePassCountSubmitCount(exerciseID)
+		model.NewContestExerciseStatusFlow().ModifyContestExerciseStatus(userID, userType, exerciseID, contestID, status) // 将用户竞赛题目提交状态表中的状态设置为正确
+		wg.Wait()                                                                                                         // 等待修改cache中状态的goroutine先完成，否则记录将不会被删去
+		cache.DeleteContestSubmitStatus(userID, userType, exerciseID, contestID, submitTime)
+		return
+	}
+	// FIXME: 以下待更改
+	if getType != expectedType { // sql语句类型不等，返回错误
+		//fmt.Println("getType:", getType)
+		//fmt.Println("expectedType:", expectedType)
+		//fmt.Println("getType != expectedType")
+		status := 2 // 答案错误
+		model.NewContestSubmissionFlow().InsertContestSubmission(contestID, exerciseID, userID, userType, username, answer, exerciseName, userAgent, contestName, status, submitTime)
+		model.NewExerciseContentFlow().IncreaseSubmitCount(exerciseID)
+		model.NewContestExerciseStatusFlow().ModifyContestExerciseStatus(userID, userType, exerciseID, contestID, status) // 更改提交状态
+		wg.Wait()                                                                                                         // 等待修改cache中状态的goroutine先完成，否则记录将不会被删去
+		cache.DeleteContestSubmitStatus(userID, userType, exerciseID, contestID, submitTime)
+		return
+	}
+	var status int
+	if getType == 1 { // select
+		status = selectJudge(answer, expectedAnswer, exerciseID)
+
+	} else { // update, insert, modify
+		status = modifyJudge(userID, exerciseID, submitTime, answer, expectedAnswer, getType)
+	}
+	model.NewContestSubmissionFlow().InsertContestSubmission(contestID, exerciseID, userID, userType, username, answer, exerciseName, userAgent, contestName, status, submitTime)
+	if status == 1 { // 答案正确
+		model.NewExerciseContentFlow().IncreasePassCountSubmitCount(exerciseID) // 自增提交总数和通过总数
+		//grade := model.NewExerciseContentFlow().QueryExerciseGrade(exerciseID)  // 获取当前习题的难度
+		//model.NewScoreRecordFlow().IncreaseScore(userID, userType, grade)       // 增加用户的积分
+	} else { // 答案错误
+		model.NewExerciseContentFlow().IncreaseSubmitCount(exerciseID) // 自增提交总数
+	}
+	model.NewContestExerciseStatusFlow().ModifyContestExerciseStatus(userID, userType, exerciseID, contestID, status) // 更改提交状态
+	wg.Wait()
+	cache.DeleteContestSubmitStatus(userID, userType, exerciseID, contestID, submitTime)
 }
 
 // modifyJudge 负责评判 update, insert, delete 类型语句, 返回状态码 1->AC, 2->WA, 3->RE

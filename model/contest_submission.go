@@ -1,6 +1,8 @@
 package model
 
 import (
+	"gorm.io/gorm"
+	"log"
 	"sync"
 	"time"
 )
@@ -35,4 +37,25 @@ func NewContestSubmissionFlow() *ContestSubmissionFlow {
 		contestSubmissionFlowDAO = new(ContestSubmissionFlow)
 	})
 	return contestSubmissionFlowDAO
+}
+
+func (*ContestSubmissionFlow) InsertContestSubmission(contestID, exerciseID, userID, userType int64, username, userAnswer, exerciseName, userAgent, contestName string, status int, submitTime time.Time) {
+	contestSubmissionDAO := ContestSubmission{
+		ExerciseID:   exerciseID,
+		UserID:       userID,
+		UserType:     userType,
+		Username:     username,
+		UserAnswer:   userAnswer,
+		ExerciseName: exerciseName,
+		UserAgent:    userAgent,
+		ContestID:    contestID,
+		ContestName:  contestName,
+		Status:       status,
+		SubmitTime:   submitTime,
+	}
+	if err := GetSysDB().Transaction(func(tx *gorm.DB) error {
+		return tx.Create(contestSubmissionDAO).Error
+	}); err != nil {
+		log.Println(err)
+	}
 }

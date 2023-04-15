@@ -60,3 +60,13 @@ func (*ContestFlow) GetAllContest() ([]Contest, error) {
 	}
 	return contestList, nil
 }
+
+func (*ContestFlow) GetContestNameByID(contestID int64) string {
+	var contestDAO Contest
+	err := GetSysDB().Model(&Contest{}).Select("name").Where("id = ?", contestID).Find(&contestDAO).Error
+	if err != nil {
+		log.Println(err)
+		return ""
+	}
+	return contestDAO.Name
+}

@@ -42,27 +42,32 @@ func NewUserProblemStatusFlow() *UserProblemStatusFlow {
 // ModifyUserProblemStatus 修改user_problem_statuses表中用户与题目对应的数据
 func (*UserProblemStatusFlow) ModifyUserProblemStatus(userID, exerciseID, userType int64, status int) {
 	var userProblemStatusDAO UserProblemStatus
-	if err := GetSysDB().Select("ID").Where("user_id = ? and exercise_id = ?", userID, exerciseID).Find(&userProblemStatusDAO).Error; err != nil {
+	if err := GetSysDB().Model(&UserProblemStatus{}).Select("id", "status").Where("user_id = ? and exercise_id = ? and user_type = ?", userID, exerciseID, userType).Find(&userProblemStatusDAO).Error; err != nil {
 		log.Println(err)
 	}
 	if userProblemStatusDAO.ID == 0 { // 其中没有记录，插入数据
-		userProblemStatusDAO := &UserProblemStatus{
+		newUserProblemStatusDAO := &UserProblemStatus{
 			UserID:     userID,
 			ExerciseID: exerciseID,
 			UserType:   userType,
 			Status:     status,
 		}
 		if err := GetSysDB().Transaction(func(tx *gorm.DB) error {
-			return tx.Create(userProblemStatusDAO).Error
+			return tx.Create(newUserProblemStatusDAO).Error
 		}); err != nil {
 			log.Println(err)
 		}
-	} else {
-		if err := GetSysDB().Transaction(func(tx *gorm.DB) error {
-			return tx.Where("user_id = ? and exercise_id = ? and user_type = ?", userID, exerciseID, userType).Update("status", status).Error
-		}); err != nil {
-			log.Println(err)
-		}
+		return
+	}
+	// 其中有记录
+	if userProblemStatusDAO.Status == 1 || userProblemStatusDAO.Status == status {
+		// 此题AC过, 做错不再更新, 或者此题状态相同
+		return
+	}
+	if err := GetSysDB().Transaction(func(tx *gorm.DB) error {
+		return tx.Where("user_id = ? and exercise_id = ? and user_type = ?", userID, exerciseID, userType).Update("status", status).Error
+	}); err != nil {
+		log.Println(err)
 	}
 }
 

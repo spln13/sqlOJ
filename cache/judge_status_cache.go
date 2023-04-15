@@ -8,8 +8,8 @@ import (
 	"time"
 )
 
-// SetJudgeStatusPending 将当前InQueue状态写入cache
-func SetJudgeStatusPending(userID, userType, exerciseID int64, submitTime time.Time) error {
+// SetExerciseJudgeStatusPending 将当前InQueue状态写入cache
+func SetExerciseJudgeStatusPending(userID, userType, exerciseID int64, submitTime time.Time) error {
 	statusHashMap := map[string]interface{}{
 		"status": 4, // 在队列中状态码是4
 	}
@@ -29,9 +29,40 @@ func SetJudgeStatusPending(userID, userType, exerciseID int64, submitTime time.T
 	return nil
 }
 
-// SetJudgeStatusJudging 将cache对应Hash表项中的status设置为2(judging)
-func SetJudgeStatusJudging(userID, userType, exerciseID int64, submitTime time.Time, wg *sync.WaitGroup) {
+// SetExerciseJudgeStatusJudging 将cache对应Hash表项中的status设置为2(judging)
+func SetExerciseJudgeStatusJudging(userID, userType, exerciseID int64, submitTime time.Time, wg *sync.WaitGroup) {
 	key := fmt.Sprintf("%d:%d:%d:%d", userID, userType, exerciseID, submitTime.Unix())
+	err := rdb.HSet(ctx, key, "status", 5).Err() // judging中状态码是5
+	if err != nil {
+		log.Println(err)
+	}
+	wg.Done()
+}
+
+// SetContestJudgeStatusPending 将当前InQueue状态写入cache
+func SetContestJudgeStatusPending(userID, userType, exerciseID, contestID int64, submitTime time.Time) error {
+	statusHashMap := map[string]interface{}{
+		"status": 4, // 在队列中状态码是4
+	}
+	// 设置下次合法提交时间为3秒后
+	nextSubmitTimeKey := fmt.Sprintf("%d:%d:%d_next_submit_time", userID, userType, exerciseID)
+	err := rdb.Set(ctx, nextSubmitTimeKey, submitTime.Add(5*time.Second).Unix(), time.Duration(3)*time.Second).Err()
+	if err != nil {
+		log.Println(err)
+		return errors.New("缓存提交时间错误")
+	}
+	hashKey := fmt.Sprintf("%d:%d:%d:%d:%d", userID, userType, exerciseID, contestID, submitTime.Unix())
+	err = rdb.HSet(ctx, hashKey, statusHashMap).Err()
+	if err != nil {
+		log.Println(err)
+		return errors.New("判题状态写入缓存错误")
+	}
+	return nil
+}
+
+// SetContestJudgeStatusJudging 将cache对应Hash表项中的status设置为2(judging)
+func SetContestJudgeStatusJudging(userID, userType, exerciseID, contestID int64, submitTime time.Time, wg *sync.WaitGroup) {
+	key := fmt.Sprintf("%d:%d:%d:%d:%d", userID, userType, exerciseID, contestID, submitTime.Unix())
 	err := rdb.HSet(ctx, key, "status", 5).Err() // judging中状态码是5
 	if err != nil {
 		log.Println(err)
@@ -61,9 +92,18 @@ func CheckSubmitTimeValid(userID, userType, exerciseID int64) (bool, error) {
 	return true, nil
 }
 
-// DeleteSubmitStatus 删除cache中对应的Status记录
-func DeleteSubmitStatus(userID, userType, exerciseID int64, submitTime time.Time) {
+// DeleteExerciseSubmitStatus 删除cache中对应的Status记录
+func DeleteExerciseSubmitStatus(userID, userType, exerciseID int64, submitTime time.Time) {
 	key := fmt.Sprintf("%d:%d:%d:%d", userID, userType, exerciseID, submitTime.Unix())
+	err := rdb.HDel(ctx, key, "status").Err()
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+// DeleteContestSubmitStatus 删除cache中contest对应的Status记录
+func DeleteContestSubmitStatus(userID, userType, exerciseID, contestID int64, submitTime time.Time) {
+	key := fmt.Sprintf("%d:%d:%d:%d:%d", userID, userType, exerciseID, contestID, submitTime.Unix())
 	err := rdb.HDel(ctx, key, "status").Err()
 	if err != nil {
 		log.Println(err)

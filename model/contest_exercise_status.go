@@ -1,6 +1,8 @@
 package model
 
 import (
+	"gorm.io/gorm"
+	"log"
 	"sync"
 	"time"
 )
@@ -11,7 +13,7 @@ type ContestExerciseStatus struct {
 	ExerciseID int64
 	UserID     int64
 	UserType   int64
-	Status     int64 // 1->ac; 2->wa; 3->re
+	Status     int // 1->ac; 2->wa; 3->re
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
 }
@@ -29,4 +31,36 @@ func NewContestExerciseStatusFlow() *ContestExerciseStatusFlow {
 		contestExerciseStatusFlowDAO = new(ContestExerciseStatusFlow)
 	})
 	return contestExerciseStatusFlowDAO
+}
+
+func (*ContestExerciseStatusFlow) ModifyContestExerciseStatus(userID, userType, exerciseID, contestID int64, status int) {
+	var contestExerciseStatusDAO ContestExerciseStatus
+	if err := GetSysDB().Model(&ContestExerciseStatus{}).Select("id", "status").Where("user_id = ? and user_type = ? and exercise_id = ? and contest_id = ?", userID, userType, exerciseID, contestID).Find(&contestExerciseStatusDAO).Error; err != nil {
+		log.Println(err)
+	}
+	if contestExerciseStatusDAO.ID == 0 { // 其中没有记录，插入数据
+		newContestExerciseStatusDAO := ContestExerciseStatus{
+			ContestID:  contestID,
+			ExerciseID: exerciseID,
+			UserID:     userID,
+			UserType:   userType,
+			Status:     status,
+		}
+		if err := GetSysDB().Transaction(func(tx *gorm.DB) error {
+			return tx.Create(newContestExerciseStatusDAO).Error
+		}); err != nil {
+			log.Println(err)
+		}
+		return
+	}
+	if contestExerciseStatusDAO.Status == 1 || contestExerciseStatusDAO.Status == status {
+		// 此题AC过, 或者状态一致,不再更新
+		return
+	}
+	if err := GetSysDB().Transaction(func(tx *gorm.DB) error {
+		return tx.Where("user_id = ? and exercise_id = ? and contest_id = ? and user_type = ?", userID, exerciseID, contestID, userType).Update("status", status).Error
+	}); err != nil {
+		log.Println(err)
+	}
+
 }
