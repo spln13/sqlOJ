@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"gorm.io/gorm"
 	"log"
 	"sync"
@@ -58,4 +59,14 @@ func (*ContestSubmissionFlow) InsertContestSubmission(contestID, exerciseID, use
 	}); err != nil {
 		log.Println(err)
 	}
+}
+
+func (*ContestSubmissionFlow) GetContestSubmissionByID(contestID int64) ([]ContestSubmission, error) {
+	var contestSubmissionList []ContestSubmission
+	err := GetSysDB().Model(&ContestSubmission{}).Where("contest_id = ?", contestID).Omit("create_at", "update_at").Find(&contestSubmissionList).Error
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("查询竞赛提交错误")
+	}
+	return contestSubmissionList, nil
 }
