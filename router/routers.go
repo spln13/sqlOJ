@@ -93,11 +93,13 @@ func InitServer() *gin.Engine {
 	}
 	submissionGroup := server.Group("/api/submission")
 	{
-		submissionGroup.GET("/get/one-one/", middlewares.StudentJWTMiddleware(), submission.GetOneOneHandle)                   // 查询当前用户当前题目提交记录
-		submissionGroup.GET("/get/one-all/", middlewares.StudentJWTMiddleware(), submission.GetOneAllHandle)                   // 查询当前用户所有提交记录
-		submissionGroup.GET("/get/all-all/", middlewares.TeacherJWTMiddleware(), submission.GetAllAllHandle)                   // 获取所有提交记录
-		submissionGroup.GET("/get/all-one/", middlewares.TeacherJWTMiddleware(), submission.GetAllOneHandle)                   // 获取当前题目所有用户的提交
-		submissionGroup.GET("/contest/get-all/", middlewares.TeacherJWTMiddleware(), submission.ContestGetAllSubmissionHandle) // 获取当前竞赛的所有提交
+		submissionGroup.GET("/get/one-one/", middlewares.StudentJWTMiddleware(), submission.GetOneOneHandle)                                                      // 查询当前用户当前题目提交记录
+		submissionGroup.GET("/get/one-all/", middlewares.StudentJWTMiddleware(), submission.GetOneAllHandle)                                                      // 查询当前用户所有提交记录
+		submissionGroup.GET("/get/all-all/", middlewares.TeacherJWTMiddleware(), submission.GetAllAllHandle)                                                      // 获取所有提交记录
+		submissionGroup.GET("/get/all-one/", middlewares.TeacherJWTMiddleware(), submission.GetAllOneHandle)                                                      // 获取当前题目所有用户的提交
+		submissionGroup.GET("/contest/get-all/", middlewares.TeacherJWTMiddleware(), submission.ContestGetAllSubmissionHandle)                                    // 获取当前竞赛的所有提交
+		submissionGroup.GET("/contest/get-my/", middlewares.StudentJWTMiddleware(), middlewares.CheckContestAuthority(), submission.ContestGetMySubmissionHandle) // 获取当前用户在竞赛中的所有提交
+		submissionGroup.GET("/contest/get-exercise/", middlewares.TeacherJWTMiddleware(), submission.ContestGetOneExerciseHandle)                                 // 获取当前竞赛当前题目所有提交
 	}
 	rankingGroup := server.Group("/api/ranking")
 	{

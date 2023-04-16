@@ -70,3 +70,23 @@ func (*ContestSubmissionFlow) GetContestSubmissionByID(contestID int64) ([]Conte
 	}
 	return contestSubmissionList, nil
 }
+
+func (*ContestSubmissionFlow) GetUserContestSubmission(userID, userType, contestID int64) ([]ContestSubmission, error) {
+	var contestSubmissionList []ContestSubmission
+	err := GetSysDB().Model(&ContestSubmission{}).Where("contest_id = ? and user_id = ? and user_type = ?", contestID, userID, userType).Omit("create_at", "update_at").Find(&contestSubmissionList).Error
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("查询竞赛提交错误")
+	}
+	return contestSubmissionList, nil
+}
+
+func (*ContestSubmissionFlow) GetOneExerciseSubmission(contestID, exerciseID int64) ([]ContestSubmission, error) {
+	var contestSubmissionList []ContestSubmission
+	err := GetSysDB().Model(&ContestSubmission{}).Where("contest_id = ? and exercise_id = ?", contestID, exerciseID).Omit("create_at", "update_at").Find(&contestSubmissionList).Error
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("查询竞赛提交错误")
+	}
+	return contestSubmissionList, nil
+}
