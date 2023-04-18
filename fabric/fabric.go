@@ -2,6 +2,7 @@ package fabric
 
 import (
 	"fmt"
+	"github.com/hyperledger/fabric-chaincode-go/shim"
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
 
@@ -74,4 +75,54 @@ func (s *SmartContract) ChangeSubmissionStatus(ctx contractapi.TransactionContex
 	submissionAsBytes, _ := json.Marshal(submission)
 
 	return ctx.GetStub().PutState(submissionNumber, submissionAsBytes)
+}
+
+// QueryAllSubmission returns all submissions found in world state
+func (s *SmartContract) QueryAllSubmission(ctx contractapi.TransactionContextInterface) ([]QueryResult, error) {
+	startKey := "" // 待修改
+	endKey := ""   // 待修改
+
+	resultsIterator, err := ctx.GetStub().GetStateByRange(startKey, endKey)
+
+	if err != nil {
+		return nil, err
+	}
+	defer func(resultsIterator shim.StateQueryIteratorInterface) {
+		err := resultsIterator.Close()
+		if err != nil {
+
+		}
+	}(resultsIterator)
+
+	var results []QueryResult
+
+	for resultsIterator.HasNext() {
+		queryResponse, err := resultsIterator.Next()
+
+		if err != nil {
+			return nil, err
+		}
+
+		submission := new(Submission)
+		_ = json.Unmarshal(queryResponse.Value, submission)
+
+		queryResult := QueryResult{Key: queryResponse.Key, Record: submission}
+		results = append(results, queryResult)
+	}
+
+	return results, nil
+}
+
+func InitChainCode() {
+
+	chaincode, err := contractapi.NewChaincode(new(SmartContract))
+
+	if err != nil {
+		fmt.Printf("Error create fabcar chaincode: %s", err.Error())
+		return
+	}
+
+	if err := chaincode.Start(); err != nil {
+		fmt.Printf("Error starting fabcar chaincode: %s", err.Error())
+	}
 }
