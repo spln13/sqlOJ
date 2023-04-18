@@ -72,6 +72,10 @@ func StudentJWTMiddleware() gin.HandlerFunc {
 		}
 		//token超时
 		if time.Now().Unix() > tokenStruck.ExpiresAt.Time.Unix() {
+			// token超时, 清空token
+			c.SetCookie("token", "", -1, "/", "localhost:8080", true, false)
+			c.SetCookie("username", "", -1, "/", "localhost:8080", true, false)
+
 			c.JSON(http.StatusBadRequest, common.NewCommonResponse(402, "token过期"))
 			c.Abort() //阻止执行
 			return
