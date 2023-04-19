@@ -36,7 +36,7 @@ const createBox = (exercise_id, exercise_name, grade, pass_count, submit_count, 
     const status_class = "status_" + status;
     let pass_rate = pass_count / submit_count;
     pass_rate = pass_rate.toFixed(2);
-    box.innerHTML = '<tr><td>' + exercise_id + '</td><td>' + exercise_name + '</td><td class=' + grade_class + '>'
+    box.innerHTML = '<tr><td>' + exercise_id + '</td><td><a href="/problem/' + exercise_id + '">' + exercise_name + '</a></td><td class=' + grade_class + '>'
         + grade_type + '</td><td class=' + publisher_class + '>' + publisher_name + '</td><td>' + pass_rate
         + '</td><td class=' + status_class + '>' + pass_count + '</td></tr>';
 }
@@ -54,7 +54,7 @@ window.onload = () => {
             '      <div class="menu">' +
             '        <a class="item" href="/problem/status/?user=114980">提交记录</a>' +
             '        <a class="item" href="/account/settings/profile/">个人信息</a>' +
-            '        <a class="item" href="/migrate/">更改密码</a>' +
+            '        <a class="item" href="/migrate/">更改信息</a>' +
             '        <a class="item" href="/logout/">登出</a>' +
             '      </div>' +
             '    </div>';

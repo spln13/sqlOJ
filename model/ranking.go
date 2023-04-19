@@ -67,7 +67,7 @@ func (*ScoreRecordFlow) IncreaseScore(userID, userType int64, grade int) {
 		score = 0
 	}
 	if err := GetSysDB().Transaction(func(tx *gorm.DB) error {
-		return tx.Model(ExerciseTable{}).Where("user_id = ? and user_type = ?", userID, userType).Update("score", gorm.Expr("score + ?", score)).Error
+		return tx.Model(&ScoreRecord{}).Where("user_id = ? and user_type = ?", userID, userType).Update("score", gorm.Expr("score + ?", score)).Error
 	}); err != nil {
 		log.Println(err)
 	}

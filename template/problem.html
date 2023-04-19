@@ -62,7 +62,7 @@
                 </div>
                 <div class="code">
                     <h3>MySQL代码</h3>
-                    <textarea id="sql-input"></textarea>
+                    <textarea id="sql-input" class="sql-input"></textarea>
                     <div class="ui animated fade button" tabindex="0" id="submit_button">
                         <div class="visible content">提交!</div>
                         <div class="hidden content">GO!</div>
@@ -94,7 +94,7 @@
 </body>
 
 <script>
-    const sqlEditor = CodeMirror.fromTextArea(document.getElementById("sql-input"), {
+    const sqlEditor = CodeMirror.fromTextArea(document.getElementById("sql_input"), {
         mode: "text/x-mysql",
         lineNumbers: true
     });

@@ -65,7 +65,7 @@ func (*UserProblemStatusFlow) ModifyUserProblemStatus(userID, exerciseID, userTy
 		return
 	}
 	if err := GetSysDB().Transaction(func(tx *gorm.DB) error {
-		return tx.Where("user_id = ? and exercise_id = ? and user_type = ?", userID, exerciseID, userType).Update("status", status).Error
+		return tx.Model(&UserProblemStatus{}).Where("user_id = ? and exercise_id = ? and user_type = ?", userID, exerciseID, userType).Update("status", status).Error
 	}); err != nil {
 		log.Println(err)
 	}

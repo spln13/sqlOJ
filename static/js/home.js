@@ -25,7 +25,7 @@ window.onload = () => {
             '      <div class="menu">' +
             '        <a class="item" href="/problem/status/?user=114980">提交记录</a>' +
             '        <a class="item" href="/account/settings/profile/">个人信息</a>' +
-            '        <a class="item" href="/migrate/">更改密码</a>' +
+            '        <a class="item" href="/migrate/">更改信息</a>' +
             '        <a class="item" href="/logout/">登出</a>' +
             '      </div>' +
             '    </div>';

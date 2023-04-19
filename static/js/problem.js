@@ -13,7 +13,8 @@ getCookie = (cname) => {
     }
     return "";
 }
-window.onload = () => {
+
+window.onload = index => {
     // 查看登录状态，获取用户名
     // 获取所有cookie
     const username = getCookie("username");
@@ -25,7 +26,7 @@ window.onload = () => {
             '      <div class="menu">' +
             '        <a class="item" href="/problem/status/?user=114980">提交记录</a>' +
             '        <a class="item" href="/account/settings/profile/">个人信息</a>' +
-            '        <a class="item" href="/migrate/">更改密码</a>' +
+            '        <a class="item" href="/migrate/">更改信息</a>' +
             '        <a class="item" href="/logout/">登出</a>' +
             '      </div>' +
             '    </div>';
@@ -34,8 +35,8 @@ window.onload = () => {
     const path = window.location.pathname;
     // 分割路径并获取最后一个部分
     const parts = path.split('/');
-    const param = parts[parts.length - 1]; // param即exercise_id
-    const url = '/api/exercise/get/one?exercise_id=' + param;
+    const exerciseID = parts[parts.length - 1];
+    const url = '/api/exercise/get/one?exercise_id=' + exerciseID;
     fetch(url, {
         method: 'GET',
         headers: {
@@ -73,11 +74,41 @@ window.onload = () => {
                 document.getElementById('card_top').innerHTML = '<p><b>' + pass_count.toString() + '份提交通过</b>, 共有' + submit_count.toString() + '份提交。</p>' +
                     '<p><b>难度</b>: <b class="' + grade_class + '">' + grade_str + '</b>。</p>';
                 document.getElementById('card_bottom').innerHTML = '<p><b>出题人</b>: <b class="' + publisher_class + '">' + publisher_name + "</b>。</p>"
-                document.getElementById('title').innerHTML = param + '. ' + name;
+                document.getElementById('title').innerHTML = exerciseID + '. ' + name;
                 document.getElementById('content').innerHTML = marked.parse(description);
             }
         })
         .catch(error => console.error(error));
-
+    const submitButton = document.getElementById("submit_button")
+    // const sqlInput = document.getElementById("sql-input")
+    const sqlEditor = CodeMirror.fromTextArea(document.getElementById("sql-input"), {
+        mode: "text/x-mysql",
+        lineNumbers: true
+    });
+    submitButton.addEventListener("click", function (e) {
+        e.preventDefault();
+        const sqlInputValue = sqlEditor.getValue();
+        console.log("input value: ", sqlInputValue);
+        const formData = new FormData;
+        formData.append("exercise_id", exerciseID);
+        formData.append("answer", sqlInputValue);
+        fetch('/api/exercise/submit/', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                const status_code = data['status_code'];
+                const status_msg = data['status_msg'];
+                if (status_code !== 0) {
+                    alert(status_msg)
+                }
+                else {
+                    alert("提交成功")
+                    // window.location.href = '/'  // FIXME: 应跳转到提交记录页面
+                }
+            })
+            .catch(error => console.log(error))
+    })
 }
 
