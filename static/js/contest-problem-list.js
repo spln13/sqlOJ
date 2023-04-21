@@ -32,11 +32,7 @@ window.onload = index => {
             '    </div>';
     }
     // 获取当前页面的路径
-    const path = window.location.pathname;
-    // 分割路径并获取最后一个部分
-    const parts = path.split('/');
-    const exerciseID = parts[parts.length - 1];
-    const url = '/api/exercise/get/one?exercise_id=' + exerciseID;
+    const url = '/api/exercise/get/one?exercise_id=';
     fetch(url, {
         method: 'GET',
         headers: {
@@ -79,36 +75,6 @@ window.onload = index => {
             }
         })
         .catch(error => console.error(error));
-    const submitButton = document.getElementById("submit_button")
-    // const sqlInput = document.getElementById("sql-input")
-    const sqlEditor = CodeMirror.fromTextArea(document.getElementById("sql-input"), {
-        mode: "text/x-mysql",
-        lineNumbers: true
-    });
-    submitButton.addEventListener("click", function (e) {
-        e.preventDefault();
-        const sqlInputValue = sqlEditor.getValue();
-        console.log("input value: ", sqlInputValue);
-        const formData = new FormData;
-        formData.append("exercise_id", exerciseID);
-        formData.append("answer", sqlInputValue);
-        fetch('/api/exercise/submit/', {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => response.json())
-            .then(data => {
-                const status_code = data['status_code'];
-                const status_msg = data['status_msg'];
-                if (status_code !== 0) {
-                    alert(status_msg)
-                }
-                else {
-                    alert("提交成功")
-                    // window.location.href = '/'  // FIXME: 应跳转到提交记录页面
-                }
-            })
-            .catch(error => console.log(error))
-    })
+
 }
 

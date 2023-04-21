@@ -1,4 +1,4 @@
-getCookie = (cname) => {
+const getCookie = (cname) => {
     let name = cname + "=";
     let decodedCookie = decodeURIComponent(document.cookie);
     let ca = decodedCookie.split(';');
@@ -17,7 +17,7 @@ getCookie = (cname) => {
 
 
 
-const createBox = (exercise_id, exercise_name, grade, pass_count, submit_count, publisher_name, publisher_type, status) => {
+let createBox = (exercise_id, exercise_name, grade, pass_count, submit_count, publisher_name, publisher_type, status) => {
     let mother_box = document.querySelector("#exercises");
     let box = document.createElement('tr');
     mother_box.appendChild(box);

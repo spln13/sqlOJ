@@ -43,6 +43,7 @@ func (*ContestFlow) CreateContest(name, publisherName string, publisherID, publi
 		BeginAt:       beginAt,
 		EndAt:         endAt,
 	}
+
 	if err := GetSysDB().Create(contestDAO).Error; err != nil {
 		log.Println(err)
 		return 0, errors.New("创建竞赛错误")

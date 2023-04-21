@@ -11,11 +11,11 @@ import (
 )
 
 type CreateContestData struct {
-	ContestName    string    `json:"contest_name"`
-	BeginAt        time.Time `json:"begin_at"`
-	EndAt          time.Time `json:"end_at"`
-	ExerciseIDList []int64   `json:"exercise_id_list"`
-	ClassIDList    []int64   `json:"class_id_list"`
+	ContestName    string  `json:"contest_name"`
+	BeginAt        string  `json:"begin_at"`
+	EndAt          string  `json:"end_at"`
+	ExerciseIDList []int64 `json:"exercise_id_list"`
+	ClassIDList    []int64 `json:"class_id_list"`
 }
 
 func CreateContestHandle(context *gin.Context) {
@@ -31,9 +31,16 @@ func CreateContestHandle(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, "解析请求参数错误"))
 		return
 	}
+	beginAt, err1 := time.Parse("2006-01-02 15:04:05", createContestData.BeginAt)
+	endAt, err2 := time.Parse("2006-01-02 15:04:05", createContestData.EndAt)
+	if err1 != nil || err2 != nil {
+		log.Println("解析时间参数错误!")
+		context.JSON(http.StatusBadRequest, common.NewCommonResponse(1, "解析请求参数错误"))
+		return
+	}
 	publisherName := common.QueryUsername(publisherID, publisherType)
 	// 在数据库中插入竞赛信息
-	contestID, err := model.NewContestFlow().CreateContest(createContestData.ContestName, publisherName, publisherID, publisherType, createContestData.BeginAt, createContestData.EndAt)
+	contestID, err := model.NewContestFlow().CreateContest(createContestData.ContestName, publisherName, publisherID, publisherType, beginAt, endAt)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, err.Error()))
 		return
@@ -57,7 +64,7 @@ func CreateContestHandle(context *gin.Context) {
 		return
 	}
 	// 缓存竞赛禁止学生访问名单
-	if err := cache.ContestForbidStudentCache(contestID, studentIDList, createContestData.BeginAt, createContestData.EndAt); err != nil {
+	if err := cache.ContestForbidStudentCache(contestID, studentIDList, beginAt, endAt); err != nil {
 		return
 	}
 	// 缓存引用题目的竞赛IDList
@@ -68,7 +75,7 @@ func CreateContestHandle(context *gin.Context) {
 		}
 	}
 	// 创建副本表，写入MySQL
-	err = model.NewContestExerciseFlow().InsertContestExercise(contestID, createContestData.ExerciseIDList, createContestData.EndAt)
+	err = model.NewContestExerciseFlow().InsertContestExercise(contestID, createContestData.ExerciseIDList, endAt)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, err.Error()))
 		return
