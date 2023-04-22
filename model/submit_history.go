@@ -89,9 +89,18 @@ func (*SubmitHistoryFlow) QueryThisExerciseUserSubmitHistory(userID int64, userT
 
 func (*SubmitHistoryFlow) QueryThisUserSubmitHistory(userID int64) ([]SubmitHistory, error) {
 	var submitHistory []SubmitHistory
-	if err := GetSysDB().Model(&SubmitHistory{}).Select("student_answer", "exercise_id", "status", "submit_time", "user_agent").Where("user_id = ?", userID).Find(&submitHistory).Error; err != nil {
+	if err := GetSysDB().Model(&SubmitHistory{}).Select("id", "student_answer", "exercise_id", "status", "submit_time", "user_agent").Where("user_id = ?", userID).Find(&submitHistory).Error; err != nil {
 		log.Println(err)
 		return nil, errors.New("查询提交记录错误")
 	}
 	return submitHistory, nil
+}
+
+func (*SubmitHistoryFlow) QuerySubmissionAnswer(submissionID int64) (int64, int64, string, error) {
+	var submitHistory SubmitHistory
+	err := GetSysDB().Model(&SubmitHistory{}).Select("user_id", "user_type", "student_answer").Where("id = ?", submissionID).Find(&submitHistory).Error
+	if err != nil {
+		return 0, 0, "", errors.New("查询提交信息错误")
+	}
+	return submitHistory.UserID, submitHistory.UserType, submitHistory.StudentAnswer, nil
 }

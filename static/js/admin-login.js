@@ -21,7 +21,7 @@ window.onload = () => {
             .then(data => {
                 const status_code = data['status_code'];
                 const status_msg = data['status_msg'];
-                if (status_code === 1) {
+                if (status_code !== 0) {
                     alert(status_msg);
                 }
                 else {

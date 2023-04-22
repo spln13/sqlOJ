@@ -17,7 +17,7 @@ const createBox = (contest_id, contest_name, publisher_name, publisher_type, beg
     let mother_box = document.querySelector('#contests');
     let box = document.createElement('tr');
     const publisher_class = "publisher_" + publisher_type;
-    box.innerHTML = '<tr><td>' + contest_id + '</td><td><a href="#">' + contest_name + '</a></td>' +
+    box.innerHTML = '<tr><td>' + contest_id + '</td><td><a href="/contest/' + contest_id.toString() + '">' + contest_name + '</a></td>' +
         '<td class="' + publisher_class + '">' + publisher_name + '</td><td>' + begin_at +
         '</td><td>' + end_at + '</td></tr>';
     mother_box.append(box);
@@ -32,8 +32,8 @@ window.onload = () => {
             '      <div class="text">spln13</div>' +
             '      <i class="dropdown icon"></i>' +
             '      <div class="menu">' +
-            '        <a class="item" href="/problem/status/?user=114980">提交记录</a>' +
-            '        <a class="item" href="/account/settings/profile/">个人信息</a>' +
+            '        <a class="item" href="/submission/">提交记录</a>' +
+            '        <a class="item" href="/profile/">个人信息</a>' +
             '        <a class="item" href="/migrate/">更改信息</a>' +
             '        <a class="item" href="/logout/">登出</a>' +
             '      </div>' +
@@ -51,7 +51,7 @@ window.onload = () => {
         .then(data => {
             const status_code = data['status_code'];
             const status_msg = data['status_msg'];
-            if (status_code === 1) {
+            if (status_code !== 0) {
                 alert(status_msg);
                 return
             }

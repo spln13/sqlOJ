@@ -42,6 +42,10 @@ func InitServer() *gin.Engine {
 	server.GET("/register/", func(context *gin.Context) {
 		context.HTML(http.StatusOK, "register.html", "")
 	})
+	server.GET("/submission/", func(context *gin.Context) {
+		context.HTML(http.StatusOK, "my-submission.html", "")
+	})
+
 	server.GET("/admin/login/", func(context *gin.Context) {
 		context.HTML(http.StatusOK, "admin-login.html", "")
 	})
@@ -55,6 +59,12 @@ func InitServer() *gin.Engine {
 	})
 	server.GET("/problem/:exercise_id", func(context *gin.Context) {
 		context.HTML(http.StatusOK, "problem.html", "")
+	})
+	server.GET("/submission/:submission_id", func(context *gin.Context) {
+		context.HTML(http.StatusOK, "answer-detail.html", "")
+	})
+	server.GET("/contest/:contest_id", func(context *gin.Context) {
+		context.HTML(http.StatusOK, "contest-problem-list.html", "")
 	})
 	// api接口
 	adminGroup := server.Group("/api/admin")
@@ -97,6 +107,7 @@ func InitServer() *gin.Engine {
 		submissionGroup.GET("/get/one-all/", middlewares.StudentJWTMiddleware(), submission.GetOneAllHandle)                                                      // 查询当前用户所有提交记录
 		submissionGroup.GET("/get/all-all/", middlewares.TeacherJWTMiddleware(), submission.GetAllAllHandle)                                                      // 获取所有提交记录
 		submissionGroup.GET("/get/all-one/", middlewares.TeacherJWTMiddleware(), submission.GetAllOneHandle)                                                      // 获取当前题目所有用户的提交
+		submissionGroup.GET("/get/answer-detail/", middlewares.StudentJWTMiddleware(), submission.GetAnswerDetailHandle)                                          // 获取提交详情信息
 		submissionGroup.GET("/contest/get-all/", middlewares.TeacherJWTMiddleware(), submission.ContestGetAllSubmissionHandle)                                    // 获取当前竞赛的所有提交
 		submissionGroup.GET("/contest/get-my/", middlewares.StudentJWTMiddleware(), middlewares.CheckContestAuthority(), submission.ContestGetMySubmissionHandle) // 获取当前用户在竞赛中的所有提交
 		submissionGroup.GET("/contest/get-exercise/", middlewares.TeacherJWTMiddleware(), submission.ContestGetOneExerciseHandle)                                 // 获取当前竞赛当前题目所有提交
@@ -107,12 +118,13 @@ func InitServer() *gin.Engine {
 	}
 	contestGroup := server.Group("/api/contest")
 	{
-		contestGroup.POST("/create/", middlewares.TeacherJWTMiddleware(), contest.CreateContestHandle)                                                // 创建竞赛接口
-		contestGroup.GET("/get/all/", contest.GetAllContestHandle)                                                                                    // 获取所有竞赛接口
-		contestGroup.POST("/submit/", middlewares.StudentJWTMiddleware(), middlewares.CheckContestAuthority(), exercise.ContestSubmitHandle)          // 竞赛提交接口
-		contestGroup.GET("/get/all-exercise/", middlewares.StudentJWTMiddleware(), middlewares.CheckContestAuthority(), contest.GetAllExerciseHandle) // 获取竞赛中所有的题目
-		contestGroup.GET("/get/contest/", middlewares.StudentJWTMiddleware(), middlewares.CheckContestAuthority(), contest.GetContestHandle)          // 获取竞赛中所有的题目
+		contestGroup.POST("/create/", middlewares.TeacherJWTMiddleware(), contest.CreateContestHandle)                                       // 创建竞赛接口
+		contestGroup.GET("/get/all/", contest.GetAllContestHandle)                                                                           // 获取所有竞赛接口
+		contestGroup.GET("/get/contest/", contest.GetContestHandle)                                                                          // 获取竞赛详情信息                                                                          // 获取所有竞赛接口
+		contestGroup.POST("/submit/", middlewares.StudentJWTMiddleware(), middlewares.CheckContestAuthority(), exercise.ContestSubmitHandle) // 竞赛提交接口
 
+		contestGroup.GET("/get/all-exercise/", middlewares.StudentJWTMiddleware(), contest.GetAllExerciseHandle) // test获取竞赛中所有的题目
+		//contestGroup.GET("/get/all-exercise/", middlewares.StudentJWTMiddleware(), middlewares.CheckContestAuthority(), contest.GetAllExerciseHandle) // 获取竞赛中所有的题目
 	}
 	return server
 }

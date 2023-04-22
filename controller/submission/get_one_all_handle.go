@@ -14,6 +14,7 @@ type OneAllResponse struct {
 }
 
 type OneAll struct {
+	SubmissionID int64     `json:"submission_id"`
 	Answer       string    `json:"answer"`
 	ExerciseID   int64     `json:"exercise_id"`
 	ExerciseName string    `json:"exercise_name"`
@@ -47,6 +48,7 @@ func GetOneAllHandle(context *gin.Context) {
 		exerciseID := submitHistory.ExerciseID
 		exerciseName := model.NewExerciseContentFlow().QueryExerciseNameByExerciseID(exerciseID)
 		oneAll := OneAll{
+			SubmissionID: submitHistory.ID,
 			Answer:       submitHistory.StudentAnswer,
 			ExerciseID:   exerciseID,
 			ExerciseName: exerciseName,

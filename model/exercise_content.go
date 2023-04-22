@@ -96,7 +96,7 @@ func (*ExerciseContentFlow) GetAllVisitableExercise() ([]ExerciseContent, error)
 
 func (*ExerciseContentFlow) GetOneExercise(exerciseID int64) (ExerciseContent, error) {
 	var exerciseContent ExerciseContent
-	if err := GetSysDB().Select("publisher_id", "publisher_type", "name", "grade", "description", "submit_count", "pass_count", "created_at").Where("id = ?", exerciseID).Find(&exerciseContent).Error; err != nil {
+	if err := GetSysDB().Select("publisher_id", "publisher_type", "publisher_name", "name", "grade", "description", "submit_count", "pass_count", "created_at").Where("id = ?", exerciseID).Find(&exerciseContent).Error; err != nil {
 		log.Println(err)
 		return exerciseContent, errors.New("查询题目信息错误")
 	}

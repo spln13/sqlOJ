@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"sqlOJ/cache"
@@ -53,6 +54,7 @@ func CheckExerciseAuthority() gin.HandlerFunc {
 }
 
 // CheckContestAuthority 检查用户是否有访问当前竞赛信息的权限
+// 判断用户id是否在竞赛在Redis中对应的Set中
 func CheckContestAuthority() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		userID, ok1 := context.MustGet("user_id").(int64)
@@ -76,7 +78,8 @@ func CheckContestAuthority() gin.HandlerFunc {
 			return
 		}
 		// code: 0->错误; 1->该键值不存在; 2->集合中存在; 3->集合中不存在
-		if code == 2 {
+		fmt.Println(code)
+		if code != 2 {
 			context.JSON(http.StatusOK, common.NewCommonResponse(403, "您无权访问"))
 			context.Abort()
 			return
