@@ -15,8 +15,6 @@ const getCookie = (cname) => {
 }
 
 
-
-
 let createBox = (exercise_id, exercise_name, grade, pass_count, submit_count, publisher_name, publisher_type, status) => {
     let mother_box = document.querySelector("#exercises");
     let box = document.createElement('tr');

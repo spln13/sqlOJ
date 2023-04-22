@@ -55,11 +55,15 @@ func CheckExerciseAuthority() gin.HandlerFunc {
 // CheckContestAuthority 检查用户是否有访问当前竞赛信息的权限
 func CheckContestAuthority() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		userID, ok := context.MustGet("user_id").(int64)
-		if !ok {
+		userID, ok1 := context.MustGet("user_id").(int64)
+		userType, ok2 := context.MustGet("user_type").(int64)
+		if !ok1 || !ok2 {
 			context.JSON(http.StatusBadRequest, common.NewCommonResponse(403, "用户token错误"))
 			context.Abort()
 			return
+		}
+		if userType > 1 { // 教师或管理员, 可以直接访问
+			context.Next()
 		}
 		exerciseIDStr := context.Query("contest_id")
 		if exerciseIDStr == "" {

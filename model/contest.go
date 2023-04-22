@@ -71,3 +71,13 @@ func (*ContestFlow) GetContestNameByID(contestID int64) string {
 	}
 	return contestDAO.Name
 }
+
+func (*ContestFlow) GetContestInfo(contestID int64) (Contest, error) {
+	var contestDAO Contest
+	err := GetSysDB().Model(&Contest{}).Select("*").Where("id = ?", contestID).Find(&contestDAO).Error
+	if err != nil {
+		log.Println(err)
+		return contestDAO, errors.New("查询竞赛信息错误")
+	}
+	return contestDAO, nil
+}

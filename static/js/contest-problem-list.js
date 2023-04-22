@@ -14,6 +14,31 @@ const getCookie = (cname) => {
     return "";
 }
 
+
+let createBox = (exercise_id, exercise_name, grade, pass_count, submit_count, publisher_name, publisher_type, status) => {
+    let mother_box = document.querySelector("#exercises");
+    let box = document.createElement('tr');
+    mother_box.appendChild(box);
+    let grade_type;
+    if (grade === 1) {
+        grade_type = "easy";
+    }
+    else if (grade === 2) {
+        grade_type = "medium";
+    }
+    else {
+        grade_type = "hard";
+    }
+    const publisher_class = "publisher_" + publisher_type;
+    const grade_class = "grade_" + grade_type;
+    const status_class = "status_" + status;
+    let pass_rate = pass_count / submit_count;
+    pass_rate = pass_rate.toFixed(2);
+    box.innerHTML = '<tr><td>' + exercise_id + '</td><td><a href="/problem/' + exercise_id + '">' + exercise_name + '</a></td><td class=' + grade_class + '>'
+        + grade_type + '</td><td class=' + publisher_class + '>' + publisher_name + '</td><td>' + pass_rate
+        + '</td><td class=' + status_class + '>' + pass_count + '</td></tr>';
+}
+
 window.onload = index => {
     // 查看登录状态，获取用户名
     // 获取所有cookie
@@ -31,8 +56,16 @@ window.onload = index => {
             '      </div>' +
             '    </div>';
     }
-    // 获取当前页面的路径
-    const url = '/api/exercise/get/one?exercise_id=';
+    // 获取当前页面的路径 当前url: /contest/123
+    const path = window.location.pathname;
+    // 分割路径并获取最后一个部分
+    const parts = path.split('/');
+    const contestID = parts[parts.length - 1];
+
+    const request_contest_info_url = '/api/'
+
+
+    const url = '/api/contest/get/all-exercise?contest_id=' + contestID;
     fetch(url, {
         method: 'GET',
         headers: {
@@ -47,31 +80,15 @@ window.onload = index => {
                 alert(status_msg)
             }
             else {
-                const name = data['name'];  // string
-                const grade = data['grade'] // int
-                const description = data['description'] // string
+                const exercise_id = data['exercise_id'] // int
+                const exercise_name = data['exercise_name'] // string
                 const publisher_name = data['publisher_name'] // string
                 const publisher_type = data['publisher_type'] // int
+                const grade = data['grade'] // int
+                const status = data['status'] // int
                 const submit_count = data['submit_count'] // int
                 const pass_count = data['pass_count'] // int
-                let grade_str;
-                if (grade === 1) {
-                    grade_str = 'easy';
-                }
-                else if (grade === 2) {
-                    grade_str = 'medium';
-                }
-                else {
-                    grade_str = 'hard';
-                }
-
-                const grade_class = 'grade_' + grade_str;
-                const publisher_class = 'publisher_' + publisher_type.toString();
-                document.getElementById('card_top').innerHTML = '<p><b>' + pass_count.toString() + '份提交通过</b>, 共有' + submit_count.toString() + '份提交。</p>' +
-                    '<p><b>难度</b>: <b class="' + grade_class + '">' + grade_str + '</b>。</p>';
-                document.getElementById('card_bottom').innerHTML = '<p><b>出题人</b>: <b class="' + publisher_class + '">' + publisher_name + "</b>。</p>"
-                document.getElementById('title').innerHTML = exerciseID + '. ' + name;
-                document.getElementById('content').innerHTML = marked.parse(description);
+                createBox(exercise_id, exercise_name, grade, pass_count, submit_count, publisher_name, publisher_type, status);
             }
         })
         .catch(error => console.error(error));
