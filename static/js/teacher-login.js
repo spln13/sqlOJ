@@ -25,7 +25,7 @@ window.onload = () => {
                     alert(status_msg)
                 }
                 else {
-                    window.location = '/';
+                    window.location = '/teacher/upload-table/';
                 }
             })
             .catch(error => console.error(error));

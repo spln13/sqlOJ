@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教师端 BUCT-SQLOJ</title>
+    <link rel="stylesheet" href="/static/semantic/semantic.min.css">
+    <link href="/static/icon/favicon.ico" rel="shortcut icon">
+    <script src="/static/semantic/semantic.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="/static/js/exercise.js"></script>
+</head>
+<body>
+<div class="ui top fixed menu">
+    <div class="item" style="font-size: 18px">
+        BUCT SQL OJ
+    </div>
+    <a class="item" href="/teacher/upload-table/">
+        上传数据表
+    </a>
+    <a class="item" href="/teacher/publish-exercise/">
+        发布习题
+    </a>
+    <a class="active item" href="/teacher/publish-contest/">
+        发布竞赛
+    </a>
+    <a class="item" href="/teacher/submission/">
+        提交记录
+    </a>
+    <a class="item" href="/teacher/query-submission/">
+        个人提交
+    </a>
+    <a class="item" href="/teacher/grade/">
+        学生成绩
+    </a>
+    <div class="right menu" style="margin-right: 100px">
+        <div class="item" id="button_username">
+            <div class="ui primary button" onclick="location.href='/teacher/login/'">登入</div>
+        </div>
+    </div>
+</div>
+<div id="blank"></div>
+
+
+
+</body>
+
+<style>
+    #blank {
+        width: 100%;
+        height: 70px;
+    }
+
+    #button_username {
+        padding: 0;
+    }
+
+    p {
+        font-size: 17px;
+    }
+</style>
+
+</html>

@@ -69,6 +69,27 @@ func InitServer() *gin.Engine {
 	server.GET("/exercise/my-submission/:exercise_id", func(context *gin.Context) {
 		context.HTML(http.StatusOK, "exercise-my-submission.html", "")
 	})
+	teacherHTMLGroup := server.Group("/teacher")
+	{
+		teacherHTMLGroup.GET("/upload-table/", func(context *gin.Context) {
+			context.HTML(http.StatusOK, "teacher-upload-table.html", "")
+		})
+		teacherHTMLGroup.GET("/publish-exercise/", func(context *gin.Context) {
+			context.HTML(http.StatusOK, "teacher-publish-exercise.html", "")
+		})
+		teacherHTMLGroup.GET("/publish-contest/", func(context *gin.Context) {
+			context.HTML(http.StatusOK, "teacher-publish-contest.html", "")
+		})
+		teacherHTMLGroup.GET("/submission/", func(context *gin.Context) {
+			context.HTML(http.StatusOK, "teacher-submission.html", "")
+		})
+		teacherHTMLGroup.GET("/query-submission/", func(context *gin.Context) {
+			context.HTML(http.StatusOK, "teacher-query-submission.html", "")
+		})
+		teacherHTMLGroup.GET("/grade/", func(context *gin.Context) {
+			context.HTML(http.StatusOK, "teacher-grade.html", "")
+		})
+	}
 	// api接口
 	adminGroup := server.Group("/api/admin")
 	{
