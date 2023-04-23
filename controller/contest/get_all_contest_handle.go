@@ -3,14 +3,13 @@ package contest
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sqlOJ/common"
 	"sqlOJ/model"
 	"time"
 )
 
 type Response struct {
 	List []SingleContest `json:"list"`
-	common.Response
+	utils.Response
 }
 
 type SingleContest struct {
@@ -28,7 +27,7 @@ func GetAllContestHandle(context *gin.Context) {
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, Response{
 			List:     nil,
-			Response: common.NewCommonResponse(1, err.Error()),
+			Response: utils.NewCommonResponse(1, err.Error()),
 		})
 		return
 	}
@@ -46,6 +45,6 @@ func GetAllContestHandle(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, Response{
 		List:     contestList,
-		Response: common.NewCommonResponse(0, ""),
+		Response: utils.NewCommonResponse(0, ""),
 	})
 }

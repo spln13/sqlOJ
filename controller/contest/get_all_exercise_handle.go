@@ -4,14 +4,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
-	"sqlOJ/common"
 	"sqlOJ/model"
 	"strconv"
 )
 
 type AllExerciseResponse struct {
 	List []ExerciseInfo `json:"list"`
-	common.Response
+	utils.Response
 }
 
 type ExerciseInfo struct {
@@ -31,7 +30,7 @@ func GetAllExerciseHandle(context *gin.Context) {
 	if !ok1 || !ok2 {
 		context.JSON(http.StatusInternalServerError, AllExerciseResponse{
 			List:     nil,
-			Response: common.NewCommonResponse(1, "解析用户信息错误"),
+			Response: utils.NewCommonResponse(1, "解析用户信息错误"),
 		})
 		return
 	}
@@ -41,7 +40,7 @@ func GetAllExerciseHandle(context *gin.Context) {
 		log.Println(err)
 		context.JSON(http.StatusBadRequest, AllExerciseResponse{
 			List:     nil,
-			Response: common.NewCommonResponse(1, "请求参数错误"),
+			Response: utils.NewCommonResponse(1, "请求参数错误"),
 		})
 		return
 	}
@@ -49,7 +48,7 @@ func GetAllExerciseHandle(context *gin.Context) {
 	if err != nil {
 		context.JSON(http.StatusBadRequest, AllExerciseResponse{
 			List:     nil,
-			Response: common.NewCommonResponse(1, err.Error()),
+			Response: utils.NewCommonResponse(1, err.Error()),
 		})
 		return
 	}
@@ -72,6 +71,6 @@ func GetAllExerciseHandle(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, AllExerciseResponse{
 		List:     exerciseInfoList,
-		Response: common.NewCommonResponse(0, ""),
+		Response: utils.NewCommonResponse(0, ""),
 	})
 }

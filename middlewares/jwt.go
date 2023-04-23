@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 	"net/http"
-	"sqlOJ/common"
 	"time"
 )
 
@@ -59,14 +58,14 @@ func StudentJWTMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenStr, err := c.Cookie("token")
 		if err != nil {
-			c.JSON(http.StatusBadRequest, common.NewCommonResponse(402, "token不存在"))
+			c.JSON(http.StatusBadRequest, utils.NewCommonResponse(402, "token不存在"))
 			c.Abort()
 			return
 		}
 		//验证token
 		tokenStruck, ok := ParseToken(tokenStr)
 		if !ok {
-			c.JSON(http.StatusBadRequest, common.NewCommonResponse(403, "token不正确"))
+			c.JSON(http.StatusBadRequest, utils.NewCommonResponse(403, "token不正确"))
 			c.Abort() //阻止执行
 			return
 		}
@@ -76,7 +75,7 @@ func StudentJWTMiddleware() gin.HandlerFunc {
 			c.SetCookie("token", "", -1, "/", "localhost:8080", true, false)
 			c.SetCookie("username", "", -1, "/", "localhost:8080", true, false)
 
-			c.JSON(http.StatusBadRequest, common.NewCommonResponse(402, "token过期"))
+			c.JSON(http.StatusBadRequest, utils.NewCommonResponse(402, "token过期"))
 			c.Abort() //阻止执行
 			return
 		}
@@ -90,25 +89,25 @@ func TeacherJWTMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenStr, err := c.Cookie("token")
 		if err != nil {
-			c.JSON(http.StatusBadRequest, common.NewCommonResponse(402, "token不存在"))
+			c.JSON(http.StatusBadRequest, utils.NewCommonResponse(402, "token不存在"))
 			c.Abort()
 			return
 		}
 		//验证token
 		tokenStruck, ok := ParseToken(tokenStr)
 		if !ok {
-			c.JSON(http.StatusBadRequest, common.NewCommonResponse(403, "token不正确"))
+			c.JSON(http.StatusBadRequest, utils.NewCommonResponse(403, "token不正确"))
 			c.Abort() //阻止执行
 			return
 		}
 		if tokenStruck.UserType < 2 {
-			c.JSON(http.StatusBadRequest, common.NewCommonResponse(401, "无权限"))
+			c.JSON(http.StatusBadRequest, utils.NewCommonResponse(401, "无权限"))
 			c.Abort() //阻止执行
 			return
 		}
 		//token超时
 		if time.Now().Unix() > tokenStruck.ExpiresAt.Time.Unix() {
-			c.JSON(http.StatusBadRequest, common.NewCommonResponse(402, "token过期"))
+			c.JSON(http.StatusBadRequest, utils.NewCommonResponse(402, "token过期"))
 			c.Abort() //阻止执行
 			return
 		}
@@ -122,25 +121,25 @@ func AdminJWTMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenStr, err := c.Cookie("token")
 		if err != nil {
-			c.JSON(http.StatusBadRequest, common.NewCommonResponse(402, "token不存在"))
+			c.JSON(http.StatusBadRequest, utils.NewCommonResponse(402, "token不存在"))
 			c.Abort()
 			return
 		}
 		//验证token
 		tokenStruck, ok := ParseToken(tokenStr)
 		if !ok {
-			c.JSON(http.StatusBadRequest, common.NewCommonResponse(403, "token不正确"))
+			c.JSON(http.StatusBadRequest, utils.NewCommonResponse(403, "token不正确"))
 			c.Abort() //阻止执行
 			return
 		}
 		if tokenStruck.UserType < 3 {
-			c.JSON(http.StatusBadRequest, common.NewCommonResponse(401, "无权限"))
+			c.JSON(http.StatusBadRequest, utils.NewCommonResponse(401, "无权限"))
 			c.Abort() //阻止执行
 			return
 		}
 		//token超时
 		if time.Now().Unix() > tokenStruck.ExpiresAt.Time.Unix() {
-			c.JSON(http.StatusBadRequest, common.NewCommonResponse(402, "token过期"))
+			c.JSON(http.StatusBadRequest, utils.NewCommonResponse(402, "token过期"))
 			c.Abort() //阻止执行
 			return
 		}

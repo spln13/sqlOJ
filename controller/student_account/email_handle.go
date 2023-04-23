@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"net/smtp"
 	"sqlOJ/cache"
-	"sqlOJ/common"
 	"sqlOJ/config"
 	"sqlOJ/model"
 	"strconv"
@@ -19,25 +18,25 @@ func SendCodeHandle(context *gin.Context) {
 	emailAddr := context.Query("email")
 	ok, err := cache.CheckEmailCodeSendTimeValid(emailAddr)
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, err.Error()))
+		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, err.Error()))
 		return
 	}
 	if !ok {
-		context.JSON(http.StatusOK, common.NewCommonResponse(1, "请求间隔少于1分钟"))
+		context.JSON(http.StatusOK, utils.NewCommonResponse(1, "请求间隔少于1分钟"))
 		return
 	}
 	// 查询此邮箱是否已经被注册过
 	exist, err := model.NewStudentAccountFlow().QueryStudentExistByEmail(emailAddr)
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, err.Error()))
+		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, err.Error()))
 		return
 	}
 	if exist {
-		context.JSON(http.StatusOK, common.NewCommonResponse(1, "邮箱已被注册"))
+		context.JSON(http.StatusOK, utils.NewCommonResponse(1, "邮箱已被注册"))
 		return
 	}
 	go SendCode(emailAddr)
-	context.JSON(200, common.NewCommonResponse(0, ""))
+	context.JSON(200, utils.NewCommonResponse(0, ""))
 }
 
 func SendCode(emailAddr string) {

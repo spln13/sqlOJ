@@ -3,13 +3,12 @@ package ranking
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sqlOJ/common"
 	"sqlOJ/model"
 )
 
 type Response struct {
 	List []Item `json:"list"`
-	common.Response
+	utils.Response
 }
 
 type Item struct {
@@ -23,7 +22,7 @@ func GetRankingHandle(context *gin.Context) {
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, Response{
 			List:     nil,
-			Response: common.NewCommonResponse(1, err.Error()),
+			Response: utils.NewCommonResponse(1, err.Error()),
 		})
 		return
 	}
@@ -38,6 +37,6 @@ func GetRankingHandle(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, Response{
 		List:     itemList,
-		Response: common.NewCommonResponse(0, ""),
+		Response: utils.NewCommonResponse(0, ""),
 	})
 }

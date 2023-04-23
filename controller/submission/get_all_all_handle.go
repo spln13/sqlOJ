@@ -3,14 +3,13 @@ package submission
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sqlOJ/common"
 	"sqlOJ/model"
 	"time"
 )
 
 type AllAllResponse struct {
 	List []AllAll `json:"list"`
-	common.Response
+	utils.Response
 }
 
 type AllAll struct {
@@ -31,7 +30,7 @@ func GetAllAllHandle(context *gin.Context) {
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, AllAllResponse{
 			List:     nil,
-			Response: common.NewCommonResponse(1, err.Error()),
+			Response: utils.NewCommonResponse(1, err.Error()),
 		})
 		return
 	}
@@ -39,7 +38,7 @@ func GetAllAllHandle(context *gin.Context) {
 	for _, submitHistory := range allSubmitHistory {
 		userID := submitHistory.UserID
 		userType := submitHistory.UserType
-		username := common.QueryUsername(userID, userType)
+		username := utils.QueryUsername(userID, userType)
 		exerciseID := submitHistory.ExerciseID
 		exerciseName := model.NewExerciseContentFlow().QueryExerciseNameByExerciseID(exerciseID)
 		allAll := AllAll{
@@ -57,6 +56,6 @@ func GetAllAllHandle(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, AllAllResponse{
 		List:     allAllList,
-		Response: common.NewCommonResponse(0, ""),
+		Response: utils.NewCommonResponse(0, ""),
 	})
 }

@@ -6,7 +6,6 @@ import (
 	"github.com/xwb1989/sqlparser"
 	"log"
 	"net/http"
-	"sqlOJ/common"
 	"sqlOJ/model"
 	"time"
 )
@@ -26,12 +25,12 @@ func PublishExerciseHandle(context *gin.Context) {
 	publisherID, ok1 := context.MustGet("user_id").(int64) // 获取由JWT设置的user_id
 	publisherType, ok2 := context.MustGet("user_type").(int64)
 	if !ok1 || !ok2 {
-		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, "解析用户token错误"))
+		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, "解析用户token错误"))
 		return
 	}
 	var publishExerciseData PublishExerciseData
 	if err := context.ShouldBindJSON(&publishExerciseData); err != nil {
-		context.JSON(http.StatusBadRequest, common.NewCommonResponse(1, "请求参数错"))
+		context.JSON(http.StatusBadRequest, utils.NewCommonResponse(1, "请求参数错"))
 		return
 	}
 	answer := publishExerciseData.Answer
@@ -46,33 +45,33 @@ func PublishExerciseHandle(context *gin.Context) {
 
 	showAt, err := time.Parse(layout, showAtStr)
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, "解析公布时间错误"))
+		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, "解析公布时间错误"))
 		return
 	}
 	exeType, err := parseAnswer(answer)
 	if err != nil {
-		context.JSON(http.StatusOK, common.NewCommonResponse(1, err.Error()))
+		context.JSON(http.StatusOK, utils.NewCommonResponse(1, err.Error()))
 		return
 	}
 	if exeType == 0 {
-		context.JSON(http.StatusOK, common.NewCommonResponse(1, "答案不合法"))
+		context.JSON(http.StatusOK, utils.NewCommonResponse(1, "答案不合法"))
 		return
 	}
 	exerciseID, err := model.NewExerciseContentFlow().InsertExerciseContent(publisherID, publisherType, name, answer, description, exeType, grade, visitable, showAt)
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, err.Error()))
+		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, err.Error()))
 		return
 	}
 	if err := model.NewExerciseAssociationFlow().InsertExerciseAssociation(exerciseID, tableIDList); err != nil {
-		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, err.Error()))
+		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, err.Error()))
 		return
 	}
 	// 自增练习表数据库中的关联数
 	if err := model.NewExerciseTableFlow().IncreaseExerciseTableAssociationCount(tableIDList); err != nil {
-		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, "关联数据表错误"))
+		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, "关联数据表错误"))
 		return
 	}
-	context.JSON(http.StatusOK, common.NewCommonResponse(0, ""))
+	context.JSON(http.StatusOK, utils.NewCommonResponse(0, ""))
 	return
 }
 

@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
-	"sqlOJ/common"
 	"sqlOJ/model"
 	"strconv"
 	"time"
@@ -12,7 +11,7 @@ import (
 
 type OneContestResponse struct {
 	OneContest
-	common.Response
+	utils.Response
 }
 
 type OneContest struct {
@@ -28,14 +27,14 @@ func GetContestHandle(context *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		context.JSON(http.StatusBadRequest, OneContestResponse{
-			Response: common.NewCommonResponse(1, "请求参数错误"),
+			Response: utils.NewCommonResponse(1, "请求参数错误"),
 		})
 		return
 	}
 	contestDAO, err := model.NewContestFlow().GetContestInfo(contestID)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, OneContestResponse{
-			Response: common.NewCommonResponse(1, err.Error()),
+			Response: utils.NewCommonResponse(1, err.Error()),
 		})
 		return
 	}
@@ -47,6 +46,6 @@ func GetContestHandle(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, OneContestResponse{
 		OneContest: oneContest,
-		Response:   common.NewCommonResponse(0, ""),
+		Response:   utils.NewCommonResponse(0, ""),
 	})
 }

@@ -3,7 +3,6 @@ package submission
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sqlOJ/common"
 	"sqlOJ/model"
 	"strconv"
 	"time"
@@ -11,7 +10,7 @@ import (
 
 type ContestAllSubmissionResponse struct {
 	SubmissionList []Submission `json:"list"`
-	common.Response
+	utils.Response
 }
 
 type Submission struct {
@@ -33,7 +32,7 @@ func ContestGetAllSubmissionHandle(context *gin.Context) {
 	if err != nil {
 		context.JSON(http.StatusBadRequest, ContestAllSubmissionResponse{
 			SubmissionList: nil,
-			Response:       common.NewCommonResponse(1, "请求参数错误"),
+			Response:       utils.NewCommonResponse(1, "请求参数错误"),
 		})
 		return
 	}
@@ -41,7 +40,7 @@ func ContestGetAllSubmissionHandle(context *gin.Context) {
 	if err != nil {
 		context.JSON(http.StatusBadRequest, ContestAllSubmissionResponse{
 			SubmissionList: nil,
-			Response:       common.NewCommonResponse(1, err.Error()),
+			Response:       utils.NewCommonResponse(1, err.Error()),
 		})
 		return
 	}
@@ -62,6 +61,6 @@ func ContestGetAllSubmissionHandle(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, ContestAllSubmissionResponse{
 		SubmissionList: submissionList,
-		Response:       common.NewCommonResponse(0, ""),
+		Response:       utils.NewCommonResponse(0, ""),
 	})
 }

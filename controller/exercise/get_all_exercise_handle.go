@@ -3,13 +3,12 @@ package exercise
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sqlOJ/common"
 	"sqlOJ/model"
 )
 
 type AllExerciseResponse struct {
 	List []AllExercise `json:"list"`
-	common.Response
+	utils.Response
 }
 
 type AllExercise struct {
@@ -29,7 +28,7 @@ func GetAllExerciseWithoutTokenHandle(context *gin.Context) {
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, AllExerciseResponse{
 			List:     nil,
-			Response: common.NewCommonResponse(1, "查询题库出错"),
+			Response: utils.NewCommonResponse(1, "查询题库出错"),
 		})
 		return
 	}
@@ -50,7 +49,7 @@ func GetAllExerciseWithoutTokenHandle(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, AllExerciseResponse{
 		List:     AllExerciseList,
-		Response: common.NewCommonResponse(0, ""),
+		Response: utils.NewCommonResponse(0, ""),
 	})
 }
 
@@ -60,7 +59,7 @@ func GetAllExerciseWithTokenHandle(context *gin.Context) {
 	userType, ok2 := context.MustGet("user_type").(int64)
 	if !ok1 || !ok2 {
 		context.JSON(http.StatusInternalServerError, AllExerciseResponse{
-			Response: common.NewCommonResponse(1, "解析用户参数错误"),
+			Response: utils.NewCommonResponse(1, "解析用户参数错误"),
 		})
 		return
 	}
@@ -68,7 +67,7 @@ func GetAllExerciseWithTokenHandle(context *gin.Context) {
 	if err != nil { // 获取所有可见的题目错误
 		context.JSON(http.StatusInternalServerError, AllExerciseResponse{
 			List:     nil,
-			Response: common.NewCommonResponse(1, err.Error()),
+			Response: utils.NewCommonResponse(1, err.Error()),
 		})
 		return
 	}
@@ -78,7 +77,7 @@ func GetAllExerciseWithTokenHandle(context *gin.Context) {
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, AllExerciseResponse{
 			List:     nil,
-			Response: common.NewCommonResponse(1, err.Error()),
+			Response: utils.NewCommonResponse(1, err.Error()),
 		})
 		return
 	}
@@ -102,6 +101,6 @@ func GetAllExerciseWithTokenHandle(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, AllExerciseResponse{
 		List:     AllExerciseWithTokenList,
-		Response: common.NewCommonResponse(0, ""),
+		Response: utils.NewCommonResponse(0, ""),
 	})
 }

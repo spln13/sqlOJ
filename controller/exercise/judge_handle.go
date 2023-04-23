@@ -6,7 +6,6 @@ import (
 	"log"
 	"reflect"
 	"sqlOJ/cache"
-	"sqlOJ/common"
 	"sqlOJ/model"
 	"sync"
 	"time"
@@ -44,7 +43,7 @@ func exerciseJudge(userID, userType, exerciseID int64, submitTime time.Time, ans
 	// 获取参数
 
 	// 获取用户名与题目名
-	username := common.QueryUsername(userID, userType)
+	username := utils.QueryUsername(userID, userType)
 	exerciseName := model.NewExerciseContentFlow().QueryExerciseNameByExerciseID(exerciseID)
 	equal, getType := checkSqlSyntax(answer, expectedAnswer)
 	if equal { // 和标准答案相等，返回正确
@@ -98,7 +97,7 @@ func contestJudge(userID, userType, exerciseID, contestID int64, submitTime time
 	// 获取参数
 
 	// 获取用户名, 题目名, 竞赛名
-	username := common.QueryUsername(userID, userType)
+	username := utils.QueryUsername(userID, userType)
 	exerciseName := model.NewExerciseContentFlow().QueryExerciseNameByExerciseID(exerciseID)
 	contestName := model.NewContestFlow().GetContestNameByID(contestID)
 	equal, getType := checkSqlSyntax(answer, expectedAnswer)

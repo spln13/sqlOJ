@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
-	"sqlOJ/common"
 	"sqlOJ/model"
 	"strconv"
 )
@@ -21,7 +20,7 @@ type OneExercise struct {
 
 type OneExerciseResponse struct {
 	OneExercise
-	common.Response
+	utils.Response
 }
 
 // GetOneExerciseHandle 获取当前题目的题目信息
@@ -32,7 +31,7 @@ func GetOneExerciseHandle(context *gin.Context) {
 		log.Println(err)
 		context.JSON(http.StatusInternalServerError, OneExerciseResponse{
 			OneExercise: OneExercise{},
-			Response:    common.NewCommonResponse(1, "解析题目信息错误"),
+			Response:    utils.NewCommonResponse(1, "解析题目信息错误"),
 		})
 		return
 	}
@@ -40,13 +39,13 @@ func GetOneExerciseHandle(context *gin.Context) {
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, OneExerciseResponse{
 			OneExercise: OneExercise{},
-			Response:    common.NewCommonResponse(1, err.Error()),
+			Response:    utils.NewCommonResponse(1, err.Error()),
 		})
 		return
 	}
 	publisherID := exerciseContent.PublisherID
 	publisherType := exerciseContent.PublisherType
-	publisherName := common.QueryUsername(publisherID, publisherType)
+	publisherName := utils.QueryUsername(publisherID, publisherType)
 	oneExercise := OneExercise{
 		Description:   exerciseContent.Description,
 		Grade:         exerciseContent.Grade,
@@ -58,6 +57,6 @@ func GetOneExerciseHandle(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, OneExerciseResponse{
 		OneExercise: oneExercise,
-		Response:    common.NewCommonResponse(0, ""),
+		Response:    utils.NewCommonResponse(0, ""),
 	})
 }

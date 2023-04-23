@@ -3,7 +3,6 @@ package submission
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"sqlOJ/common"
 	"sqlOJ/model"
 	"strconv"
 	"time"
@@ -11,7 +10,7 @@ import (
 
 type ContestGetOneExerciseSubmissionResponse struct {
 	OneExerciseSubmissionList []OneExerciseSubmission `json:"list"`
-	common.Response
+	utils.Response
 }
 
 type OneExerciseSubmission struct {
@@ -34,7 +33,7 @@ func ContestGetOneExerciseHandle(context *gin.Context) {
 	if err1 != nil || err2 != nil {
 		context.JSON(http.StatusBadRequest, ContestGetOneExerciseSubmissionResponse{
 			OneExerciseSubmissionList: nil,
-			Response:                  common.NewCommonResponse(1, "请求参数错误"),
+			Response:                  utils.NewCommonResponse(1, "请求参数错误"),
 		})
 		return
 	}
@@ -42,7 +41,7 @@ func ContestGetOneExerciseHandle(context *gin.Context) {
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, ContestGetOneExerciseSubmissionResponse{
 			OneExerciseSubmissionList: nil,
-			Response:                  common.NewCommonResponse(1, err.Error()),
+			Response:                  utils.NewCommonResponse(1, err.Error()),
 		})
 		return
 	}
@@ -63,7 +62,7 @@ func ContestGetOneExerciseHandle(context *gin.Context) {
 	}
 	context.JSON(http.StatusInternalServerError, ContestGetOneExerciseSubmissionResponse{
 		OneExerciseSubmissionList: oneExerciseSubmissionList,
-		Response:                  common.NewCommonResponse(0, ""),
+		Response:                  utils.NewCommonResponse(0, ""),
 	})
 	return
 }

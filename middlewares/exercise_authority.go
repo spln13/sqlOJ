@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"sqlOJ/cache"
-	"sqlOJ/common"
 )
 
 // CheckExerciseAuthority 是一个用于检测用户是否有权限访问题库中的当前题目的中间件
@@ -16,14 +15,14 @@ func CheckExerciseAuthority() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		userID, ok := context.MustGet("user_id").(int64)
 		if !ok {
-			context.JSON(http.StatusBadRequest, common.NewCommonResponse(403, "用户token错误"))
+			context.JSON(http.StatusBadRequest, utils.NewCommonResponse(403, "用户token错误"))
 			context.Abort()
 			return
 		}
 		exerciseIDStr := context.Query("exercise_id")
 		contestIDStrList, err := cache.GetExerciseSetMember(exerciseIDStr)
 		if err != nil {
-			context.JSON(http.StatusInternalServerError, common.NewCommonResponse(403, err.Error()))
+			context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(403, err.Error()))
 			context.Abort()
 			return
 		}
@@ -31,20 +30,20 @@ func CheckExerciseAuthority() gin.HandlerFunc {
 			code, err := cache.CheckUserIDInContest(userID, contestIDStr)
 			// code: 0->错误; 1->该键值不存在; 2->集合中存在; 3->集合中不存在
 			if err != nil {
-				context.JSON(http.StatusInternalServerError, common.NewCommonResponse(403, err.Error()))
+				context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(403, err.Error()))
 				context.Abort()
 				return
 			}
 			if code == 1 { // 键值不存在, 即竞赛已经结束
 				// 删除exercise对应Set中的contestID
 				if err := cache.DeleteContestIDInExercise(exerciseIDStr, contestIDStr); err != nil {
-					context.JSON(http.StatusInternalServerError, common.NewCommonResponse(403, err.Error()))
+					context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(403, err.Error()))
 					context.Abort()
 					return
 				}
 				continue
 			} else if code == 2 { // 集合中存在, 即学生此刻参与的竞赛有引用此题目
-				context.JSON(http.StatusOK, common.NewCommonResponse(403, "竞赛进行中"))
+				context.JSON(http.StatusOK, utils.NewCommonResponse(403, "竞赛进行中"))
 				context.Abort()
 				return
 			}
@@ -60,7 +59,7 @@ func CheckContestAuthority() gin.HandlerFunc {
 		userID, ok1 := context.MustGet("user_id").(int64)
 		userType, ok2 := context.MustGet("user_type").(int64)
 		if !ok1 || !ok2 {
-			context.JSON(http.StatusBadRequest, common.NewCommonResponse(403, "用户token错误"))
+			context.JSON(http.StatusBadRequest, utils.NewCommonResponse(403, "用户token错误"))
 			context.Abort()
 			return
 		}
@@ -73,14 +72,14 @@ func CheckContestAuthority() gin.HandlerFunc {
 		}
 		code, err := cache.CheckUserIDInContest(userID, exerciseIDStr)
 		if err != nil {
-			context.JSON(http.StatusInternalServerError, common.NewCommonResponse(403, err.Error()))
+			context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(403, err.Error()))
 			context.Abort()
 			return
 		}
 		// code: 0->错误; 1->该键值不存在; 2->集合中存在; 3->集合中不存在
 		fmt.Println(code)
 		if code != 2 {
-			context.JSON(http.StatusOK, common.NewCommonResponse(403, "您无权访问"))
+			context.JSON(http.StatusOK, utils.NewCommonResponse(403, "您无权访问"))
 			context.Abort()
 			return
 		}

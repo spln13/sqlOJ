@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
-	"sqlOJ/common"
 	"sqlOJ/model"
 	"strconv"
 	"time"
@@ -12,7 +11,7 @@ import (
 
 type AllOneResponse struct {
 	List []AllOne `json:"list"`
-	common.Response
+	utils.Response
 }
 
 type AllOne struct {
@@ -33,7 +32,7 @@ func GetAllOneHandle(context *gin.Context) {
 		log.Println(err)
 		context.JSON(http.StatusInternalServerError, AllAllResponse{
 			List:     nil,
-			Response: common.NewCommonResponse(1, "解析题目信息错误"),
+			Response: utils.NewCommonResponse(1, "解析题目信息错误"),
 		})
 		return
 	}
@@ -42,7 +41,7 @@ func GetAllOneHandle(context *gin.Context) {
 	for _, submitHistory := range submitHistoryArray {
 		userID := submitHistory.UserID
 		userType := submitHistory.UserType
-		username := common.QueryUsername(userID, userType)
+		username := utils.QueryUsername(userID, userType)
 		allOne := AllOne{
 			Answer:     submitHistory.StudentAnswer,
 			Status:     submitHistory.Status,
@@ -56,6 +55,6 @@ func GetAllOneHandle(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, AllOneResponse{
 		List:     AllOneList,
-		Response: common.NewCommonResponse(0, ""),
+		Response: utils.NewCommonResponse(0, ""),
 	})
 }
