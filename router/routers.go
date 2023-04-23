@@ -6,6 +6,7 @@ import (
 	"sqlOJ/cache"
 	"sqlOJ/controller/admin_account"
 	"sqlOJ/controller/class"
+	"sqlOJ/controller/common"
 	"sqlOJ/controller/contest"
 	"sqlOJ/controller/exercise"
 	"sqlOJ/controller/ranking"
@@ -150,5 +151,6 @@ func InitServer() *gin.Engine {
 		contestGroup.GET("/get/all-exercise/", middlewares.StudentJWTMiddleware(), contest.GetAllExerciseHandle) // test获取竞赛中所有的题目
 		//contestGroup.GET("/get/all-exercise/", middlewares.StudentJWTMiddleware(), middlewares.CheckContestAuthority(), contest.GetAllExerciseHandle) // 获取竞赛中所有的题目
 	}
+	server.GET("/api/get-type/", middlewares.StudentJWTMiddleware(), common.GetTypeHandle) // 获取用户类型
 	return server
 }
