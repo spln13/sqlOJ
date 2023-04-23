@@ -28,5 +28,28 @@ window.onload = () => {
             '      </div>' +
             '    </div>';
     }
+    const url = '/api/get-type/';
+    // 获取所有题目信息
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+        .then(response => response.json())
+        .then(data => {
+            const status_code = data['status_code'];
+            const status_msg = data['status_msg'];
+            if (status_code !== 0) {    // token出错
+                window.location = '/';
+                return
+            }
+            const type = data['type']
+            if (type < 2) { // 学生
+                window.location = '/';
+            }
+        })
+        .catch(error => console.error(error));
+
 }
 
