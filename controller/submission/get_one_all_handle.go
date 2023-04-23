@@ -25,8 +25,9 @@ type OneAll struct {
 
 // GetOneAllHandle 查询当前用户所有提交记录
 func GetOneAllHandle(context *gin.Context) {
-	userID, ok := context.MustGet("user_id").(int64)
-	if !ok {
+	userID, ok1 := context.MustGet("user_id").(int64)
+	userType, ok2 := context.MustGet("user_type").(int64)
+	if !ok1 || !ok2 {
 		context.JSON(http.StatusInternalServerError, OneOneResponse{
 			List:       nil,
 			StatusCode: 1,
@@ -34,7 +35,7 @@ func GetOneAllHandle(context *gin.Context) {
 		})
 		return
 	}
-	submitHistoryArray, err := model.NewSubmitHistoryFlow().QueryThisUserSubmitHistory(userID)
+	submitHistoryArray, err := model.NewSubmitHistoryFlow().QueryThisUserSubmitHistory(userID, userType)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, OneOneResponse{
 			List:       nil,

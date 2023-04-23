@@ -29,7 +29,7 @@ func SetExerciseJudgeStatusPending(userID, userType, exerciseID int64, submitTim
 	return nil
 }
 
-// SetExerciseJudgeStatusJudging 将cache对应Hash表项中的status设置为2(judging)
+// SetExerciseJudgeStatusJudging 将cache对应Hash表项中的status设置为5(judging)
 func SetExerciseJudgeStatusJudging(userID, userType, exerciseID int64, submitTime time.Time, wg *sync.WaitGroup) {
 	key := fmt.Sprintf("%d:%d:%d:%d", userID, userType, exerciseID, submitTime.Unix())
 	err := rdb.HSet(ctx, key, "status", 5).Err() // judging中状态码是5

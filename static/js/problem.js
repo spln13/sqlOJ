@@ -14,6 +14,11 @@ const getCookie = (cname) => {
     return "";
 }
 
+const modifySubmissionButton = (exercise_id) => {
+    let submissionButton = document.getElementById('submission-button');
+    submissionButton.innerHTML = '<a class="item" href="/exercise/my-submission/' + exercise_id + '">我的提交</a>';
+}
+
 window.onload = index => {
     // 查看登录状态，获取用户名
     // 获取所有cookie
@@ -21,7 +26,7 @@ window.onload = index => {
     if (username !== "") {
         // 用户已登录，将用户名显示在页面右上角
         document.getElementById("button_username").innerHTML = '<div class="ui dropdown simple item">\n' +
-            '      <div class="text">spln13</div>' +
+            '      <div class="text">' + username + '</div>' +
             '      <i class="dropdown icon"></i>' +
             '      <div class="menu">' +
             '        <a class="item" href="/submission/">提交记录</a>' +
@@ -36,6 +41,7 @@ window.onload = index => {
     // 分割路径并获取最后一个部分
     const parts = path.split('/');
     const exerciseID = parts[parts.length - 1];
+    modifySubmissionButton(exerciseID)
     const url = '/api/exercise/get/one?exercise_id=' + exerciseID;
     fetch(url, {
         method: 'GET',

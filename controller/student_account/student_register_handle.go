@@ -29,6 +29,16 @@ func StudentRegisterHandle(context *gin.Context) {
 		context.JSON(http.StatusOK, common.NewCommonResponse(1, "用户名已存在"))
 		return
 	}
+	// 再次查询此邮箱是否已经被注册过
+	exist, err = model.NewStudentAccountFlow().QueryStudentExistByEmail(email)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, common.NewCommonResponse(1, err.Error()))
+		return
+	}
+	if exist {
+		context.JSON(http.StatusOK, common.NewCommonResponse(1, "邮箱已被注册"))
+		return
+	}
 	ok, err = cache.VerifyEmailCode(email, code)
 	if !ok {
 		context.JSON(http.StatusOK, common.NewCommonResponse(1, err.Error()))

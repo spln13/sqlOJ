@@ -16,79 +16,81 @@
 
 </head>
 <body>
-    <div class="ui top fixed menu">
-        <div class="item" style="font-size: 18px">
-            BUCT SQL OJ
+<div class="ui top fixed menu">
+    <div class="item" style="font-size: 18px">
+        BUCT SQL OJ
+    </div>
+    <a class="item" href="/">
+        <img src="/static/icon/主页.svg" style="height: 15px;" alt="">
+        首页
+    </a>
+    <a class="item" href="/exercise/">
+        <img src="/static/icon/题目.svg" style="height: 15px;" alt="">
+        题目
+    </a>
+    <a class="item" href="/contest/">
+        <img src="/static/icon/竞赛.svg" style="height: 15px;" alt="">
+        竞赛
+    </a>
+    <a class="item" href="/ranking/">
+        <img src="/static/icon/排行榜.svg" style="height: 15px;" alt="">
+        排行榜
+    </a>
+    <div class="right menu" style="margin-right: 100px">
+        <div class="item">
+            <div class="ui icon input">
+                <input type="text" placeholder="搜索...">
+            </div>
         </div>
-        <a class="item" href="/">
-            <img src="/static/icon/主页.svg" style="height: 15px;" alt="">
-            首页
-        </a>
-        <a class="item" href="/exercise/">
-            <img src="/static/icon/题目.svg" style="height: 15px;" alt="">
-            题目
-        </a>
-        <a class="item" href="/contest/">
-            <img src="/static/icon/竞赛.svg" style="height: 15px;" alt="">
-            竞赛
-        </a>
-        <a class="item" href="/ranking/">
-            <img src="/static/icon/排行榜.svg" style="height: 15px;" alt="">
-            排行榜
-        </a>
-        <div class="right menu" style="margin-right: 100px">
-            <div class="item">
-                <div class="ui icon input">
-                    <input type="text" placeholder="搜索...">
-                </div>
-            </div>
-            <div class="item" id="button_username">
-                <div class="ui primary button" onclick="location.href='/login/'">登入</div>
-            </div>
+        <div class="item" id="button_username">
+            <div class="ui primary button" onclick="location.href='/login/'">登入</div>
         </div>
     </div>
-    <div id="blank"></div>
+</div>
+<div id="blank"></div>
 
-    <div class="ui main container">
-        <h1 class="ui header" id="title">1. 测试题目</h1>
-        <div class="ui text stackable menu">
+<div class="ui main container">
+    <h1 class="ui header" id="title">1. 测试题目</h1>
+    <div class="ui text stackable menu">
+        <div>
             <a class="active item" href="#">题面</a>
-            <a class="item" href="#">我的提交</a>
-            <a class="item" href="#">所有提交</a>
         </div>
-        <div class="ui grid">
-            <div class="eleven wide column">
-                <div class="passage" id="content">
-                </div>
-                <div class="code">
-                    <h3>MySQL代码</h3>
-                    <textarea id="sql-input" class="sql-input"></textarea>
-                    <div class="ui animated fade button" tabindex="0" id="submit_button">
-                        <div class="visible content">提交!</div>
-                        <div class="hidden content">GO!</div>
-                    </div>
+        <div id="submission-button">
+            <a class="item" href="#">我的提交</a>
+        </div>
+    </div>
+    <div class="ui grid">
+        <div class="eleven wide column">
+            <div class="passage" id="content">
+            </div>
+            <div class="code">
+                <h3>MySQL代码</h3>
+                <textarea id="sql-input" class="sql-input"></textarea>
+                <div class="ui animated fade button" tabindex="0" id="submit_button">
+                    <div class="visible content">提交!</div>
+                    <div class="hidden content">GO!</div>
                 </div>
             </div>
-            <div class="five wide column">
-                <div class="ui fluid card">
-                    <div class="content">
-                        <div class="description" id="card_top">
-                            <p><b>503 份提交通过</b>，共有 4344 份提交。</p>
-                            <p><b>4.0</b> 积分奖励。</p>
-                            <p><b>难度</b>: medium。</p>
-                        </div>
+        </div>
+        <div class="five wide column">
+            <div class="ui fluid card">
+                <div class="content">
+                    <div class="description" id="card_top">
+                        <p><b>503 份提交通过</b>，共有 4344 份提交。</p>
+                        <p><b>4.0</b> 积分奖励。</p>
+                        <p><b>难度</b>: medium。</p>
                     </div>
-                    <div class="content">
-                        <div class="description" id="card_bottom">
-                            <p><b>创建于</b>: 2023年4月7日。</p>
-                            <p><b>出题人</b>: Genesis。</p>
-                        </div>
+                </div>
+                <div class="content">
+                    <div class="description" id="card_bottom">
+                        <p><b>创建于</b>: 2023年4月7日。</p>
+                        <p><b>出题人</b>: Genesis。</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
+</div>
 
 
 </body>
@@ -121,12 +123,15 @@
     .code {
         margin-top: 30px;
     }
+
     .code #submit_button {
         margin-top: 20px;
     }
+
     #button_username {
         padding: 0;
     }
+
     .publisher_3 {
         /*管理员*/
         color: red;
@@ -135,9 +140,11 @@
     .publisher_2 {
         color: purple;
     }
+
     .publisher_1 {
         color: #0d6efd;
     }
+
     .grade_easy {
         color: #52B5A3;
     }

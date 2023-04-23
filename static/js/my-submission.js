@@ -15,7 +15,7 @@ const getCookie = (cname) => {
 }
 
 
-let createBox = (id, submission_id,exercise_id, exercise_name, submit_time, status) => {
+let createBox = (id, submission_id,exercise_id, exercise_name, submit_time, status, on_chain) => {
     let mother_box = document.querySelector("#submission");
     let box = document.createElement('tr');
     mother_box.appendChild(box);
@@ -27,9 +27,12 @@ let createBox = (id, submission_id,exercise_id, exercise_name, submit_time, stat
     else if (status === 3) {
         status_content = 'RE'
     }
-
+    let on_chain_content = '未上链';
+    if (on_chain === 1) {
+        on_chain_content = '已上链';
+    }
     box.innerHTML = '<tr><td>' + id + '</td><td><a href="/problem/' + exercise_id + '">' + exercise_name + '</a></td><td>' + submit_time +
-        '</td><td><a href="/submission/' + submission_id + '">查看</a></td>' + '<td class="' + status_class + '">' + status_content + '</td></tr>';
+        '</td><td><a href="/submission/' + submission_id + '">查看</a></td><td>' + on_chain_content + '</td><td class="' + status_class + '">' + status_content + '</td></tr>';
 }
 
 window.onload = () => {
@@ -39,7 +42,7 @@ window.onload = () => {
     if (username !== "") {
         // 用户已登录，将用户名显示在页面右上角
         document.getElementById("button_username").innerHTML = '<div class="ui dropdown simple item">\n' +
-            '      <div class="text">spln13</div>' +
+            '      <div class="text">' + username + '</div>' +
             '      <i class="dropdown icon"></i>' +
             '      <div class="menu">' +
             '        <a class="item" href="/submission/">提交记录</a>' +
@@ -72,7 +75,8 @@ window.onload = () => {
                 const exercise_name = list[i]['exercise_name'];
                 const submit_time = list[i]['submit_time'];
                 const status = list[i]['status'];
-                createBox(i + 1, submission_id, exercise_id, exercise_name, submit_time, status);
+                const on_chain = list[i]['on_chain'];
+                createBox(i + 1, submission_id, exercise_id, exercise_name, submit_time, status, on_chain);
             }
         })
         .catch(error => console.error(error));

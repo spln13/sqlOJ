@@ -14,6 +14,7 @@ type SubmitHistory struct {
 	ExerciseID    int64
 	UserType      int64
 	Status        int
+	OnChain       int // 0: 待上链; 1: 已上链
 	Username      string
 	ExerciseName  string
 	StudentAnswer string
@@ -60,7 +61,7 @@ func (*SubmitHistoryFlow) InsertSubmitHistory(userID, exerciseID, userType int64
 // QueryAllSubmitHistory 查询所有的提交记录
 func (*SubmitHistoryFlow) QueryAllSubmitHistory() ([]SubmitHistory, error) {
 	var submitHistory []SubmitHistory
-	if err := GetSysDB().Model(&SubmitHistory{}).Omit("create_at", "update_at").Find(&submitHistory).Error; err != nil {
+	if err := GetSysDB().Model(&SubmitHistory{}).Omit("create_at", "update_at").Order("id desc").Find(&submitHistory).Error; err != nil {
 		log.Println(err)
 		return nil, errors.New("查询提交记录错误")
 	}
@@ -80,16 +81,16 @@ func (*SubmitHistoryFlow) QueryThisExerciseSubmitHistory(exerciseID int64) ([]Su
 // QueryThisExerciseUserSubmitHistory 查询userID, userType, exerciseID对应的提交记录
 func (*SubmitHistoryFlow) QueryThisExerciseUserSubmitHistory(userID int64, userType int64, exerciseID int64) ([]SubmitHistory, error) {
 	var submitHistory []SubmitHistory
-	if err := GetSysDB().Model(&SubmitHistory{}).Select("student_answer", "status", "submit_time").Where("user_id = ? and exercise_id = ? and user_type = ?", userID, exerciseID, userType).Find(&submitHistory).Error; err != nil {
+	if err := GetSysDB().Model(&SubmitHistory{}).Select("student_answer", "status", "submit_time", "on_chain").Where("user_id = ? and exercise_id = ? and user_type = ?", userID, exerciseID, userType).Order("id desc").Find(&submitHistory).Error; err != nil {
 		log.Println(err)
 		return nil, errors.New("查询提交记录错误")
 	}
 	return submitHistory, nil
 }
 
-func (*SubmitHistoryFlow) QueryThisUserSubmitHistory(userID int64) ([]SubmitHistory, error) {
+func (*SubmitHistoryFlow) QueryThisUserSubmitHistory(userID, userType int64) ([]SubmitHistory, error) {
 	var submitHistory []SubmitHistory
-	if err := GetSysDB().Model(&SubmitHistory{}).Select("id", "student_answer", "exercise_id", "status", "submit_time", "user_agent").Where("user_id = ?", userID).Find(&submitHistory).Error; err != nil {
+	if err := GetSysDB().Model(&SubmitHistory{}).Select("id", "student_answer", "exercise_id", "status", "submit_time", "user_agent", "on_chain").Where("user_id = ? and user_type = ?", userID, userType).Order("id desc").Find(&submitHistory).Error; err != nil {
 		log.Println(err)
 		return nil, errors.New("查询提交记录错误")
 	}

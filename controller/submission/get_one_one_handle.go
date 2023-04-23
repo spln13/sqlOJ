@@ -20,6 +20,7 @@ type OneOneResponse struct {
 type OneOne struct {
 	Answer     string    `json:"answer"`
 	Status     int       `json:"status"`
+	OnChain    int       `json:"on_chain"`
 	SubmitTime time.Time `json:"submit_time"`
 }
 
@@ -69,6 +70,7 @@ func GetOneOneHandle(context *gin.Context) {
 		}
 		oneOne := OneOne{
 			Answer:     "",
+			OnChain:    0,
 			Status:     valueInt,
 			SubmitTime: submitTime,
 		}
@@ -88,6 +90,7 @@ func GetOneOneHandle(context *gin.Context) {
 		oneOne := OneOne{
 			Answer:     submitHistory.StudentAnswer,
 			Status:     submitHistory.Status,
+			OnChain:    submitHistory.OnChain,
 			SubmitTime: submitHistory.SubmitTime,
 		}
 		OneOneList = append(OneOneList, oneOne)

@@ -21,7 +21,7 @@ window.onload = index => {
     if (username !== "") {
         // 用户已登录，将用户名显示在页面右上角
         document.getElementById("button_username").innerHTML = '<div class="ui dropdown simple item">\n' +
-            '      <div class="text">spln13</div>' +
+            '      <div class="text">' + username + '</div>' +
             '      <i class="dropdown icon"></i>' +
             '      <div class="menu">' +
             '        <a class="item" href="/submission/">提交记录</a>' +

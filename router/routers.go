@@ -66,6 +66,9 @@ func InitServer() *gin.Engine {
 	server.GET("/contest/:contest_id", func(context *gin.Context) {
 		context.HTML(http.StatusOK, "contest-problem-list.html", "")
 	})
+	server.GET("/exercise/my-submission/:exercise_id", func(context *gin.Context) {
+		context.HTML(http.StatusOK, "exercise-my-submission.html", "")
+	})
 	// api接口
 	adminGroup := server.Group("/api/admin")
 	{
