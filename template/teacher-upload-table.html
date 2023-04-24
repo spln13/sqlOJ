@@ -43,6 +43,23 @@
 </div>
 <div id="blank"></div>
 
+<div class="ui celled table">
+    <div class="ui form">
+        <div class="field">
+            <label>上传sql文件(每次只支持上传一张表)</label>
+            <input type="file" id="sql-file">
+        </div>
+        <div class="field">
+            <label>表名</label>
+            <input type="text" name="table-name" placeholder="表名" id="table-name">
+        </div>
+        <div class="field">
+            <label>描述</label>
+            <textarea id="description"></textarea>
+        </div>
+        <button class="ui button" type="submit" id="submit-button">Submit</button>
+    </div>
+</div>
 
 </body>
 
@@ -58,6 +75,13 @@
 
     p {
         font-size: 17px;
+    }
+
+    .ui .form {
+        width: 80%;
+        margin-left: 100px;
+        margin-bottom: 50px;
+        margin-top: 50px;
     }
 </style>
 

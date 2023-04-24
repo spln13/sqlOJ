@@ -51,5 +51,37 @@ window.onload = () => {
         })
         .catch(error => console.error(error));
 
+    const submitButton = document.getElementById('submit-button');
+    const fileStruct = document.getElementById('sql-file');
+    const tableNameStruct = document.getElementById('table-name');
+    const descriptionStruct = document.getElementById('description');
+    submitButton.addEventListener('click', function (e) {
+        e.preventDefault();
+        const sqlFile = fileStruct.files[0];
+        const tableName = tableNameStruct.value;
+        const description = descriptionStruct.value;
+        const formData = new FormData();
+        formData.append('name', tableName);
+        formData.append('sql_file', sqlFile);
+        formData.append('description', description);
+        fetch('/api/exercise/upload/table/', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                const status_code = data['status_code'];
+                const status_msg = data['status_msg'];
+                if (status_code !== 0) {
+                    alert(status_msg);
+                }
+                else {
+                    alert("上传成功");
+                    window.location.href = '/teacher/upload-table/';
+                }
+            })
+            .catch(error => console.log(error))
+    })
+
 }
 
