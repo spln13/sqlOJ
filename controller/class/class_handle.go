@@ -10,20 +10,9 @@ import (
 )
 
 func CreateClassHandle(context *gin.Context) {
-	userID, ok := context.MustGet("user_id").(int64)
 	className := context.Query("name")
-	teacherUsername := context.Query("username")
-	if !ok {
-		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, "解析用户信息错误"))
-		return
-	}
 	// 根据teacherUsername即教职工号查询对应教职工真实姓名
-	realName, err := model.NewTeacherAccountFlow().QueryTeacherRealNameByUsername(teacherUsername)
-	if err != nil {
-		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, err.Error()))
-		return
-	}
-	if err := model.NewClassFlow().InsertClass(className, teacherUsername, realName, userID); err != nil {
+	if err := model.NewClassFlow().InsertClass(className); err != nil {
 		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, err.Error()))
 		return
 	}
@@ -37,6 +26,8 @@ func AddStudentToClassHandle(context *gin.Context) {
 		intVal, err := strconv.ParseInt(val, 10, 64)
 		if err != nil {
 			log.Println(err)
+			context.JSON(http.StatusBadRequest, utils.NewCommonResponse(1, "请求参数错误"))
+			return
 		}
 		studentIDList = append(studentIDList, intVal)
 	}
@@ -46,10 +37,17 @@ func AddStudentToClassHandle(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, "获取classID"))
 		return
 	}
+	studentCount := len(studentIDList)
+	err = model.NewClassFlow().IncreaseStudentCountInClass(classID, studentCount)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, err.Error()))
+		return
+	}
 	// 将班级班级信息更新到学生表中
 	if err := model.NewStudentAccountFlow().UpdateStudentsClass(classID, studentIDList); err != nil {
 		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, err.Error()))
 		return
 	}
 
+	context.JSON(http.StatusOK, utils.NewCommonResponse(0, ""))
 }

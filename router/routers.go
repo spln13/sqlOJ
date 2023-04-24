@@ -110,7 +110,8 @@ func InitServer() *gin.Engine {
 		studentGroup.POST("/login/", middlewares.PasswordEncryptionMiddleware(), student_account.StudentLoginHandle)                                                           // 学生登录接口
 		studentGroup.POST("/register/", middlewares.PasswordEncryptionMiddleware(), student_account.StudentRegisterHandle)                                                     // 学生注册接口
 		studentGroup.POST("/change-password/", middlewares.StudentJWTMiddleware(), middlewares.TwoPasswordEncryptionMiddleware(), student_account.StudentChangePasswordHandle) // 学生改密码接口
-		studentGroup.POST("/email/send-code/", student_account.SendCodeHandle)
+		studentGroup.POST("/email/send-code/", student_account.SendCodeHandle)                                                                                                 // 发送验证码
+		studentGroup.GET("/get/all-students/", middlewares.TeacherJWTMiddleware(), student_account.GetAllStudentsHandle)                                                       // 获取所有学生信息
 	}
 	classGroup := server.Group("/api/class")
 	{

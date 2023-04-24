@@ -151,3 +151,13 @@ func (*StudentAccountFlow) QueryStudentIDByClassID(classIDList []int64) ([]int64
 	}
 	return studentIDList, nil
 }
+
+func (*StudentAccountFlow) QueryAllStudent() ([]StudentAccount, error) {
+	var studentAccountDAOList []StudentAccount
+	err := GetSysDB().Model(&StudentAccount{}).Omit("password", "created_at", "updated_at").Find(&studentAccountDAOList).Error
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("查询学生信息错误")
+	}
+	return studentAccountDAOList, nil
+}
