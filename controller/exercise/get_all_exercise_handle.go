@@ -73,7 +73,7 @@ func GetAllExerciseWithTokenHandle(context *gin.Context) {
 		return
 	}
 	var AllExerciseWithTokenList []AllExercise
-	problemStatusMap, err := model.NewUserProblemStatusFlow().QueryUserProblemStatus(userID, userType)
+	problemStatusMap, err := model.NewUserProblemStatusFlow().QueryUserAllProblemStatus(userID, userType)
 	// 获取用户所有提交过题目的状态
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, AllExerciseResponse{

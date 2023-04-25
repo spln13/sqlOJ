@@ -71,8 +71,8 @@ func (*UserProblemStatusFlow) ModifyUserProblemStatus(userID, exerciseID, userTy
 	}
 }
 
-// QueryUserProblemStatus 查询用户对应所有的做过的题以及状态
-func (*UserProblemStatusFlow) QueryUserProblemStatus(userID, userType int64) (map[int64]int, error) {
+// QueryUserAllProblemStatus 查询用户对应所有的做过的题以及状态
+func (*UserProblemStatusFlow) QueryUserAllProblemStatus(userID, userType int64) (map[int64]int, error) {
 	var userProblemStatusMinList []UserProblemStatusMin
 	err := GetSysDB().Model(&UserProblemStatus{}).Where("user_id = ? and user_type = ?", userID, userType).Find(&userProblemStatusMinList).Error
 	if err != nil {
@@ -84,4 +84,20 @@ func (*UserProblemStatusFlow) QueryUserProblemStatus(userID, userType int64) (ma
 		problemStatusMap[userProblemStatusMin.ExerciseID] = userProblemStatusMin.Status
 	}
 	return problemStatusMap, nil
+}
+
+// QueryUserProblemStatus 查询当前用户在当前题目的提交状态0:err; 1: ac; 2: wa; 3: re; 4: 未提交过
+func (*UserProblemStatusFlow) QueryUserProblemStatus(userID, userType, exerciseID int64) int {
+	var userProblemStatusDAO UserProblemStatus
+	err := GetSysDB().Model(&UserProblemStatus{}).Select("id", "status").
+		Where("user_id = ? and user_type = ? and exercise_id = ?", userID, userType, exerciseID).
+		Find(&userProblemStatusDAO).Error
+	if err != nil {
+		log.Println(err)
+		return 0
+	}
+	if userProblemStatusDAO.ID == 0 { // 未提交过
+		return 4
+	}
+	return userProblemStatusDAO.Status
 }

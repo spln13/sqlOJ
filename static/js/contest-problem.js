@@ -31,11 +31,12 @@ window.onload = index => {
             '      </div>' +
             '    </div>';
     }
-    // 获取当前页面的路径
+    // 获取当前页面的路径, 竞赛中题目的url: /contest/123/problem/123
     const path = window.location.pathname;
     // 分割路径并获取最后一个部分
     const parts = path.split('/');
     const exerciseID = parts[parts.length - 1];
+    const contestID = parts[parts.length - 3];
     const url = '/api/exercise/get/one?exercise_id=' + exerciseID;
     fetch(url, {
         method: 'GET',
@@ -88,27 +89,30 @@ window.onload = index => {
     submitButton.addEventListener("click", function (e) {
         e.preventDefault();
         const sqlInputValue = sqlEditor.getValue();
-        console.log("input value: ", sqlInputValue);
         const formData = new FormData;
         formData.append("exercise_id", exerciseID);
+        formData.append("contest_id", contestID);
         formData.append("answer", sqlInputValue);
-        fetch('/api/exercise/submit/', {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => response.json())
-            .then(data => {
-                const status_code = data['status_code'];
-                const status_msg = data['status_msg'];
-                if (status_code !== 0) {
-                    alert(status_msg)
-                }
-                else {
-                    alert("提交成功")
-                    // window.location.href = '/'  // FIXME: 应跳转到提交记录页面
-                }
-            })
-            .catch(error => console.log(error))
+        console.log("exercise_id", exerciseID);
+        console.log("contest_id", contestID);
+        console.log("answer", sqlInputValue);
+        // fetch('/api/contest/submit/', {
+        //     method: 'POST',
+        //     body: formData
+        // })
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         const status_code = data['status_code'];
+        //         const status_msg = data['status_msg'];
+        //         if (status_code !== 0) {
+        //             alert(status_msg)
+        //         }
+        //         else {
+        //             alert("提交成功")
+        //             // window.location.href = '/'  // FIXME: 应跳转到提交记录页面
+        //         }
+        //     })
+        //     .catch(error => console.log(error))
     })
 }
 

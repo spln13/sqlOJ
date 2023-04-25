@@ -52,6 +52,11 @@ func exerciseJudge(userID, userType, exerciseID int64, submitTime time.Time, ans
 		// 插入做题记录表
 		model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, username, exerciseName, submitTime)
 		model.NewExerciseContentFlow().IncreasePassCountSubmitCount(exerciseID)
+		grade := model.NewExerciseContentFlow().QueryExerciseGrade(exerciseID) // 获取当前习题的难度
+		thisExerciseStatus := model.NewUserProblemStatusFlow().QueryUserProblemStatus(userID, userType, exerciseID)
+		if thisExerciseStatus > 1 { // wa&re&未提交
+			model.NewScoreRecordFlow().IncreaseScore(userID, userType, grade) // 增加用户的积分
+		}
 		model.NewUserProblemStatusFlow().ModifyUserProblemStatus(userID, exerciseID, userType, status) // 将用户题目提交状态表中的状态设置为正确
 		wg.Wait()                                                                                      // 等待修改cache中状态的goroutine先完成，否则记录将不会被删去
 		cache.DeleteExerciseSubmitStatus(userID, userType, exerciseID, submitTime)
@@ -80,7 +85,10 @@ func exerciseJudge(userID, userType, exerciseID int64, submitTime time.Time, ans
 	if status == 1 { // 答案正确
 		model.NewExerciseContentFlow().IncreasePassCountSubmitCount(exerciseID) // 自增提交总数和通过总数
 		grade := model.NewExerciseContentFlow().QueryExerciseGrade(exerciseID)  // 获取当前习题的难度
-		model.NewScoreRecordFlow().IncreaseScore(userID, userType, grade)       // 增加用户的积分
+		thisExerciseStatus := model.NewUserProblemStatusFlow().QueryUserProblemStatus(userID, userType, exerciseID)
+		if thisExerciseStatus > 1 { // wa&re&未提交
+			model.NewScoreRecordFlow().IncreaseScore(userID, userType, grade) // 增加用户的积分
+		}
 	} else { // 答案错误
 		model.NewExerciseContentFlow().IncreaseSubmitCount(exerciseID) // 自增提交总数
 	}
@@ -112,7 +120,6 @@ func contestJudge(userID, userType, exerciseID, contestID int64, submitTime time
 		cache.DeleteContestSubmitStatus(userID, userType, exerciseID, contestID, submitTime)
 		return
 	}
-	// FIXME: 以下待更改
 	if getType != expectedType { // sql语句类型不等，返回错误
 		//fmt.Println("getType:", getType)
 		//fmt.Println("expectedType:", expectedType)
@@ -182,19 +189,17 @@ func selectJudge(userAnswer, expectedAnswer string, exerciseID int64) int {
 		if err != nil {
 			return 3 // RE
 		}
-		cache.ExpectedResultCache(exerciseID, expectedResult)   // 缓存查询结果
+		cache.ExpectedResultCache(exerciseID, expectedResult)   // 将查询结果写入缓存
 		expectedResultBytes, err = json.Marshal(expectedResult) // 将查询结果转换成[]byte,与缓存中对应
 		if err != nil {
 			log.Println(err)
 			return 3
 		}
 	}
+
 	if reflect.DeepEqual(userResultBytes, expectedResultBytes) { // 判断二者查询结果是否相等
-		// 相等
-		fmt.Println("相等")
 		return 1
 	}
-	// 不等
 	fmt.Println("不等")
 	return 2
 }

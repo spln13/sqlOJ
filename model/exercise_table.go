@@ -76,3 +76,13 @@ func (*ExerciseTableFlow) IncreaseExerciseTableAssociationCount(tableIDList []in
 	}
 	return errReturn
 }
+
+func (*ExerciseTableFlow) QueryAllTable() ([]ExerciseTable, error) {
+	var tableList []ExerciseTable
+	err := GetSysDB().Model(&ExerciseTable{}).Omit("created_at", "updated_at").Find(&tableList).Error
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("获取数据表信息错误")
+	}
+	return tableList, nil
+}

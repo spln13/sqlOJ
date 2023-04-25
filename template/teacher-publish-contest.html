@@ -43,6 +43,33 @@
 </div>
 <div id="blank"></div>
 
+<div class="ui celled table">
+    <div class="ui form">
+        <div class="field">
+            <label>竞赛名</label>
+            <input type="text" name="table-name" placeholder="竞赛名" id="name">
+        </div>
+        <div class="field">
+            <label>竞赛开始时间</label>
+            <input type="datetime-local" id="begin_at">
+        </div>
+        <div class="field">
+            <label>竞赛结束时间</label>
+            <input type="datetime-local" id="end_at">
+        </div>
+        <div class="field">
+            <label>引用题目(输入题目id, 以空格隔开)</label>
+            <input type="text" name="tables" placeholder="题目id" id="problems">
+        </div>
+
+        <div class="field">
+            <label>参与班级(输入班级id, 以空格隔开)</label>
+            <input type="text" name="tables" placeholder="班级id" id="classes">
+        </div>
+        
+        <button class="ui button" type="submit" id="submit-button">Submit</button>
+    </div>
+</div>
 
 
 </body>
@@ -60,6 +87,14 @@
     p {
         font-size: 17px;
     }
+
+    .ui .form {
+        width: 80%;
+        margin-left: 100px;
+        margin-bottom: 50px;
+        margin-top: 50px;
+    }
+
 </style>
 
 </html>

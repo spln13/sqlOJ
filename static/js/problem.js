@@ -110,8 +110,8 @@ window.onload = index => {
                     alert(status_msg)
                 }
                 else {
-                    alert("提交成功")
-                    // window.location.href = '/'  // FIXME: 应跳转到提交记录页面
+                    // alert("提交成功")
+                    window.location.href = '/exercise/my-submission/' + exerciseID  // FIXME: 应跳转到提交记录页面
                 }
             })
             .catch(error => console.log(error))

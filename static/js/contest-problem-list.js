@@ -15,7 +15,7 @@ const getCookie = (cname) => {
 }
 
 
-let createBox = (exercise_id, exercise_name, grade, publisher_name, publisher_type, status) => {
+let createBox = (exercise_id, exercise_name, grade, publisher_name, publisher_type, status, contest_id) => {
     let mother_box = document.querySelector("#exercises");
     let box = document.createElement('tr');
     mother_box.appendChild(box);
@@ -42,7 +42,9 @@ let createBox = (exercise_id, exercise_name, grade, publisher_name, publisher_ty
     else if (status === 3) {
         status_content = 'RE';
     }
-    box.innerHTML = '<tr><td>' + exercise_id + '</td><td><a href="/problem/' + exercise_id + '">' + exercise_name + '</a></td><td class="' + grade_class + '">'
+    // 竞赛中题目的url: /contest/123/problem/123
+    const problem_url = '/contest/' + contest_id + '/problem/' + exercise_id;
+    box.innerHTML = '<tr><td>' + exercise_id + '</td><td><a href="' + problem_url + '">' + exercise_name + '</a></td><td class="' + grade_class + '">'
         + grade_type + '</td><td class="' + publisher_class + '">' + publisher_name + '</td><td class="' + status_class + '">' + status_content + '</td></tr>';
 }
 
@@ -122,7 +124,7 @@ window.onload = index => {
                     const status = list[i]['status'] // int
                     const submit_count = list[i]['submit_count'] // int
                     const pass_count = list[i]['pass_count'] // int
-                    createBox(i + 1, exercise_name, grade, publisher_name, publisher_type, status);
+                    createBox(i + 1, exercise_name, grade, publisher_name, publisher_type, status, contestID);
                 }
             }
         })

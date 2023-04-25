@@ -10,7 +10,7 @@ import (
 	"encoding/json"
 )
 
-// SmartContract provides functions for managing a car
+// SmartContract provides functions for managing a submission record
 type SmartContract struct {
 	contractapi.Contract
 }

@@ -8,8 +8,8 @@
     <title>教师端 BUCT-SQLOJ</title>
     <link rel="stylesheet" href="/static/semantic/semantic.min.css">
     <link href="/static/icon/favicon.ico" rel="shortcut icon">
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="/static/semantic/semantic.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="/static/js/teacher-publish-exercise.js"></script>
 </head>
 <body>
@@ -43,6 +43,36 @@
 </div>
 <div id="blank"></div>
 
+<div class="ui celled table">
+    <div class="ui form">
+        <div class="field">
+            <label>题目名</label>
+            <input type="text" name="table-name" placeholder="题目名" id="name">
+        </div>
+        <div class="field">
+            <label>答案</label>
+            <input type="text" name="table-name" placeholder="答案" id="answer">
+        </div>
+        <div class="field">
+            <label>题面(输入markdown格式)</label>
+            <textarea id="description"></textarea>
+        </div>
+
+        <div class="field">
+            <label>难度</label>
+            <select class="ui dropdown">
+                <option value="1">easy</option>
+                <option value="2">medium</option>
+                <option value="3">hard</option>
+            </select>
+        </div>
+        <div class="field">
+            <label>引用数据表(输入数据表id, 以空格隔开)</label>
+            <input type="text" name="tables" placeholder="数据表id" id="tables">
+        </div>
+        <button class="ui button" type="submit" id="submit-button">Submit</button>
+    </div>
+</div>
 
 
 </body>
@@ -59,6 +89,13 @@
 
     p {
         font-size: 17px;
+    }
+
+    .ui .form {
+        width: 80%;
+        margin-left: 100px;
+        margin-bottom: 50px;
+        margin-top: 50px;
     }
 </style>
 
