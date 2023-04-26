@@ -40,7 +40,7 @@ func (*ContestExerciseStatusFlow) ModifyContestExerciseStatus(userID, userType, 
 		log.Println(err)
 	}
 	if contestExerciseStatusDAO.ID == 0 { // 其中没有记录，插入数据
-		newContestExerciseStatusDAO := ContestExerciseStatus{
+		newContestExerciseStatusDAO := &ContestExerciseStatus{
 			ContestID:  contestID,
 			ExerciseID: exerciseID,
 			UserID:     userID,

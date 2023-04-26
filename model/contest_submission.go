@@ -41,7 +41,7 @@ func NewContestSubmissionFlow() *ContestSubmissionFlow {
 }
 
 func (*ContestSubmissionFlow) InsertContestSubmission(contestID, exerciseID, userID, userType int64, username, userAnswer, exerciseName, userAgent, contestName string, status int, submitTime time.Time) {
-	contestSubmissionDAO := ContestSubmission{
+	contestSubmissionDAO := &ContestSubmission{
 		ExerciseID:   exerciseID,
 		UserID:       userID,
 		UserType:     userType,

@@ -33,6 +33,7 @@ func ContestSubmitHandle(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, "写入判题队列错误"))
 		return
 	}
+	context.JSON(http.StatusOK, utils.NewCommonResponse(0, ""))
 }
 
 // WriteContestMessage 将做题数据写入channel，并且在cache中保存当前提交的判题状态

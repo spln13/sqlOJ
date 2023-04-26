@@ -96,23 +96,22 @@ window.onload = index => {
         console.log("exercise_id", exerciseID);
         console.log("contest_id", contestID);
         console.log("answer", sqlInputValue);
-        // fetch('/api/contest/submit/', {
-        //     method: 'POST',
-        //     body: formData
-        // })
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         const status_code = data['status_code'];
-        //         const status_msg = data['status_msg'];
-        //         if (status_code !== 0) {
-        //             alert(status_msg)
-        //         }
-        //         else {
-        //             alert("提交成功")
-        //             // window.location.href = '/'  // FIXME: 应跳转到提交记录页面
-        //         }
-        //     })
-        //     .catch(error => console.log(error))
+        fetch('/api/contest/submit/', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                const status_code = data['status_code'];
+                const status_msg = data['status_msg'];
+                if (status_code !== 0) {
+                    alert(status_msg)
+                }
+                else {
+                    alert("提交成功")
+                    // window.location.href = '/'  // FIXME: 应跳转到提交记录页面
+                }
+            })
+            .catch(error => console.log(error))
     })
 }
-

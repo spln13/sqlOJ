@@ -121,9 +121,6 @@ func contestJudge(userID, userType, exerciseID, contestID int64, submitTime time
 		return
 	}
 	if getType != expectedType { // sql语句类型不等，返回错误
-		//fmt.Println("getType:", getType)
-		//fmt.Println("expectedType:", expectedType)
-		//fmt.Println("getType != expectedType")
 		status := 2 // 答案错误
 		model.NewContestSubmissionFlow().InsertContestSubmission(contestID, exerciseID, userID, userType, username, answer, exerciseName, userAgent, contestName, status, submitTime)
 		model.NewExerciseContentFlow().IncreaseSubmitCount(exerciseID)
@@ -196,7 +193,6 @@ func selectJudge(userAnswer, expectedAnswer string, exerciseID int64) int {
 			return 3
 		}
 	}
-
 	if reflect.DeepEqual(userResultBytes, expectedResultBytes) { // 判断二者查询结果是否相等
 		return 1
 	}
