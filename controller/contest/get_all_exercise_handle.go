@@ -55,9 +55,9 @@ func GetAllExerciseHandle(context *gin.Context) {
 	}
 	// 先获取竞赛引用的所有题目ID, 再根据题目ID去查询题目相关信息
 	var exerciseInfoList []ExerciseInfo
+	problemStatusMap, _ := model.NewContestExerciseStatusFlow().QueryContestExerciseStatus(userID, userType, contestID)
 	for _, exerciseID := range exerciseIDList {
 		oneExercise, _ := model.NewExerciseContentFlow().GetOneExercise(exerciseID)
-		problemStatusMap, _ := model.NewContestExerciseStatusFlow().QueryContestExerciseStatus(userID, userType, contestID)
 		exerciseInfo := ExerciseInfo{
 			ExerciseID:    oneExercise.ID,
 			ExerciseName:  oneExercise.Name,
