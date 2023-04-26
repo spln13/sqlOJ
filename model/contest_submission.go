@@ -20,6 +20,7 @@ type ContestSubmission struct {
 	UserAgent    string
 	ContestName  string
 	Status       int
+	OnChain      int
 	SubmitTime   time.Time
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
@@ -89,4 +90,17 @@ func (*ContestSubmissionFlow) GetOneExerciseSubmission(contestID, exerciseID int
 		return nil, errors.New("查询竞赛提交错误")
 	}
 	return contestSubmissionList, nil
+}
+
+func (*ContestSubmissionFlow) QueryOneSubmissionAnswer(userID, userType, submissionID int64) (string, error) {
+	var contestSubmission ContestSubmission
+	err := GetSysDB().Model(&ContestSubmission{}).Select("user_id", "user_type", "user_answer").
+		Where("id = ?", submissionID).Find(&contestSubmission).Error
+	if err != nil {
+		return "", errors.New("查询提交答案错误")
+	}
+	if contestSubmission.UserID != userID || contestSubmission.UserType != userType {
+		return "", errors.New("无权限")
+	}
+	return contestSubmission.UserAnswer, nil
 }

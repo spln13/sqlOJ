@@ -16,11 +16,13 @@ type ContestMySubmissionResponse struct {
 }
 
 type MySubmission struct {
+	SubmissionID int64     `json:"submission_id"`
 	Answer       string    `json:"answer"`
 	ExerciseID   int64     `json:"exercise_id"`
 	ExerciseName string    `json:"exercise_name"`
 	Status       int       `json:"status"`
 	SubmitTime   time.Time `json:"submit_time"`
+	OnChain      int       `json:"on_chain"`
 }
 
 func ContestGetMySubmissionHandle(context *gin.Context) {
@@ -54,11 +56,13 @@ func ContestGetMySubmissionHandle(context *gin.Context) {
 	var MySubmissionList []MySubmission
 	for _, contestSubmission := range contestSubmissionList {
 		oneSubmission := MySubmission{
+			SubmissionID: contestSubmission.ID,
 			Answer:       contestSubmission.UserAnswer,
 			ExerciseID:   contestSubmission.ExerciseID,
 			ExerciseName: contestSubmission.ExerciseName,
 			Status:       contestSubmission.Status,
 			SubmitTime:   contestSubmission.SubmitTime,
+			OnChain:      contestSubmission.OnChain,
 		}
 		MySubmissionList = append(MySubmissionList, oneSubmission)
 	}
