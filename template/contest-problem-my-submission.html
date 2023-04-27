@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>提交记录 BUCT-SQLOJ</title>
+    <link rel="stylesheet" href="/static/semantic/semantic.min.css">
+    <link href="/static/icon/favicon.ico" rel="shortcut icon">
+    <script src="/static/semantic/semantic.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="/static/js/contest-problem-my-submission.js"></script>
+</head>
+<body>
+<div class="ui top fixed menu">
+    <div class="item" style="font-size: 18px">
+        BUCT SQL OJ
+    </div>
+    <a class="item" href="/">
+        <img src="/static/icon/主页.svg" style="height: 15px;" alt="">
+        首页
+    </a>
+    <a class="item" href="/exercise/">
+        <img src="/static/icon/题目.svg" style="height: 15px;" alt="">
+        题目
+    </a>
+    <a class="item" href="/contest/">
+        <img src="/static/icon/竞赛.svg" style="height: 15px;" alt="">
+        竞赛
+    </a>
+    <a class="item" href="/ranking/">
+        <img src="/static/icon/排行榜.svg" style="height: 15px;" alt="">
+        排行榜
+    </a>
+    <div class="right menu" style="margin-right: 100px">
+        <div class="item">
+            <div class="ui icon input">
+                <input type="text" placeholder="搜索...">
+            </div>
+        </div>
+        <div class="item" id="button_username">
+            <div class="ui primary button" onclick="location.href='/login/'">登入</div>
+        </div>
+    </div>
+</div>
+<div id="blank"></div>
+<h1 class="ui header" id="title">本题我的提交</h1>
+<table class="ui celled table" style="margin: 50px 90px; width: 85%; ">
+    <thead>
+    <tr class="center aligned">
+        <th class="center aligned one wide">#</th>
+        <th class="center aligned three wide">提交时间</th>
+        <th class="center aligned one wide">是否上链</th>
+        <th class="center aligned one wide">状态</th>
+    </tr>
+    </thead>
+    <tbody id="submission" class="center aligned">
+    </tbody>
+</table>
+
+</body>
+<style>
+    #button_username {
+        padding: 0;
+    }
+
+    #blank {
+        width: 100%;
+        height: 70px;
+    }
+
+    #title {
+        margin-left: 100px;
+    }
+
+    .status_0 {
+    }
+
+    .status_1 {
+        background-color: #E6FEE6;
+    }
+
+    .status_2 {
+        background-color: #FAE4E3;
+    }
+
+    .status_3 {
+        background-color: #FAE4E3;
+    }
+</style>
+
+</html>

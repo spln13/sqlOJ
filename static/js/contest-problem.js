@@ -37,6 +37,9 @@ window.onload = index => {
     const parts = path.split('/');
     const exerciseID = parts[parts.length - 1];
     const contestID = parts[parts.length - 3];
+    let my_submission_button = document.getElementById('my-submission');
+    const my_submission_url = '/contest/' + contestID + '/problem/' + exerciseID + '/my-submission';
+    my_submission_button.setAttribute('href', my_submission_url);
     const url = '/api/exercise/get/one?exercise_id=' + exerciseID;
     fetch(url, {
         method: 'GET',

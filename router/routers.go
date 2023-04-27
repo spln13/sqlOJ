@@ -79,6 +79,9 @@ func InitServer() *gin.Engine {
 	server.GET("/contest/submission-detail/:submission_id", func(context *gin.Context) {
 		context.HTML(http.StatusOK, "contest-answer-detail.html", "")
 	})
+	server.GET("/contest/:contest_id/problem/:problem_id/my-submission", func(context *gin.Context) {
+		context.HTML(http.StatusOK, "contest-problem-my-submission.html", "")
+	})
 
 	teacherHTMLGroup := server.Group("/teacher")
 	{
