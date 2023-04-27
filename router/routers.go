@@ -151,6 +151,7 @@ func InitServer() *gin.Engine {
 		submissionGroup.GET("/contest/get-my/", middlewares.StudentJWTMiddleware(), submission.ContestGetMySubmissionHandle)      // test获取当前用户在竞赛中的所有提交
 		submissionGroup.GET("/contest/get-exercise/", middlewares.TeacherJWTMiddleware(), submission.ContestGetOneExerciseHandle) // 获取当前竞赛当前题目所有提交
 		submissionGroup.GET("/contest/detail/", middlewares.StudentJWTMiddleware(), submission.ContestGetDetailHandle)            // 获取竞赛提交记录对应的答案
+		submissionGroup.GET("/contest/", middlewares.StudentJWTMiddleware(), submission.ContestGetUserExerciseHandle)             // 获取当前用户当前竞赛当前题目的所有提交
 
 	}
 	rankingGroup := server.Group("/api/ranking")

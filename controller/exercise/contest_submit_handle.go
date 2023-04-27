@@ -27,7 +27,16 @@ func ContestSubmitHandle(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, utils.NewCommonResponse(1, "请求参数错误"))
 		return
 	}
-	err := WriteContestMessage(userID, userType, exerciseID, contestID, answer, userAgent)
+	ok, err := cache.CheckSubmitTimeValid(userID, userType, exerciseID) // 检查提交间隔是否合法
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, err.Error()))
+		return
+	}
+	if !ok { // 与上次发送未间隔3s
+		context.JSON(http.StatusOK, utils.NewCommonResponse(1, "请勿频繁发送"))
+		return
+	}
+	err = WriteContestMessage(userID, userType, exerciseID, contestID, answer, userAgent)
 	if err != nil {
 		log.Println(err)
 		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, "写入判题队列错误"))

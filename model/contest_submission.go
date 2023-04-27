@@ -104,3 +104,20 @@ func (*ContestSubmissionFlow) QueryOneSubmissionAnswer(userID, userType, submiss
 	}
 	return contestSubmission.UserAnswer, nil
 }
+
+type MinContestSubmission struct {
+	OnChain    int
+	Status     int
+	SubmitTime time.Time
+}
+
+func (*ContestSubmissionFlow) QueryOneUserExerciseSubmission(userID, userType, contestID, exerciseID int64) ([]MinContestSubmission, error) {
+	var minContestSubmissionList []MinContestSubmission
+	err := GetSysDB().Model(&ContestSubmission{}).
+		Where("user_id = ? and user_type = ? and contest_id = ? and exercise_id = ?", userID, userType, contestID, exerciseID).
+		Find(&minContestSubmissionList).Error
+	if err != nil {
+		return nil, errors.New("查询提交记录错误")
+	}
+	return minContestSubmissionList, nil
+}

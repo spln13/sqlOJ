@@ -130,6 +130,26 @@ func GetUserJudgeStatus(userID int64, userType int64, exerciseID int64) (map[str
 	return kvMap, nil
 }
 
+// GetContestUserJudgeStatus 获得指定userID与userType与exerciseID的redis结果
+func GetContestUserJudgeStatus(userID, userType, exerciseID, contestID int64) (map[string]string, error) {
+	pattern := fmt.Sprintf("%d:%d:%d:%d:*", userID, userType, exerciseID, contestID)
+	keys, err := rdb.Keys(ctx, pattern).Result()
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	kvMap := make(map[string]string)
+	for _, key := range keys {
+		value, err := rdb.HGet(ctx, key, "status").Result()
+		if err != nil {
+			log.Println(err)
+			return nil, errors.New("查询提交状态缓存错误")
+		}
+		kvMap[key] = value
+	}
+	return kvMap, nil
+}
+
 // GetAllKeyValue 获取缓存中所有的key-value返回map[string]string
 func GetAllKeyValue() (map[string]string, error) {
 	keys, err := rdb.Keys(ctx, "*").Result()
