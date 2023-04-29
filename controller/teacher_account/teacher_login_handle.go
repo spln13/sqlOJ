@@ -27,7 +27,7 @@ func TeacherLoginHandle(context *gin.Context) {
 		return
 	}
 	// 验证通过，颁发token
-	token, err := middlewares.ReleaseToken(userID, 3)
+	token, err := middlewares.ReleaseToken(userID, 2)
 	log.Println(err)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, "token颁发错误"))

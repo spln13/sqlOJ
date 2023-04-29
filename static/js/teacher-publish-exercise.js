@@ -41,15 +41,58 @@ window.onload = () => {
             const status_code = data['status_code'];
             const status_msg = data['status_msg'];
             if (status_code !== 0) {    // token出错
-                window.location = '/';
+                window.location = '/teacher/login/';
                 return
             }
             const type = data['type']
             if (type < 2) { // 学生
-                window.location = '/';
+                window.location = '/teacher/login/';
             }
         })
         .catch(error => console.error(error));
 
+    const submit_buttonHTML = document.getElementById('submit-button');
+    const nameHTML = document.getElementById('name');
+    const answerHTML = document.getElementById('answer');
+    const selectHTML = document.getElementById("select");
+    const descriptionHTML = document.getElementById('description');
+    const tableIDListHTML = document.getElementById('tables');
+    submit_buttonHTML.addEventListener('click', function (e) {
+        e.preventDefault();
+        const grade = selectHTML.selectedIndex + 1;
+        const name = nameHTML.value;
+        const answer = answerHTML.value;
+        const description = descriptionHTML.value;
+        const tableIDStringList = tableIDListHTML.value;
+        const stringArray = tableIDStringList.split(" ");
+        const tableIDList = stringArray.map(str => parseInt(str, 10))
+        const filteredTableIDArr = tableIDList.filter((value) => !isNaN(value));
+        const dataToSent = {
+            name: name,
+            description: description,
+            answer: answer,
+            grade: grade,
+            table_id_list: filteredTableIDArr,
+        }
+        console.log(dataToSent);
+        const jsonData = JSON.stringify(dataToSent);
+        fetch('/api/exercise/publish/exercise/', {
+            method: 'POST',
+            body: jsonData
+        })
+            .then(response => response.json())
+            .then(data => {
+                const status_code = data['status_code'];
+                const status_msg = data['status_msg'];
+                if (status_code !== 0) {
+                    alert(status_msg);
+                }
+                else {
+                    alert("发布成功");
+                    window.location.href = '/teacher/publish-exercise/';
+                }
+            })
+            .catch(error => console.log(error))
+    })
 }
 

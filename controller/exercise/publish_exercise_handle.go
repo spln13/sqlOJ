@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"sqlOJ/model"
 	"sqlOJ/utils"
-	"time"
 )
 
 type PublishExerciseData struct {
@@ -16,9 +15,7 @@ type PublishExerciseData struct {
 	Description string  `json:"description"`
 	Grade       int     `json:"grade"`
 	Name        string  `json:"name"`
-	ShowAt      string  `json:"show_at"`
 	TableIDList []int64 `json:"table_id_list"`
-	Visitable   int     `json:"visitable"`
 }
 
 // PublishExerciseHandle 完成发布题目功能
@@ -36,19 +33,10 @@ func PublishExerciseHandle(context *gin.Context) {
 	}
 	answer := publishExerciseData.Answer
 	description := publishExerciseData.Description
-	showAtStr := publishExerciseData.ShowAt
 	tableIDList := publishExerciseData.TableIDList
-	visitable := publishExerciseData.Visitable
 	name := publishExerciseData.Name
 	grade := publishExerciseData.Grade
-	// 时间格式
-	layout := "2006-01-02 15:04:05"
-
-	showAt, err := time.Parse(layout, showAtStr)
-	if err != nil {
-		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, "解析公布时间错误"))
-		return
-	}
+	publisherName := utils.QueryUsername(publisherID, publisherType)
 	exeType, err := parseAnswer(answer)
 	if err != nil {
 		context.JSON(http.StatusOK, utils.NewCommonResponse(1, err.Error()))
@@ -58,7 +46,7 @@ func PublishExerciseHandle(context *gin.Context) {
 		context.JSON(http.StatusOK, utils.NewCommonResponse(1, "答案不合法"))
 		return
 	}
-	exerciseID, err := model.NewExerciseContentFlow().InsertExerciseContent(publisherID, publisherType, name, answer, description, exeType, grade, visitable, showAt)
+	exerciseID, err := model.NewExerciseContentFlow().InsertExerciseContent(publisherID, publisherType, name, answer, publisherName, description, exeType, grade)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, err.Error()))
 		return
