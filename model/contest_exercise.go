@@ -41,7 +41,7 @@ func (*ContestExerciseFlow) InsertContestExercise(contestID int64, originExercis
 				OriginExerciseID: originExerciseID,
 				EndAt:            endAt,
 			}
-			if err := tx.Create(contestExercise).Error; err != nil {
+			if err := tx.Create(&contestExercise).Error; err != nil {
 				log.Println(err)
 				return err
 			}

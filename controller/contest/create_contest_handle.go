@@ -1,6 +1,7 @@
 package contest
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -31,10 +32,12 @@ func CreateContestHandle(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, "解析请求参数错误"))
 		return
 	}
-	beginAt, err1 := time.Parse("2006-01-02 15:04:05", createContestData.BeginAt)
-	endAt, err2 := time.Parse("2006-01-02 15:04:05", createContestData.EndAt)
+	fmt.Println(createContestData.BeginAt)
+	fmt.Println(createContestData.EndAt)
+	beginAt, err1 := time.Parse(time.RFC3339, createContestData.BeginAt)
+	endAt, err2 := time.Parse(time.RFC3339, createContestData.EndAt)
 	if err1 != nil || err2 != nil {
-		log.Println("解析时间参数错误!")
+		log.Println(err1)
 		context.JSON(http.StatusBadRequest, utils.NewCommonResponse(1, "解析请求参数错误"))
 		return
 	}

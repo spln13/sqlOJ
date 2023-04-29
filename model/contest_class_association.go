@@ -33,7 +33,7 @@ func NewContestClassAssociationFlow() *ContestClassAssociationFlow {
 func (*ContestClassAssociationFlow) InsertContestClassAssociation(contestID int64, ClassIDList []int64) error {
 	for _, classID := range ClassIDList {
 		contestClassAssociationDAO := ContestClassAssociation{ContestID: contestID, ClassID: classID}
-		if err := GetSysDB().Create(contestClassAssociationDAO).Error; err != nil {
+		if err := GetSysDB().Create(&contestClassAssociationDAO).Error; err != nil {
 			log.Println(err)
 			return errors.New("插入竞赛班级关联信息错误")
 		}
