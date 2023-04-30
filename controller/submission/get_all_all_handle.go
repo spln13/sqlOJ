@@ -14,6 +14,7 @@ type AllAllResponse struct {
 }
 
 type AllAll struct {
+	SubmissionID int64     `json:"submission_id"`
 	Answer       string    `json:"answer"`
 	Status       int       `json:"status"`
 	SubmitTime   time.Time `json:"submit_time"`
@@ -23,6 +24,7 @@ type AllAll struct {
 	ExerciseID   int64     `json:"exercise_id"`
 	ExerciseName string    `json:"exercise_name"`
 	UserAgent    string    `json:"user_agent"`
+	OnChain      int       `json:"on_chain"`
 }
 
 // GetAllAllHandle 获取所有的提交记录, 包括在cache中的
@@ -43,6 +45,7 @@ func GetAllAllHandle(context *gin.Context) {
 		exerciseID := submitHistory.ExerciseID
 		exerciseName := model.NewExerciseContentFlow().QueryExerciseNameByExerciseID(exerciseID)
 		allAll := AllAll{
+			SubmissionID: submitHistory.ID,
 			Answer:       submitHistory.StudentAnswer,
 			Status:       submitHistory.Status,
 			SubmitTime:   submitHistory.SubmitTime,
@@ -52,6 +55,7 @@ func GetAllAllHandle(context *gin.Context) {
 			Username:     username,
 			ExerciseID:   exerciseID,
 			ExerciseName: exerciseName,
+			OnChain:      submitHistory.OnChain,
 		}
 		allAllList = append(allAllList, allAll)
 	}
