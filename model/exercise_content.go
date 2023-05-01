@@ -79,8 +79,8 @@ func (*ExerciseContentFlow) QueryExerciseNameByExerciseID(exerciseID int64) stri
 	return exerciseContentDAO.Name
 }
 
-// GetAllVisitableExercise 获取当前数据库中所有可见的题目
-func (*ExerciseContentFlow) GetAllVisitableExercise() ([]ExerciseContent, error) {
+// GetAllExercise 获取当前数据库中所有可见的题目
+func (*ExerciseContentFlow) GetAllExercise() ([]ExerciseContent, error) {
 	var exerciseContentArray []ExerciseContent
 	err := GetSysDB().Select("id, publisher_id", "publisher_type", "publisher_name", "name", "grade", "submit_count", "pass_count", "type").Find(&exerciseContentArray).Error
 	if err != nil {

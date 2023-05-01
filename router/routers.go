@@ -82,7 +82,9 @@ func InitServer() *gin.Engine {
 	server.GET("/contest/:contest_id/problem/:problem_id/my-submission", func(context *gin.Context) {
 		context.HTML(http.StatusOK, "contest-problem-my-submission.html", "")
 	})
-
+	server.GET("/teacher/exercise-answer/:exercise_id", func(context *gin.Context) {
+		context.HTML(http.StatusOK, "teacher-exercise-answer.html", "")
+	})
 	teacherHTMLGroup := server.Group("/teacher")
 	{
 		teacherHTMLGroup.GET("/upload-table/", func(context *gin.Context) {
@@ -102,6 +104,9 @@ func InitServer() *gin.Engine {
 		})
 		teacherHTMLGroup.GET("/grade/", func(context *gin.Context) {
 			context.HTML(http.StatusOK, "teacher-grade.html", "")
+		})
+		teacherHTMLGroup.GET("/exercises/", func(context *gin.Context) {
+			context.HTML(http.StatusOK, "teacher-exercises.html", "")
 		})
 	}
 	// api接口
@@ -140,6 +145,8 @@ func InitServer() *gin.Engine {
 		exerciseGroup.GET("/get/all/with-token", middlewares.StudentJWTMiddleware(), exercise.GetAllExerciseWithTokenHandle)                    //  登录用户获取题库中所有可见的题目
 		exerciseGroup.GET("/get/one/", middlewares.StudentJWTMiddleware(), middlewares.CheckExerciseAuthority(), exercise.GetOneExerciseHandle) // 获取当前题目的题面
 		exerciseGroup.GET("/get/all-tables/", middlewares.TeacherJWTMiddleware(), exercise.GetAllTableHandle)                                   // 获取所有数据表
+		exerciseGroup.GET("/teacher/all-exercises/", middlewares.TeacherJWTMiddleware(), exercise.TeacherGetAllExercises)                       // 教师获取题库所有题目
+		exerciseGroup.GET("/teacher/answer/", middlewares.TeacherJWTMiddleware(), exercise.TeacherGetAnswer)                                    // 教师获取题目答案
 
 	}
 	submissionGroup := server.Group("/api/submission")

@@ -25,7 +25,7 @@ type AllExercise struct {
 
 // GetAllExerciseWithoutTokenHandle 获取题库中所有可见的题目条目, 未登录状态时请求
 func GetAllExerciseWithoutTokenHandle(context *gin.Context) {
-	exerciseContentArray, err := model.NewExerciseContentFlow().GetAllVisitableExercise()
+	exerciseContentArray, err := model.NewExerciseContentFlow().GetAllExercise()
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, AllExerciseResponse{
 			List:     nil,
@@ -64,7 +64,7 @@ func GetAllExerciseWithTokenHandle(context *gin.Context) {
 		})
 		return
 	}
-	exerciseContentArray, err := model.NewExerciseContentFlow().GetAllVisitableExercise()
+	exerciseContentArray, err := model.NewExerciseContentFlow().GetAllExercise()
 	if err != nil { // 获取所有可见的题目错误
 		context.JSON(http.StatusInternalServerError, AllExerciseResponse{
 			List:     nil,
