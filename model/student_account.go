@@ -160,3 +160,22 @@ func (*StudentAccountFlow) QueryAllStudent() ([]StudentAccount, error) {
 	}
 	return studentAccountDAOList, nil
 }
+
+type StudentIDNumberStruct struct {
+	ID     int64
+	Number int64
+}
+
+func (*StudentAccountFlow) QueryStudentIDNumberMap(studentIDList []int64) (map[int64]int64, error) {
+	var StudentIDNumberStructList []StudentIDNumberStruct
+	err := GetSysDB().Model(&StudentAccount{}).Where("id in ?", studentIDList).Find(&StudentIDNumberStructList).Error
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("查询学生学号错误")
+	}
+	studentIDNumberMap := make(map[int64]int64)
+	for _, studentIDNumberStruct := range StudentIDNumberStructList {
+		studentIDNumberMap[studentIDNumberStruct.ID] = studentIDNumberStruct.Number
+	}
+	return studentIDNumberMap, nil
+}

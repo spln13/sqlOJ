@@ -84,3 +84,32 @@ func (*ContestExerciseStatusFlow) QueryContestExerciseStatus(userID, userType, c
 	}
 	return problemStatusMap, nil
 }
+
+func (*ContestExerciseStatusFlow) QueryStudentIDListByContestID(contestID int64) ([]int64, error) {
+	var contestExerciseStatusList []ContestExerciseStatus
+	err := GetSysDB().Model(&ContestExerciseStatus{}).Select("user_id").Where("contest_id = ? and user_type > 1", contestID).Find(&contestExerciseStatusList).Error
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("查询学生信息错误")
+	}
+	var studentIDList []int64
+	for _, contestStatus := range contestExerciseStatusList {
+		studentIDList = append(studentIDList, contestStatus.UserID)
+	}
+	return studentIDList, nil
+}
+
+func (*ContestExerciseStatusFlow) QueryStudentProblemStatusMap(userID, contestID int64) (map[int64]int, error) {
+	var contestExerciseStatusList []ContestExerciseStatus
+	err := GetSysDB().Model(&ContestExerciseStatus{}).Select("exercise_id", "status").
+		Where("user_type = 1 and user_id = ? and contest_id = ?", userID, contestID).Find(&contestExerciseStatusList).Error
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("查询学生做题数据错误")
+	}
+	studentProblemStatusMap := make(map[int64]int)
+	for _, contestStatus := range contestExerciseStatusList {
+		studentProblemStatusMap[contestStatus.ExerciseID] = contestStatus.Status
+	}
+	return studentProblemStatusMap, nil
+}
