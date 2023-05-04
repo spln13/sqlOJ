@@ -5,52 +5,59 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>竞赛 BUCT-SQLOJ</title>
+    <title>教师端 BUCT-SQLOJ</title>
     <link rel="stylesheet" href="/static/semantic/semantic.min.css">
     <link href="/static/icon/favicon.ico" rel="shortcut icon">
     <script src="/static/semantic/semantic.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="/static/js/contest.js"></script>
+    <script src="/static/js/teacher-contests.js"></script>
 </head>
 <body>
 <div class="ui top fixed menu">
-    <div class="item" style="font-size: 18px">
-        BUCT SQL OJ
-    </div>
-    <a class="item" href="/">
-        <img src="/static/icon/主页.svg" style="height: 15px;" alt="">
-        首页
+    <a href="/">
+        <div class="item" style="font-size: 18px">
+            BUCT SQL OJ
+        </div>
     </a>
-    <a class="item" href="/exercise/">
-        <img src="/static/icon/题目.svg" style="height: 15px;" alt="">
-        题目
+    <a class="item" href="/teacher/upload-table/">
+        上传数据表
     </a>
-    <a class="active item" href="/contest/">
-        <img src="/static/icon/竞赛.svg" style="height: 15px;" alt="">
-        竞赛
+    <a class="item" href="/teacher/exercises/">
+        题库信息
     </a>
-    <a class="item" href="/ranking/">
-        <img src="/static/icon/排行榜.svg" style="height: 15px;" alt="">
-        排行榜
+    <a class="item" href="/teacher/publish-exercise/">
+        发布习题
+    </a>
+    <a class="item" href="/teacher/publish-contest/">
+        发布竞赛
+    </a>
+    <a class="active item" href="/teacher/contests/">
+        竞赛信息
+    </a>
+    <a class="item" href="/teacher/submission/">
+        提交记录
+    </a>
+    <a class="item" href="/teacher/tables/">
+        数据表
+    </a>
+    <a class="item" href="/teacher/grade/">
+        学生成绩
     </a>
     <div class="right menu" style="margin-right: 100px">
-        <div class="item">
-            <div class="ui icon input">
-                <input type="text" placeholder="搜索...">
-            </div>
-        </div>
         <div class="item" id="button_username">
-            <div class="ui primary button" onclick="location.href='/login/'">登入</div>
+            <div class="ui primary button" onclick="location.href='/teacher/login/'">登入</div>
         </div>
     </div>
 </div>
 <div id="blank"></div>
+
 <table class="ui celled table" style="margin: 50px 90px; width: 85%; ">
     <thead>
     <tr class="center aligned">
         <th class="center aligned one wide">#</th>
-        <th class="center aligned six wide">标题</th>
+        <th class="center aligned five wide">标题</th>
         <th class="center aligned two wide">出题人</th>
+        <th class="center aligned one wide">状态</th>
         <th class="center aligned three wide">开始时间</th>
         <th class="center aligned three wide">结束时间</th>
     </tr>
@@ -62,13 +69,26 @@
 </body>
 
 <style>
-    #button_username {
-        padding: 0;
-    }
     #blank {
         width: 100%;
         height: 70px;
     }
+
+    #button_username {
+        padding: 0;
+    }
+
+    p {
+        font-size: 17px;
+    }
+
+    .ui .form {
+        width: 80%;
+        margin-left: 100px;
+        margin-bottom: 50px;
+        margin-top: 50px;
+    }
+
     .publisher_3 {
         /*管理员*/
         color: red;
@@ -80,6 +100,7 @@
     .publisher_1 {
         color: #0d6efd;
     }
+
 </style>
 
 </html>

@@ -87,7 +87,7 @@ func (*ContestExerciseStatusFlow) QueryContestExerciseStatus(userID, userType, c
 
 func (*ContestExerciseStatusFlow) QueryStudentIDListByContestID(contestID int64) ([]int64, error) {
 	var contestExerciseStatusList []ContestExerciseStatus
-	err := GetSysDB().Model(&ContestExerciseStatus{}).Select("user_id").Where("contest_id = ? and user_type > 1", contestID).Find(&contestExerciseStatusList).Error
+	err := GetSysDB().Model(&ContestExerciseStatus{}).Distinct("user_id").Where("contest_id = ? and user_type = 1", contestID).Find(&contestExerciseStatusList).Error
 	if err != nil {
 		log.Println(err)
 		return nil, errors.New("查询学生信息错误")

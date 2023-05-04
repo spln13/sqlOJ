@@ -82,6 +82,10 @@ func InitServer() *gin.Engine {
 	server.GET("/contest/:contest_id/problem/:problem_id/my-submission", func(context *gin.Context) {
 		context.HTML(http.StatusOK, "contest-problem-my-submission.html", "")
 	})
+	server.GET("/contest/status/:contest_id", func(context *gin.Context) {
+		context.HTML(http.StatusOK, "contest-status.html", "")
+	})
+
 	server.GET("/teacher/exercise-answer/:exercise_id", func(context *gin.Context) {
 		context.HTML(http.StatusOK, "teacher-exercise-answer.html", "")
 	})
@@ -107,6 +111,9 @@ func InitServer() *gin.Engine {
 		})
 		teacherHTMLGroup.GET("/exercises/", func(context *gin.Context) {
 			context.HTML(http.StatusOK, "teacher-exercises.html", "")
+		})
+		teacherHTMLGroup.GET("/contests/", func(context *gin.Context) {
+			context.HTML(http.StatusOK, "teacher-contests.html", "")
 		})
 	}
 	// api接口
@@ -175,6 +182,7 @@ func InitServer() *gin.Engine {
 		contestGroup.GET("/get/contest/", contest.GetContestHandle)                                              // 获取竞赛详情信息                                                                          // 获取所有竞赛接口
 		contestGroup.POST("/submit/", middlewares.StudentJWTMiddleware(), exercise.ContestSubmitHandle)          // test竞赛提交接口
 		contestGroup.GET("/get/all-exercise/", middlewares.StudentJWTMiddleware(), contest.GetAllExerciseHandle) // test获取竞赛中所有的题目
+		contestGroup.GET("/status/", middlewares.TeacherJWTMiddleware(), contest.GetContestStatusHandle)         // 获取竞赛的状态
 		//contestGroup.POST("/submit/", middlewares.StudentJWTMiddleware(), middlewares.CheckContestAuthority(), exercise.ContestSubmitHandle) // 竞赛提交接口
 		//contestGroup.GET("/get/all-exercise/", middlewares.StudentJWTMiddleware(), middlewares.CheckContestAuthority(), contest.GetAllExerciseHandle) // 获取竞赛中所有的题目
 	}

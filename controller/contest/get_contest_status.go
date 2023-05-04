@@ -3,6 +3,7 @@ package contest
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"sort"
 	"sqlOJ/model"
 	"sqlOJ/utils"
 	"strconv"
@@ -38,7 +39,7 @@ func GetContestStatusHandle(context *gin.Context) {
 	// 获取竞赛状态中提交过学生学号, 忽略提交状态表中userType > 1的记录
 	// 1. 首先查询参与竞赛的学生ID与学号的对应表map[int64]int64
 	// 2. 遍历学生id, 获取当前学生题目id和状态的对应表map[int64]int64
-	// 3. append到返回list中
+	// 3. append到返回list中, 需要按学号排序
 	studentIDList, err := model.NewContestExerciseStatusFlow().QueryStudentIDListByContestID(contestID)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, OneContestStatusResponse{
@@ -81,6 +82,10 @@ func GetContestStatusHandle(context *gin.Context) {
 		}
 		statusList = append(statusList, oneStudentList)
 	}
+	// 对返回结果排序，使其按照学生学号升序排列
+	sort.Slice(statusList, func(i, j int) bool {
+		return statusList[i][0] < statusList[j][0]
+	})
 	context.JSON(http.StatusOK, OneContestStatusResponse{
 		StatusList:  statusList,
 		ProblemList: problemIDList,
