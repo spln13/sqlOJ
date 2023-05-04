@@ -10,7 +10,7 @@
     <link href="/static/icon/favicon.ico" rel="shortcut icon">
     <script src="/static/semantic/semantic.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="/static/js/exercise.js"></script>
+    <script src="/static/js/home.js"></script>
 </head>
 <body>
 <div class="ui top fixed menu">
@@ -102,35 +102,7 @@
                         <th class="six wide">积分</th>
                     </tr>
                     </thead>
-                    <tbody>
-
-                    <tr>
-                        <td><a style="display: inline-block" class="user text semi-bold"
-                               href="/profile/30057/">spln13 </a></td>
-                        <td><a href="/contest/rating/?q=30057">785231</a></td>
-                    </tr>
-
-                    <tr>
-                        <td><a style="display: inline-block" class="user text semi-bold"
-                               href="/profile/31501/">tisfy </a></td>
-                        <td><a href="/contest/rating/?q=31501">218424</a></td>
-                    </tr>
-                    <tr>
-                        <td><a style="display: inline-block" class="user text semi-bold"
-                               href="/profile/31501/">wwwo </a></td>
-                        <td><a href="/contest/rating/?q=31501">112424</a></td>
-                    </tr>
-                    <tr>
-                        <td><a style="display: inline-block" class="user text semi-bold"
-                               href="/profile/31501/">newbie_dqt </a></td>
-                        <td><a href="/contest/rating/?q=31501">45424</a></td>
-                    </tr>
-                    <tr>
-                        <td><a style="display: inline-block" class="user text semi-bold"
-                               href="/profile/31501/">rainbow_7 </a></td>
-                        <td><a href="/contest/rating/?q=31501">1424</a></td>
-                    </tr>
-
+                    <tbody id="ranking">
                     </tbody>
                 </table>
             </div>
@@ -167,6 +139,16 @@
     p {
         font-size: 17px;
     }
+
+    .user_3 {
+        /*管理员*/
+        color: red;
+    }
+
+    .user_2 {
+        color: purple;
+    }
+
 </style>
 
 </html>

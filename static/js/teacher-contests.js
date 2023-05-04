@@ -19,9 +19,10 @@ const createBox = (idx, contest_id, contest_name, publisher_name, publisher_type
     let box = document.createElement('tr');
     const publisher_class = "publisher_" + publisher_type;
     const contestStatusURL = '/contest/status/' + contest_id;
+    const submissionURL = '/contest/submission/' + contest_id;
     box.innerHTML = '<tr><td>' + idx + '</td><td><a href="/contest/' + contest_id.toString() + '">' + contest_name + '</a></td>' +
         '<td class="' + publisher_class + '">' + publisher_name + '</td><td>' + '<a href="' + contestStatusURL + '">查看</a>' +
-        '<td>' + begin_at + '</td><td>' + end_at + '</td></tr>';
+        '<td><a href="' + submissionURL + '">查看' + '</a></td>' + '<td>' + begin_at + '</td><td>' + end_at + '</td></tr>';
     mother_box.append(box);
 }
 

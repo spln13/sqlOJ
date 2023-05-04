@@ -75,7 +75,18 @@ func (*ScoreRecordFlow) IncreaseScore(userID, userType int64, grade int) {
 
 func (*ScoreRecordFlow) GetRanking() ([]RankingAPI, error) {
 	var rankingAPIList []RankingAPI
-	err := GetSysDB().Model(&ScoreRecord{}).Order("score").Find(&rankingAPIList).Error
+	err := GetSysDB().Model(&ScoreRecord{}).Order("score desc").Find(&rankingAPIList).Error
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("获取排名错误")
+	}
+	return rankingAPIList, nil
+}
+
+// GetMinRanking 获取排行榜前五条记录
+func (*ScoreRecordFlow) GetMinRanking() ([]RankingAPI, error) {
+	var rankingAPIList []RankingAPI
+	err := GetSysDB().Model(&ScoreRecord{}).Order("score desc").Limit(5).Find(&rankingAPIList).Error
 	if err != nil {
 		log.Println(err)
 		return nil, errors.New("获取排名错误")

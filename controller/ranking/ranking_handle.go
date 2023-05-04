@@ -41,3 +41,27 @@ func GetRankingHandle(context *gin.Context) {
 		Response: utils.NewCommonResponse(0, ""),
 	})
 }
+
+func GetMinRankingHandle(context *gin.Context) {
+	rankingMinAPIList, err := model.NewScoreRecordFlow().GetMinRanking()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, Response{
+			List:     nil,
+			Response: utils.NewCommonResponse(1, err.Error()),
+		})
+		return
+	}
+	var itemList []Item
+	for _, rankingMinAPI := range rankingMinAPIList {
+		item := Item{
+			Score:    rankingMinAPI.Score,
+			UserType: rankingMinAPI.UserType,
+			Username: rankingMinAPI.Username,
+		}
+		itemList = append(itemList, item)
+	}
+	context.JSON(http.StatusOK, Response{
+		List:     itemList,
+		Response: utils.NewCommonResponse(0, ""),
+	})
+}

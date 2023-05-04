@@ -85,6 +85,9 @@ func InitServer() *gin.Engine {
 	server.GET("/contest/status/:contest_id", func(context *gin.Context) {
 		context.HTML(http.StatusOK, "contest-status.html", "")
 	})
+	server.GET("/contest/submission/:contest_id", func(context *gin.Context) {
+		context.HTML(http.StatusOK, "teacher-contest-submission.html", "")
+	})
 
 	server.GET("/teacher/exercise-answer/:exercise_id", func(context *gin.Context) {
 		context.HTML(http.StatusOK, "teacher-exercise-answer.html", "")
@@ -173,7 +176,8 @@ func InitServer() *gin.Engine {
 	}
 	rankingGroup := server.Group("/api/ranking")
 	{
-		rankingGroup.GET("/get/list/", ranking.GetRankingHandle) // 获取排行榜信息
+		rankingGroup.GET("/get/list/", ranking.GetRankingHandle)   // 获取排行榜信息
+		rankingGroup.GET("/get/min/", ranking.GetMinRankingHandle) // 获取min排行榜信息
 	}
 	contestGroup := server.Group("/api/contest")
 	{
