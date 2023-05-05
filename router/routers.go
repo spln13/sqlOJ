@@ -109,8 +109,8 @@ func InitServer() *gin.Engine {
 		teacherHTMLGroup.GET("/tables/", func(context *gin.Context) {
 			context.HTML(http.StatusOK, "teacher-query-tables.html", "")
 		})
-		teacherHTMLGroup.GET("/grade/", func(context *gin.Context) {
-			context.HTML(http.StatusOK, "teacher-grade.html", "")
+		teacherHTMLGroup.GET("/students/", func(context *gin.Context) {
+			context.HTML(http.StatusOK, "teacher-students.html", "")
 		})
 		teacherHTMLGroup.GET("/exercises/", func(context *gin.Context) {
 			context.HTML(http.StatusOK, "teacher-exercises.html", "")

@@ -10,7 +10,7 @@
     <link href="/static/icon/favicon.ico" rel="shortcut icon">
     <script src="/static/semantic/semantic.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="/static/js/teacher-grade.js"></script>
+    <script src="/static/js/teacher-students.js"></script>
 </head>
 <body>
 <div class="ui top fixed menu">
@@ -40,8 +40,8 @@
     <a class="item" href="/teacher/tables/">
         数据表
     </a>
-    <a class="active item" href="/teacher/grade/">
-        学生成绩
+    <a class="active item" href="/teacher/students/">
+        学生信息
     </a>
     <div class="right menu" style="margin-right: 100px">
         <div class="item" id="button_username">
@@ -51,6 +51,20 @@
 </div>
 <div id="blank"></div>
 
+
+<table class="ui celled table" style="margin: 50px 90px; width: 85%; ">
+    <thead>
+    <tr class="center aligned">
+        <th class="center aligned one wide">#</th>
+        <th class="center aligned two wide">学号</th>
+        <th class="center aligned two wide">用户名</th>
+        <th class="center aligned two wide">真实姓名</th>
+        <th class="center aligned two wide">班级</th>
+    </tr>
+    </thead>
+    <tbody id="students" class="center aligned">
+    </tbody>
+</table>
 
 </body>
 

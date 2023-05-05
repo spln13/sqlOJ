@@ -13,6 +13,15 @@ getCookie = (cname) => {
     }
     return "";
 }
+
+let createBox = (idx, number, className, username, realName) => {
+    let mother_box = document.querySelector("#students");
+    let box = document.createElement('tr');
+    box.innerHTML = '<td>' + idx + '</td><td>' + number + '</td><td>' + username + '</td><td>' + realName + '</td>' +
+        '<td>' + className + '</td>';
+    mother_box.append(box);
+}
+
 window.onload = () => {
     // 查看登录状态，获取用户名
     // 获取所有cookie
@@ -50,6 +59,32 @@ window.onload = () => {
             }
         })
         .catch(error => console.error(error));
-
+    const getStudentsInfoURL = '/api/student/get/all-students';
+    fetch(getStudentsInfoURL, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+        .then(response => response.json())
+        .then(data => {
+            const status_code = data['status_code'];
+            const status_msg = data['status_msg'];
+            if (status_code !== 0) {    // token出错
+                alert(status_msg);
+                return
+            }
+            const list = data['list'];
+            for (let i = 0; i < list.length; i++) {
+                const student_id = list[i]['student_id'];
+                const number = list[i]['number'];
+                const classID = list[i]['class_id'];
+                const className = list[i]['class_name'];
+                const username = list[i]['username'];
+                const realName = list[i]['real_name'];
+                createBox(i + 1, number, className, username, realName);
+            }
+        })
+        .catch(error => console.error(error));
 }
 
