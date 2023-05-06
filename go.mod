@@ -5,6 +5,7 @@ go 1.19
 require (
 	github.com/gin-gonic/gin v1.8.2
 	github.com/golang-jwt/jwt/v4 v4.5.0
+	github.com/hyperledger/fabric-chaincode-go v0.0.0-20230228194215-b84622ba6a7a
 	github.com/hyperledger/fabric-contract-api-go v1.2.1
 	github.com/redis/go-redis/v9 v9.0.2
 	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
@@ -29,8 +30,6 @@ require (
 	github.com/gobuffalo/packr v1.30.1 // indirect
 	github.com/goccy/go-json v0.10.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/hyperledger/fabric-chaincode-go v0.0.0-20230228194215-b84622ba6a7a // indirect
-	github.com/hyperledger/fabric-gateway v1.2.2 // indirect
 	github.com/hyperledger/fabric-protos-go v0.3.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
