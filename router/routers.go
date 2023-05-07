@@ -46,6 +46,9 @@ func InitServer() *gin.Engine {
 	server.GET("/submission/", func(context *gin.Context) {
 		context.HTML(http.StatusOK, "my-submission.html", "")
 	})
+	server.GET("/migrate/", func(context *gin.Context) {
+		context.HTML(http.StatusOK, "migrate.html", "")
+	})
 
 	server.GET("/admin/login/", func(context *gin.Context) {
 		context.HTML(http.StatusOK, "admin-login.html", "")
