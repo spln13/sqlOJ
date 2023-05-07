@@ -1,6 +1,8 @@
 package model
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"gorm.io/gorm"
 	"log"
@@ -12,8 +14,8 @@ type StudentAccount struct {
 	ID        int64  `gorm:"primary_key"`
 	Number    string `gorm:"primary_key"`
 	ClassID   int64
+	ClassName string
 	Username  string
-	Email     string
 	Password  string
 	RealName  string
 	CreatedAt time.Time
@@ -35,13 +37,30 @@ func NewStudentAccountFlow() *StudentAccountFlow {
 	return studentAccountFlow
 }
 
-func (*StudentAccountFlow) InsertStudentAccount(username, password, number, realName, email string) (int64, error) {
+func (*StudentAccountFlow) InsertStudentAccount(username, password, number, realName string) (int64, error) {
 	studentAccountDAO := &StudentAccount{
 		Number:   number,
 		Username: username,
 		Password: password,
 		RealName: realName,
-		Email:    email,
+	}
+	if err := GetSysDB().Transaction(func(tx *gorm.DB) error {
+		return tx.Create(studentAccountDAO).Error
+	}); err != nil {
+		log.Println(err)
+		return 0, errors.New("新增用户信息错误")
+	}
+	return studentAccountDAO.ID, nil
+}
+
+func (*StudentAccountFlow) CreateStudentAccount(number, realName, className, password string, classID int64) (int64, error) {
+	studentAccountDAO := &StudentAccount{
+		Number:    number,
+		Username:  number,
+		Password:  password,
+		RealName:  realName,
+		ClassName: className,
+		ClassID:   classID,
 	}
 	if err := GetSysDB().Transaction(func(tx *gorm.DB) error {
 		return tx.Create(studentAccountDAO).Error
@@ -153,7 +172,7 @@ func (*StudentAccountFlow) QueryStudentIDByClassID(classIDList []int64) ([]int64
 
 func (*StudentAccountFlow) QueryAllStudent() ([]StudentAccount, error) {
 	var studentAccountDAOList []StudentAccount
-	err := GetSysDB().Model(&StudentAccount{}).Omit("password", "created_at", "updated_at").Find(&studentAccountDAOList).Error
+	err := GetSysDB().Model(&StudentAccount{}).Omit("password", "created_at", "updated_at").Order("number").Find(&studentAccountDAOList).Error
 	if err != nil {
 		log.Println(err)
 		return nil, errors.New("查询学生信息错误")
@@ -178,4 +197,25 @@ func (*StudentAccountFlow) QueryStudentIDNumberMap(studentIDList []int64) (map[i
 		studentIDNumberMap[studentIDNumberStruct.ID] = studentIDNumberStruct.Number
 	}
 	return studentIDNumberMap, nil
+}
+
+func (*StudentAccountFlow) ResetStudentPassword(studentID int64) error {
+	var studentAccountDAO StudentAccount
+	err := GetSysDB().Model(&StudentAccount{}).Select("number").Where("id = ?", studentID).Find(&studentAccountDAO).Error
+	if err != nil {
+		log.Println(err)
+		return errors.New("获取学生信息错误")
+	}
+	digest := sha256.New() // 对密码加密
+	digest.Write([]byte(studentAccountDAO.Number))
+	passwordSHA := hex.EncodeToString(digest.Sum(nil))
+	err = GetSysDB().Transaction(func(tx *gorm.DB) error {
+		err := tx.Model(&StudentAccount{}).Where("id = ?", studentID).Update("password", passwordSHA).Error
+		return err
+	})
+	if err != nil {
+		log.Println(err)
+		return errors.New("重置密码错误")
+	}
+	return nil
 }

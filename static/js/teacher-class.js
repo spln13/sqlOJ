@@ -14,36 +14,10 @@ getCookie = (cname) => {
     return "";
 }
 
-let resetPassword = (studentID) => {    // 重制当前学生密码
-    const r = confirm("确定重置吗?");
-    if (r === false) {
-        return
-    }
-    const url = '/api/student/reset?student_id=' + studentID;
-    fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-    })
-        .then(response => response.json())
-        .then(data => {
-            const status_code = data['status_code'];
-            const status_msg = data['status_msg'];
-            if (status_code !== 0) {    // token出错
-                alert(status_msg);
-                return
-            }
-            alert("重置成功");
-        })
-        .catch(error => console.error(error));
-}
-
-let createBox = (idx, number, className, username, realName, studentID) => {
-    let mother_box = document.querySelector("#students");
+let createBox = (idx, classID, className, studentCount) => {
+    let mother_box = document.querySelector("#class");
     let box = document.createElement('tr');
-    box.innerHTML = '<td>' + idx + '</td><td>' + number + '</td><td>' + username + '</td><td>' + realName + '</td>' +
-        '<td>' + className + '</td><td><button class="ui button" onclick="resetPassword('+ studentID + ')">重置密码</button></td>'
+    box.innerHTML = '<td>' + idx + '</td><td>' + classID + '</td><td>' + className + '</td><td>' + studentCount + '</td>';
     mother_box.append(box);
 }
 
@@ -84,8 +58,8 @@ window.onload = () => {
             }
         })
         .catch(error => console.error(error));
-    const getStudentsInfoURL = '/api/student/get/all-students';
-    fetch(getStudentsInfoURL, {
+    const getClassURL = '/api/class/get/all-class';
+    fetch(getClassURL, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
@@ -101,13 +75,10 @@ window.onload = () => {
             }
             const list = data['list'];
             for (let i = 0; i < list.length; i++) {
-                const student_id = list[i]['student_id'];
-                const number = list[i]['number'];
                 const classID = list[i]['class_id'];
                 const className = list[i]['class_name'];
-                const username = list[i]['username'];
-                const realName = list[i]['real_name'];
-                createBox(i + 1, number, className, username, realName, student_id);
+                const studentCount = list[i]['student_count'];
+                createBox(i + 1, classID, className, studentCount);
             }
         })
         .catch(error => console.error(error));

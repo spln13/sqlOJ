@@ -40,9 +40,9 @@ func InitServer() *gin.Engine {
 	server.GET("/ranking/", func(context *gin.Context) {
 		context.HTML(http.StatusOK, "ranking.html", "")
 	})
-	server.GET("/register/", func(context *gin.Context) {
-		context.HTML(http.StatusOK, "register.html", "")
-	})
+	//server.GET("/register/", func(context *gin.Context) {
+	//	context.HTML(http.StatusOK, "register.html", "")
+	//})
 	server.GET("/submission/", func(context *gin.Context) {
 		context.HTML(http.StatusOK, "my-submission.html", "")
 	})
@@ -118,6 +118,12 @@ func InitServer() *gin.Engine {
 		teacherHTMLGroup.GET("/contests/", func(context *gin.Context) {
 			context.HTML(http.StatusOK, "teacher-contests.html", "")
 		})
+		teacherHTMLGroup.GET("/class/", func(context *gin.Context) {
+			context.HTML(http.StatusOK, "teacher-class.html", "")
+		})
+		teacherHTMLGroup.GET("/create-class/", func(context *gin.Context) {
+			context.HTML(http.StatusOK, "teacher-create-class.html", "")
+		})
 	}
 	// api接口
 	adminGroup := server.Group("/api/admin")
@@ -135,16 +141,19 @@ func InitServer() *gin.Engine {
 	}
 	studentGroup := server.Group("/api/student")
 	{
-		studentGroup.POST("/login/", middlewares.PasswordEncryptionMiddleware(), student_account.StudentLoginHandle)                                                           // 学生登录接口
-		studentGroup.POST("/register/", middlewares.PasswordEncryptionMiddleware(), student_account.StudentRegisterHandle)                                                     // 学生注册接口
+		studentGroup.POST("/login/", middlewares.PasswordEncryptionMiddleware(), student_account.StudentLoginHandle) // 学生登录接口
+		//studentGroup.POST("/register/", middlewares.PasswordEncryptionMiddleware(), student_account.StudentRegisterHandle)                                                     // 学生注册接口
 		studentGroup.POST("/change-password/", middlewares.StudentJWTMiddleware(), middlewares.TwoPasswordEncryptionMiddleware(), student_account.StudentChangePasswordHandle) // 学生改密码接口
-		studentGroup.POST("/email/send-code/", student_account.SendCodeHandle)                                                                                                 // 发送验证码
-		studentGroup.GET("/get/all-students/", middlewares.TeacherJWTMiddleware(), student_account.GetAllStudentsHandle)                                                       // 获取所有学生信息
+		//studentGroup.POST("/email/send-code/", student_account.SendCodeHandle)                                                                                                 // 发送验证码
+		studentGroup.GET("/get/all-students/", middlewares.TeacherJWTMiddleware(), student_account.GetAllStudentsHandle) // 获取所有学生信息
+		studentGroup.POST("/reset/", middlewares.TeacherJWTMiddleware(), student_account.StudentResetHandle)             // 重置学生密码
+
 	}
 	classGroup := server.Group("/api/class")
 	{
 		classGroup.POST("/create/", middlewares.TeacherJWTMiddleware(), class.CreateClassHandle)            // 教师&管理员添加班级接口
 		classGroup.POST("/add-student/", middlewares.TeacherJWTMiddleware(), class.AddStudentToClassHandle) // 教师添加学生进入班级接口
+		classGroup.GET("/get/all-class", middlewares.TeacherJWTMiddleware(), class.GetAllClassHandle)       // 获取所有班级
 	}
 	exerciseGroup := server.Group("/api/exercise")
 	{

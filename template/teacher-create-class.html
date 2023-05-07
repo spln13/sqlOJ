@@ -8,9 +8,9 @@
     <title>教师端 BUCT-SQLOJ</title>
     <link rel="stylesheet" href="/static/semantic/semantic.min.css">
     <link href="/static/icon/favicon.ico" rel="shortcut icon">
-    <script src="/static/semantic/semantic.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="/static/js/teacher-submission.js"></script>
+    <script src="/static/semantic/semantic.min.js"></script>
+    <script src="/static/js/teacher-create-class.js"></script>
 </head>
 <body>
 <div class="ui top fixed menu">
@@ -34,7 +34,7 @@
     <a class="item" href="/teacher/contests/">
         竞赛信息
     </a>
-    <a class="active item" href="/teacher/submission/">
+    <a class="item" href="/teacher/submission/">
         提交记录
     </a>
     <a class="item" href="/teacher/tables/">
@@ -54,22 +54,19 @@
 </div>
 <div id="blank"></div>
 
-<table class="ui celled table" style="margin: 50px 90px; width: 85%; ">
-    <thead>
-    <tr class="center aligned">
-        <th class="center aligned one wide">#</th>
-        <th class="center aligned four wide">题目名</th>
-        <th class="center aligned two wide">用户</th>
-        <th class="center aligned three wide">提交时间</th>
-        <th class="center aligned one wide">提交语句</th>
-        <th class="center aligned one wide">是否上链</th>
-        <th class="center aligned one wide">状态</th>
-    </tr>
-    </thead>
-    <tbody id="submission" class="center aligned">
-    </tbody>
-</table>
-
+<div class="ui celled table">
+    <div class="ui form">
+        <div class="field">
+            <label>导入学生(上传excel文件)</label>
+            <input type="file" id="class-file">
+        </div>
+        <div class="field">
+            <label>班级名</label>
+            <input type="text" name="class-name" placeholder="班级名" id="class-name">
+        </div>
+        <button class="ui button" type="submit" id="submit-button">Submit</button>
+    </div>
+</div>
 
 </body>
 
@@ -87,28 +84,11 @@
         font-size: 17px;
     }
 
-    .status_0 {
-    }
-
-    .status_1 {
-        background-color: #E6FEE6;
-    }
-
-    .status_2 {
-        background-color: #FAE4E3;
-    }
-
-    .status_3 {
-        background-color: #FAE4E3;
-    }
-
-    .user_3 {
-        /*管理员*/
-        color: red;
-    }
-
-    .user_2 {
-        color: purple;
+    .ui .form {
+        width: 80%;
+        margin-left: 100px;
+        margin-bottom: 50px;
+        margin-top: 50px;
     }
 </style>
 

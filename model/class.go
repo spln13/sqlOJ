@@ -31,15 +31,15 @@ func NewClassFlow() *ClassFlow {
 	return classFlow
 }
 
-func (*ClassFlow) InsertClass(className string) error {
-	classDAO := &Class{Name: className}
+func (*ClassFlow) CreateClass(className string, studentCount int) (int64, error) {
+	classDAO := &Class{Name: className, StudentCount: studentCount}
 	if err := GetSysDB().Transaction(func(tx *gorm.DB) error {
 		return tx.Create(classDAO).Error
 	}); err != nil {
 		log.Println(err)
-		return errors.New("保存班级信息错误")
+		return 0, errors.New("保存班级信息错误")
 	}
-	return nil
+	return classDAO.ID, nil
 }
 
 func (*ClassFlow) QueryClassNameByClassID(classID int64) (string, error) {
@@ -78,4 +78,27 @@ func (*ClassFlow) QueryClassIDNameMap() (map[int64]string, error) {
 		classIDNameMap[classID] = className
 	}
 	return classIDNameMap, nil
+}
+
+func (*ClassFlow) GetAllClass() ([]Class, error) {
+	var classDAOList []Class
+	err := GetSysDB().Model(&Class{}).Select("id", "name", "student_count").Find(&classDAOList).Error
+	if err != nil {
+		log.Println(err)
+		return nil, errors.New("查询班级信息错误")
+	}
+	return classDAOList, nil
+}
+
+func (*ClassFlow) QueryClassNameValid(name string) (bool, error) {
+	var classDAO Class
+	err := GetSysDB().Model(&Class{}).Select("id").Where("name = ?", name).Find(&classDAO).Error
+	if err != nil {
+		log.Println(err)
+		return false, errors.New("查询班级名错误")
+	}
+	if classDAO.ID == 0 { // 不存在
+		return true, nil
+	}
+	return false, nil
 }

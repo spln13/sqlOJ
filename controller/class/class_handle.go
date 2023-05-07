@@ -9,16 +9,6 @@ import (
 	"strconv"
 )
 
-func CreateClassHandle(context *gin.Context) {
-	className := context.Query("name")
-	// 根据teacherUsername即教职工号查询对应教职工真实姓名
-	if err := model.NewClassFlow().InsertClass(className); err != nil {
-		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, err.Error()))
-		return
-	}
-	context.JSON(http.StatusOK, utils.NewCommonResponse(0, ""))
-}
-
 func AddStudentToClassHandle(context *gin.Context) {
 	studentIDStringArray := context.PostFormArray("student_id_list")
 	var studentIDList []int64

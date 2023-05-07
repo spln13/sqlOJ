@@ -8,9 +8,9 @@
     <title>教师端 BUCT-SQLOJ</title>
     <link rel="stylesheet" href="/static/semantic/semantic.min.css">
     <link href="/static/icon/favicon.ico" rel="shortcut icon">
-    <script src="/static/semantic/semantic.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="/static/js/teacher-submission.js"></script>
+    <script src="/static/semantic/semantic.min.js"></script>
+    <script src="/static/js/teacher-class.js"></script>
 </head>
 <body>
 <div class="ui top fixed menu">
@@ -34,7 +34,7 @@
     <a class="item" href="/teacher/contests/">
         竞赛信息
     </a>
-    <a class="active item" href="/teacher/submission/">
+    <a class="item" href="/teacher/submission/">
         提交记录
     </a>
     <a class="item" href="/teacher/tables/">
@@ -43,7 +43,7 @@
     <a class="item" href="/teacher/students/">
         学生信息
     </a>
-    <a class="item" href="/teacher/class/">
+    <a class="active item" href="/teacher/class/">
         班级管理
     </a>
     <div class="right menu" style="margin-right: 100px">
@@ -54,22 +54,20 @@
 </div>
 <div id="blank"></div>
 
+<button class="ui button" id="button_create_class" onclick="window.location.href = '/teacher/create-class/'">创建班级</button>
+
 <table class="ui celled table" style="margin: 50px 90px; width: 85%; ">
     <thead>
     <tr class="center aligned">
         <th class="center aligned one wide">#</th>
-        <th class="center aligned four wide">题目名</th>
-        <th class="center aligned two wide">用户</th>
-        <th class="center aligned three wide">提交时间</th>
-        <th class="center aligned one wide">提交语句</th>
-        <th class="center aligned one wide">是否上链</th>
-        <th class="center aligned one wide">状态</th>
+        <th class="center aligned two wide">班级ID</th>
+        <th class="center aligned three wide">班级名</th>
+        <th class="center aligned one wide">学生数</th>
     </tr>
     </thead>
-    <tbody id="submission" class="center aligned">
+    <tbody id="class" class="center aligned">
     </tbody>
 </table>
-
 
 </body>
 
@@ -83,32 +81,12 @@
         padding: 0;
     }
 
+    #button_create_class {
+        margin-left: 90px;
+    }
+
     p {
         font-size: 17px;
-    }
-
-    .status_0 {
-    }
-
-    .status_1 {
-        background-color: #E6FEE6;
-    }
-
-    .status_2 {
-        background-color: #FAE4E3;
-    }
-
-    .status_3 {
-        background-color: #FAE4E3;
-    }
-
-    .user_3 {
-        /*管理员*/
-        color: red;
-    }
-
-    .user_2 {
-        color: purple;
     }
 </style>
 
