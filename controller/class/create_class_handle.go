@@ -49,7 +49,7 @@ func CreateClassHandle(context *gin.Context) {
 	}
 	defer func() { // defer关闭文件流
 		if err := excelFile.Close(); err != nil {
-			fmt.Println(err)
+			log.Println(err)
 		}
 	}()
 	rows, err := excelFile.GetRows("Sheet1")

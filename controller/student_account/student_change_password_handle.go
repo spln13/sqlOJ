@@ -35,7 +35,6 @@ func StudentChangePasswordHandle(context *gin.Context) {
 		return
 	}
 	if err = model.NewStudentAccountFlow().UpdateStudentPasswordByUserID(UserID, newPassword); err != nil { // 更新数据库中密码
-		log.Println(err)
 		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, err.Error())) // 更新失败
 		return
 	}

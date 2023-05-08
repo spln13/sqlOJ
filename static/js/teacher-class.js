@@ -31,7 +31,7 @@ window.onload = () => {
             '      <div class="text">' + username + '</div>' +
             '      <i class="dropdown icon"></i>' +
             '      <div class="menu">' +
-            '        <a class="item" href="/migrate/">更改信息</a>' +
+            '        <a class="item" href="/teacher/migrate/">更改信息</a>' +
             '        <a class="item" href="/logout/">登出</a>' +
             '      </div>' +
             '    </div>';

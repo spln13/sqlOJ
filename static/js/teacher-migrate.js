@@ -16,7 +16,7 @@ const getCookie = (cname) => {
 
 
 window.onload = () => {
-    // 查看登 录状态，获取用户名
+    // 查看登录状态，获取用户名
     // 获取所有cookie
     const username = getCookie("username");
     if (username !== "") {
@@ -25,13 +25,32 @@ window.onload = () => {
             '      <div class="text">' + username + '</div>' +
             '      <i class="dropdown icon"></i>' +
             '      <div class="menu">' +
-            '        <a class="item" href="/submission/">提交记录</a>' +
-            '        <a class="item" href="/profile/">个人信息</a>' +
-            '        <a class="item" href="/migrate/">更改信息</a>' +
+            '        <a class="item" href="/teacher/migrate/">更改信息</a>' +
             '        <a class="item" href="/logout/">登出</a>' +
             '      </div>' +
             '    </div>';
     }
+    const url = '/api/get-type/';
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+        .then(response => response.json())
+        .then(data => {
+            const status_code = data['status_code'];
+            const status_msg = data['status_msg'];
+            if (status_code !== 0) {    // token出错
+                window.location = '/teacher/login/';
+                return
+            }
+            const type = data['type']
+            if (type < 2) { // 学生
+                window.location = '/teacher/login/';
+            }
+        })
+        .catch(error => console.error(error));
 
     const button = document.getElementById('submit-button');
     const oldPasswordHTML = document.getElementById('old-password');
@@ -46,7 +65,7 @@ window.onload = () => {
             alert("密码不一致");
             return
         }
-        const url = '/api/student/change-password/?old_password=' + oldPassword + '&new_password=' + newPassword;
+        const url = '/api/teacher/change-password/?old_password=' + oldPassword + '&new_password=' + newPassword;
         fetch(url, {
             method: 'POST',
             headers: {
@@ -66,7 +85,4 @@ window.onload = () => {
             })
             .catch(error => console.error(error));
     })
-
-
 }
-
