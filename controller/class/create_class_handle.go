@@ -84,7 +84,9 @@ func CreateClassHandle(context *gin.Context) {
 	// 注册学生信息
 	for _, studentInfo := range studentInfoList {
 		password := passwordEncryption(studentInfo.Number)
-		_, err = model.NewStudentAccountFlow().CreateStudentAccount(studentInfo.Number, studentInfo.Name, className, password, classID)
+		studentID, _ := model.NewStudentAccountFlow().CreateStudentAccount(studentInfo.Number, studentInfo.Name, className, password, classID)
+		// 在ScoreRecord中插入学生记录
+		_ = model.NewScoreRecordFlow().InsertScoreRecord(studentID, 1, studentInfo.Number)
 	}
 	context.JSON(http.StatusOK, utils.NewCommonResponse(0, ""))
 }
