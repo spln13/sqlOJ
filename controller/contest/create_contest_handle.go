@@ -77,11 +77,5 @@ func CreateContestHandle(context *gin.Context) {
 			return
 		}
 	}
-	// 创建副本表，写入MySQL
-	err = model.NewContestExerciseFlow().InsertContestExercise(contestID, createContestData.ExerciseIDList, endAt)
-	if err != nil {
-		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, err.Error()))
-		return
-	}
 	context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(0, ""))
 }
