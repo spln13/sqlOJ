@@ -60,9 +60,9 @@ func (*ScoreRecordFlow) IncreaseScore(userID, userType int64, grade int) {
 	if grade == 1 { // easy
 		score = 3
 	} else if grade == 2 { // medium
-		score = 7
+		score = 5
 	} else if grade == 3 { // hard
-		score = 15
+		score = 8
 	} else {
 		score = 0
 	}
