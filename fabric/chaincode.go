@@ -122,6 +122,7 @@ func (s *SmartContract) QueryAllSubmission(ctx contractapi.TransactionContextInt
 	return results, nil
 }
 
+// RatingStudents 用于给出学生评分，评分细则见doc
 func (s *SmartContract) RatingStudents(ctx contractapi.TransactionContextInterface) []byte {
 	allSubmissionList, err := s.QueryAllSubmission(ctx) // 获取所有提交记录
 	if err != nil {
@@ -158,14 +159,37 @@ func (s *SmartContract) RatingStudents(ctx contractapi.TransactionContextInterfa
 	sort.Slice(numbers, func(i, j int) bool { // 对学号从小到大排序
 		return numbers[i] < numbers[j]
 	})
-	var studentGrade [][]int64 // 用于存放学生学号和成绩的二维数组
+	var studentGradeList [][]float64 // 用于存放学生学号和成绩的二维数组
+	var maxExerciseScore int64 = 0   // 用于维护用户在题库中取得的最大得分
+	var maxContestScore int64 = 0    // 用于维护用户在竞赛中取得的最大得分
 	for _, number := range numbers {
 		exerciseScore := userScoreMap[number][0]
+		if exerciseScore > maxExerciseScore { // 维护用户在题库中取得的最大得分
+			maxExerciseScore = exerciseScore
+		}
 		contestScore := userScoreMap[number][1]
-		record := []int64{number, exerciseScore, contestScore} // 二维数组结构
-		studentGrade = append(studentGrade, record)
+		if contestScore > maxContestScore { // 维护用户在竞赛中取得的最大得分
+			maxContestScore = contestScore
+		}
+		record := []float64{float64(number), float64(exerciseScore), float64(contestScore)} // 二维数组结构
+		studentGradeList = append(studentGradeList, record)
 	}
-	studentGradeJSON, _ := json.Marshal(studentGrade)
+	// 已获取到maxExerciseScore, maxContestScore 根据文档中评分细则进行评分
+	// max_grade = max(100, min(300, max_exercise_score))
+	upperLimitExerciseGrade := max(100, min(300, maxExerciseScore))
+	upperLimitContestGrade := max(100, min(300, maxContestScore))
+	// exercise_score = (x / max_grade) * 100
+	// contest_score = (x / max_grade) * 100
+
+	for idx := range studentGradeList {
+		studentGradeList[idx][1] /= float64(upperLimitExerciseGrade)
+		studentGradeList[idx][2] /= float64(upperLimitContestGrade)
+		// 智能合约给出的用户评分为: exercise_score * 0.3 + contest_score * 0.7
+		comprehensiveGrade := 0.3*studentGradeList[idx][1] + 0.7*studentGradeList[idx][2]
+		studentGradeList[idx] = append(studentGradeList[idx], comprehensiveGrade)
+	}
+
+	studentGradeJSON, _ := json.Marshal(studentGradeList)
 	return studentGradeJSON
 }
 
@@ -181,4 +205,18 @@ func InitChainCode() {
 	if err := chaincode.Start(); err != nil {
 		fmt.Printf("Error starting fabcar chaincode: %s", err.Error())
 	}
+}
+
+func min(a, b int64) int64 {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+func max(a, b int64) int64 {
+	if a > b {
+		return a
+	}
+	return b
 }
