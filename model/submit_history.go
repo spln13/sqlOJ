@@ -4,6 +4,7 @@ import (
 	"errors"
 	"gorm.io/gorm"
 	"log"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -39,7 +40,7 @@ func NewSubmitHistoryFlow() *SubmitHistoryFlow {
 	return submitHistoryFlow
 }
 
-func (*SubmitHistoryFlow) InsertSubmitHistory(userID, exerciseID, userType int64, status int, studentAnswer, userAgent, username, exerciseName string, submitTime time.Time) {
+func (*SubmitHistoryFlow) InsertSubmitHistory(userID, exerciseID, userType int64, status int, studentAnswer, userAgent, username, exerciseName string, submitTime time.Time) int64 {
 	submitHistoryDAO := &SubmitHistory{
 		UserID:        userID,
 		ExerciseID:    exerciseID,
@@ -56,6 +57,7 @@ func (*SubmitHistoryFlow) InsertSubmitHistory(userID, exerciseID, userType int64
 	}); err != nil {
 		log.Println(err)
 	}
+	return submitHistoryDAO.ID
 }
 
 // QueryAllSubmitHistory 查询所有的提交记录
@@ -104,4 +106,12 @@ func (*SubmitHistoryFlow) QuerySubmissionAnswer(submissionID int64) (int64, int6
 		return 0, 0, "", errors.New("查询提交信息错误")
 	}
 	return submitHistory.UserID, submitHistory.UserType, submitHistory.StudentAnswer, nil
+}
+
+func (*SubmitHistoryFlow) ModifySubmissionOnChain(submissionIDStr string) {
+	submissionID, _ := strconv.ParseInt(submissionIDStr, 10, 64)
+	err := GetSysDB().Model(&SubmitHistory{}).Where("id = ?", submissionID).Update("on_chain", 1).Error
+	if err != nil {
+		log.Println(err)
+	}
 }

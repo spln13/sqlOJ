@@ -153,7 +153,7 @@ func InitServer() *gin.Engine {
 		//studentGroup.POST("/email/send-code/", student_account.SendCodeHandle)                                                                                                 // 发送验证码
 		studentGroup.GET("/get/all-students/", middlewares.TeacherJWTMiddleware(), student_account.GetAllStudentsHandle) // 获取所有学生信息
 		studentGroup.POST("/reset/", middlewares.TeacherJWTMiddleware(), student_account.StudentResetHandle)             // 重置学生密码
-
+		studentGroup.GET("/get/score/", middlewares.TeacherJWTMiddleware(), student_account.StudentScoreHandle)          // 获取学生智能合约评分结果
 	}
 	classGroup := server.Group("/api/class")
 	{

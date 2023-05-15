@@ -1,22 +1,24 @@
 package fabric
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/hyperledger/fabric-chaincode-go/shim"
-	"github.com/hyperledger/fabric-contract-api-go/contractapi"
+	"log"
 	"sort"
 	"strconv"
+
+	"github.com/hyperledger/fabric-chaincode-go/shim"
+	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
 
-import (
-	"encoding/json"
-)
-
-// SmartContract provides functions for managing a submission record
+// SmartContract provides functions for managing an Asset
 type SmartContract struct {
 	contractapi.Contract
 }
 
+// Submission describes basic details of what makes up a simple asset
+// Insert struct field in alphabetic order => to achieve determinism across languages
+// golang keeps the order when marshal to json but doesn't order automatically
 type Submission struct {
 	UserID     int64 `json:"user_id"`
 	UserType   int64 `json:"user_type"`
@@ -33,6 +35,44 @@ type QuerySubmissionResult struct {
 	Record *Submission
 }
 
+// InitLedger adds a base set of assets to the ledger
+func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) error {
+	// submissions := []Submission{
+	// 	{UserID: 1, UserType: 1, Number: 2019040471, ExerciseID: 1, ContestID: 0, Grade: 7, Status: 1},
+	// 	{UserID: 2, UserType: 1, Number: 2019040472, ExerciseID: 1, ContestID: 1, Grade: 7, Status: 1},
+	// 	{UserID: 3, UserType: 1, Number: 2019040473, ExerciseID: 1, ContestID: 1, Grade: 7, Status: 1},
+	// 	{UserID: 4, UserType: 1, Number: 2019040474, ExerciseID: 2, ContestID: 0, Grade: 7, Status: 2},
+	// 	{UserID: 5, UserType: 1, Number: 2019040475, ExerciseID: 2, ContestID: 0, Grade: 7, Status: 3},
+	// 	{UserID: 6, UserType: 1, Number: 2019040476, ExerciseID: 3, ContestID: 0, Grade: 7, Status: 1},
+	// 	{UserID: 7, UserType: 1, Number: 2019040471, ExerciseID: 2, ContestID: 1, Grade: 7, Status: 1},
+	// 	{UserID: 7, UserType: 1, Number: 2019040471, ExerciseID: 2, ContestID: 0, Grade: 7, Status: 2},
+	// 	{UserID: 7, UserType: 1, Number: 2019040471, ExerciseID: 2, ContestID: 0, Grade: 7, Status: 2},
+	// }
+	submissions := []Submission{
+		{UserID: 1, UserType: 1, Number: 2019040471, ExerciseID: 1, ContestID: 0, Grade: 200, Status: 1},
+		{UserID: 1, UserType: 1, Number: 2019040471, ExerciseID: 1, ContestID: 1, Grade: 150, Status: 1},
+		{UserID: 2, UserType: 1, Number: 2019040472, ExerciseID: 1, ContestID: 0, Grade: 150, Status: 1},
+		{UserID: 2, UserType: 1, Number: 2019040472, ExerciseID: 1, ContestID: 1, Grade: 150, Status: 1},
+		{UserID: 3, UserType: 1, Number: 2019040473, ExerciseID: 1, ContestID: 0, Grade: 200, Status: 1},
+		{UserID: 3, UserType: 1, Number: 2019040473, ExerciseID: 1, ContestID: 1, Grade: 200, Status: 1},
+	}
+
+	for idx, submission := range submissions {
+		submissionJSON, err := json.Marshal(submission)
+		if err != nil {
+			return err
+		}
+		idxStr := strconv.Itoa(idx)
+		submissionID := "submission_" + idxStr
+		err = ctx.GetStub().PutState(submissionID, submissionJSON)
+		if err != nil {
+			return fmt.Errorf("failed to put to world state. %v", err)
+		}
+	}
+
+	return nil
+}
+
 // CreateSubmission adds a new submission to the world state with given details
 func (s *SmartContract) CreateSubmission(ctx contractapi.TransactionContextInterface, submissionID, userID, userType, exerciseID, contestID, status, grade, number int64) error {
 	submission := Submission{
@@ -47,7 +87,12 @@ func (s *SmartContract) CreateSubmission(ctx contractapi.TransactionContextInter
 
 	submissionAsBytes, _ := json.Marshal(submission)
 	submissionIDStr := strconv.FormatInt(submissionID, 10)
-	submissionKey := "submission_" + submissionIDStr
+	var submissionKey string
+	if contestID != 0 {
+		submissionKey = "submission_contest_" + submissionIDStr
+	} else {
+		submissionKey = "submission_" + submissionIDStr
+	}
 	return ctx.GetStub().PutState(submissionKey, submissionAsBytes)
 }
 
@@ -72,26 +117,12 @@ func (s *SmartContract) QuerySubmission(ctx contractapi.TransactionContextInterf
 	return submission, nil
 }
 
-// ChangeSubmissionStatus updates the status field of submission with given id in world state
-func (s *SmartContract) ChangeSubmissionStatus(ctx contractapi.TransactionContextInterface, submissionID, newStatus int64) error {
-	submission, err := s.QuerySubmission(ctx, submissionID)
-	if err != nil {
-		return err
-	}
-
-	submission.Status = newStatus
-	submissionAsBytes, _ := json.Marshal(submission)
-	submissionIDStr := strconv.FormatInt(submissionID, 10)
-	submissionKey := "submission_" + submissionIDStr
-	return ctx.GetStub().PutState(submissionKey, submissionAsBytes)
-}
-
 // QueryAllSubmission returns all submissions found in world state
 func (s *SmartContract) QueryAllSubmission(ctx contractapi.TransactionContextInterface) ([]QuerySubmissionResult, error) {
-	startKey := "submission_1"
-	endKey := "submission_999999"
+	//startKey := "submission_1"
+	//endKey := "submission_999999"
 
-	resultsIterator, err := ctx.GetStub().GetStateByRange(startKey, endKey)
+	resultsIterator, err := ctx.GetStub().GetStateByRange("", "")
 
 	if err != nil {
 		return nil, err
@@ -99,7 +130,7 @@ func (s *SmartContract) QueryAllSubmission(ctx contractapi.TransactionContextInt
 	defer func(resultsIterator shim.StateQueryIteratorInterface) {
 		err := resultsIterator.Close()
 		if err != nil {
-
+			log.Println(err)
 		}
 	}(resultsIterator)
 
@@ -118,22 +149,34 @@ func (s *SmartContract) QueryAllSubmission(ctx contractapi.TransactionContextInt
 		queryResult := QuerySubmissionResult{Key: queryResponse.Key, Record: submission}
 		results = append(results, queryResult)
 	}
-
 	return results, nil
 }
 
+type StudentRating struct {
+	Number        int64   `json:"number"`
+	ExerciseScore float64 `json:"exercise_score"`
+	ContestScore  float64 `json:"contest_score"`
+	Score         float64 `json:"score"`
+}
+
 // RatingStudents 用于给出学生评分，评分细则见doc
-func (s *SmartContract) RatingStudents(ctx contractapi.TransactionContextInterface) []byte {
+func (s *SmartContract) RatingStudents(ctx contractapi.TransactionContextInterface) ([]StudentRating, error) {
 	allSubmissionList, err := s.QueryAllSubmission(ctx) // 获取所有提交记录
 	if err != nil {
-		fmt.Printf("Error create fabcar chaincode: %s", err.Error())
-		return nil
+		fmt.Printf("Error create chaincode: %s", err.Error())
+		return nil, err
 	}
 	userScoreMap := make(map[int64][]int64) // 用户得分Map
 	// 规定userScoreMap的value中[exercise_score, contest_score]
 	for _, submissionRecord := range allSubmissionList {
 		submission := submissionRecord.Record
 		number := submission.Number
+		if status := submission.Status; status != 1 { // 若提交状态不为正确则跳过
+			continue
+		}
+		if userType := submission.UserType; userType != 1 { // 提交者不是学生则跳过
+			continue
+		}
 		if submission.ContestID == 0 { // 题库中做题记录
 			if len(userScoreMap[submission.Number]) > 0 { // 当前用户已有在规定userScore中有记录
 				userScoreMap[number][0] += submission.Grade // 增加题库得分
@@ -159,9 +202,9 @@ func (s *SmartContract) RatingStudents(ctx contractapi.TransactionContextInterfa
 	sort.Slice(numbers, func(i, j int) bool { // 对学号从小到大排序
 		return numbers[i] < numbers[j]
 	})
-	var studentGradeList [][]float64 // 用于存放学生学号和成绩的二维数组
-	var maxExerciseScore int64 = 0   // 用于维护用户在题库中取得的最大得分
-	var maxContestScore int64 = 0    // 用于维护用户在竞赛中取得的最大得分
+	var studentGradeList []StudentRating // 用于存放学生学号和成绩的二维数组
+	var maxExerciseScore int64 = 0       // 用于维护用户在题库中取得的最大得分
+	var maxContestScore int64 = 0        // 用于维护用户在竞赛中取得的最大得分
 	for _, number := range numbers {
 		exerciseScore := userScoreMap[number][0]
 		if exerciseScore > maxExerciseScore { // 维护用户在题库中取得的最大得分
@@ -171,40 +214,32 @@ func (s *SmartContract) RatingStudents(ctx contractapi.TransactionContextInterfa
 		if contestScore > maxContestScore { // 维护用户在竞赛中取得的最大得分
 			maxContestScore = contestScore
 		}
-		record := []float64{float64(number), float64(exerciseScore), float64(contestScore)} // 二维数组结构
-		studentGradeList = append(studentGradeList, record)
+		studentScore := StudentRating{
+			Number:        number,
+			ExerciseScore: float64(exerciseScore),
+			ContestScore:  float64(contestScore),
+			Score:         0,
+		}
+		studentGradeList = append(studentGradeList, studentScore)
 	}
 	// 已获取到maxExerciseScore, maxContestScore 根据文档中评分细则进行评分
 	// max_grade = max(100, min(300, max_exercise_score))
-	upperLimitExerciseGrade := max(100, min(300, maxExerciseScore))
+	upperLimitExerciseGrade := max(100, min(300, maxExerciseScore)) // 最低100,最高300
 	upperLimitContestGrade := max(100, min(300, maxContestScore))
 	// exercise_score = (x / max_grade) * 100
 	// contest_score = (x / max_grade) * 100
 
 	for idx := range studentGradeList {
-		studentGradeList[idx][1] /= float64(upperLimitExerciseGrade)
-		studentGradeList[idx][2] /= float64(upperLimitContestGrade)
+		studentGradeList[idx].ExerciseScore /= float64(upperLimitExerciseGrade)
+		studentGradeList[idx].ContestScore /= float64(upperLimitContestGrade)
+		studentGradeList[idx].ExerciseScore *= 100
+		studentGradeList[idx].ContestScore *= 100
 		// 智能合约给出的用户评分为: exercise_score * 0.3 + contest_score * 0.7
-		comprehensiveGrade := 0.3*studentGradeList[idx][1] + 0.7*studentGradeList[idx][2]
-		studentGradeList[idx] = append(studentGradeList[idx], comprehensiveGrade)
+		studentGradeList[idx].Score = 0.3*studentGradeList[idx].ExerciseScore + 0.7*studentGradeList[idx].ContestScore
 	}
 
-	studentGradeJSON, _ := json.Marshal(studentGradeList)
-	return studentGradeJSON
-}
-
-func InitChainCode() {
-
-	chaincode, err := contractapi.NewChaincode(new(SmartContract))
-
-	if err != nil {
-		fmt.Printf("Error create fabcar chaincode: %s", err.Error())
-		return
-	}
-
-	if err := chaincode.Start(); err != nil {
-		fmt.Printf("Error starting fabcar chaincode: %s", err.Error())
-	}
+	//studentGradeJSON, _ := json.Marshal(studentGradeList)
+	return studentGradeList, nil
 }
 
 func min(a, b int64) int64 {

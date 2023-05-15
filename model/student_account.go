@@ -6,6 +6,7 @@ import (
 	"errors"
 	"gorm.io/gorm"
 	"log"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -218,4 +219,25 @@ func (*StudentAccountFlow) ResetStudentPassword(studentID int64) error {
 		return errors.New("重置密码错误")
 	}
 	return nil
+}
+
+func (*StudentAccountFlow) QueryStudentRealNameByNumber(number int64) (string, error) {
+	numberStr := strconv.FormatInt(number, 10)
+	var studentAccount StudentAccount
+	err := GetSysDB().Model(&StudentAccount{}).Select("real_name").Where("number = ?", numberStr).Find(&studentAccount).Error
+	if err != nil {
+		log.Println(err)
+		return "", errors.New("查询学生真实姓名错误")
+	}
+	return studentAccount.RealName, nil
+}
+
+func (*StudentAccountFlow) QueryStudentNumberByID(studentID int64) string {
+	var studentAccount StudentAccount
+	err := GetSysDB().Model(&StudentAccount{}).Select("number").Where("id = ?", studentID).Find(&studentAccount).Error
+	if err != nil {
+		log.Println(err)
+		return ""
+	}
+	return studentAccount.Number
 }

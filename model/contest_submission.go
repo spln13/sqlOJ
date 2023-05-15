@@ -4,6 +4,7 @@ import (
 	"errors"
 	"gorm.io/gorm"
 	"log"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -41,7 +42,7 @@ func NewContestSubmissionFlow() *ContestSubmissionFlow {
 	return contestSubmissionFlowDAO
 }
 
-func (*ContestSubmissionFlow) InsertContestSubmission(contestID, exerciseID, userID, userType int64, username, userAnswer, exerciseName, userAgent, contestName string, status int, submitTime time.Time) {
+func (*ContestSubmissionFlow) InsertContestSubmission(contestID, exerciseID, userID, userType int64, username, userAnswer, exerciseName, userAgent, contestName string, status int, submitTime time.Time) int64 {
 	contestSubmissionDAO := &ContestSubmission{
 		ExerciseID:   exerciseID,
 		UserID:       userID,
@@ -60,6 +61,7 @@ func (*ContestSubmissionFlow) InsertContestSubmission(contestID, exerciseID, use
 	}); err != nil {
 		log.Println(err)
 	}
+	return contestSubmissionDAO.ID
 }
 
 func (*ContestSubmissionFlow) GetContestSubmissionByID(contestID int64) ([]ContestSubmission, error) {
@@ -120,4 +122,12 @@ func (*ContestSubmissionFlow) QueryOneUserExerciseSubmission(userID, userType, c
 		return nil, errors.New("查询提交记录错误")
 	}
 	return minContestSubmissionList, nil
+}
+
+func (*ContestSubmissionFlow) ModifyContestSubmissionOnChain(submissionIDStr string) {
+	submissionID, _ := strconv.ParseInt(submissionIDStr, 10, 64)
+	err := GetSysDB().Model(&ContestSubmission{}).Where("id = ?", submissionID).Update("on_chain", 1).Error
+	if err != nil {
+		log.Println(err)
+	}
 }

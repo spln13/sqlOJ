@@ -50,9 +50,10 @@ func exerciseJudge(userID, userType, exerciseID int64, submitTime time.Time, ans
 	if equal { // 和标准答案相等，返回正确
 		status := 1 // 答案正确
 		// 插入做题记录表
-		model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, username, exerciseName, submitTime)
 		model.NewExerciseContentFlow().IncreasePassCountSubmitCount(exerciseID)
 		grade := model.NewExerciseContentFlow().QueryExerciseGrade(exerciseID) // 获取当前习题的难度
+		submissionID := model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, username, exerciseName, submitTime)
+		appendPendingTxQueue(userID, userType, submissionID, 0, exerciseID, status, grade) // 将提交记录append到上链队列
 		thisExerciseStatus := model.NewUserProblemStatusFlow().QueryUserProblemStatus(userID, userType, exerciseID)
 		if thisExerciseStatus > 1 { // wa&re&未提交
 			model.NewScoreRecordFlow().IncreaseScore(userID, userType, grade) // 增加用户的积分
@@ -67,7 +68,8 @@ func exerciseJudge(userID, userType, exerciseID int64, submitTime time.Time, ans
 		//fmt.Println("expectedType:", expectedType)
 		//fmt.Println("getType != expectedType")
 		status := 2 // 答案错误
-		model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, username, exerciseName, submitTime)
+		submissionID := model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, username, exerciseName, submitTime)
+		appendPendingTxQueue(userID, userType, submissionID, 0, exerciseID, status, 0) // 将提交记录append到上链队列
 		model.NewExerciseContentFlow().IncreaseSubmitCount(exerciseID)
 		model.NewUserProblemStatusFlow().ModifyUserProblemStatus(userID, exerciseID, userType, status) // 将用户题目提交状态表中的状态设置为错误
 		wg.Wait()                                                                                      // 等待修改cache中状态的goroutine先完成，否则记录将不会被删去
@@ -81,16 +83,18 @@ func exerciseJudge(userID, userType, exerciseID int64, submitTime time.Time, ans
 	} else {
 		status = modifyJudge(userID, exerciseID, submitTime, answer, expectedAnswer, getType)
 	}
-	model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, username, exerciseName, submitTime)
+	submissionID := model.NewSubmitHistoryFlow().InsertSubmitHistory(userID, exerciseID, userType, status, answer, userAgent, username, exerciseName, submitTime)
 	if status == 1 { // 答案正确
-		model.NewExerciseContentFlow().IncreasePassCountSubmitCount(exerciseID) // 自增提交总数和通过总数
-		grade := model.NewExerciseContentFlow().QueryExerciseGrade(exerciseID)  // 获取当前习题的难度
+		model.NewExerciseContentFlow().IncreasePassCountSubmitCount(exerciseID)            // 自增提交总数和通过总数
+		grade := model.NewExerciseContentFlow().QueryExerciseGrade(exerciseID)             // 获取当前习题的难度
+		appendPendingTxQueue(userID, userType, submissionID, 0, exerciseID, status, grade) // 将提交记录append到上链队列
 		thisExerciseStatus := model.NewUserProblemStatusFlow().QueryUserProblemStatus(userID, userType, exerciseID)
 		if thisExerciseStatus > 1 { // wa&re&未提交
 			model.NewScoreRecordFlow().IncreaseScore(userID, userType, grade) // 增加用户的积分
 		}
 	} else { // 答案错误
-		model.NewExerciseContentFlow().IncreaseSubmitCount(exerciseID) // 自增提交总数
+		model.NewExerciseContentFlow().IncreaseSubmitCount(exerciseID)                 // 自增提交总数
+		appendPendingTxQueue(userID, userType, submissionID, 0, exerciseID, status, 0) // 将提交记录append到上链队列
 	}
 	model.NewUserProblemStatusFlow().ModifyUserProblemStatus(userID, exerciseID, userType, status) // 将用户做题数据写入用户做题表
 	wg.Wait()
@@ -113,7 +117,9 @@ func contestJudge(userID, userType, exerciseID, contestID int64, submitTime time
 	if equal { // 和标准答案相等，返回正确
 		status := 1 // 答案正确
 		// 插入做题记录表
-		model.NewContestSubmissionFlow().InsertContestSubmission(contestID, exerciseID, userID, userType, username, answer, exerciseName, userAgent, contestName, status, submitTime)
+		submissionID := model.NewContestSubmissionFlow().InsertContestSubmission(contestID, exerciseID, userID, userType, username, answer, exerciseName, userAgent, contestName, status, submitTime)
+		grade := model.NewExerciseContentFlow().QueryExerciseGrade(exerciseID)
+		appendPendingTxQueue(userID, userType, submissionID, contestID, exerciseID, status, grade)
 		model.NewExerciseContentFlow().IncreasePassCountSubmitCount(exerciseID)
 		model.NewContestExerciseStatusFlow().ModifyContestExerciseStatus(userID, userType, exerciseID, contestID, status) // 将用户竞赛题目提交状态表中的状态设置为正确
 		wg.Wait()                                                                                                         // 等待修改cache中状态的goroutine先完成，否则记录将不会被删去
@@ -122,7 +128,8 @@ func contestJudge(userID, userType, exerciseID, contestID int64, submitTime time
 	}
 	if getType != expectedType { // sql语句类型不等，返回错误
 		status := 2 // 答案错误
-		model.NewContestSubmissionFlow().InsertContestSubmission(contestID, exerciseID, userID, userType, username, answer, exerciseName, userAgent, contestName, status, submitTime)
+		submissionID := model.NewContestSubmissionFlow().InsertContestSubmission(contestID, exerciseID, userID, userType, username, answer, exerciseName, userAgent, contestName, status, submitTime)
+		appendPendingTxQueue(userID, userType, submissionID, contestID, exerciseID, status, 0)
 		model.NewExerciseContentFlow().IncreaseSubmitCount(exerciseID)
 		model.NewContestExerciseStatusFlow().ModifyContestExerciseStatus(userID, userType, exerciseID, contestID, status) // 更改提交状态
 		wg.Wait()                                                                                                         // 等待修改cache中状态的goroutine先完成，否则记录将不会被删去
@@ -136,7 +143,9 @@ func contestJudge(userID, userType, exerciseID, contestID int64, submitTime time
 	} else { // update, insert, modify
 		status = modifyJudge(userID, exerciseID, submitTime, answer, expectedAnswer, getType)
 	}
-	model.NewContestSubmissionFlow().InsertContestSubmission(contestID, exerciseID, userID, userType, username, answer, exerciseName, userAgent, contestName, status, submitTime)
+	submissionID := model.NewContestSubmissionFlow().InsertContestSubmission(contestID, exerciseID, userID, userType, username, answer, exerciseName, userAgent, contestName, status, submitTime)
+	grade := model.NewExerciseContentFlow().QueryExerciseGrade(exerciseID)
+	appendPendingTxQueue(userID, userType, submissionID, contestID, exerciseID, status, grade)
 	if status == 1 { // 答案正确
 		model.NewExerciseContentFlow().IncreasePassCountSubmitCount(exerciseID) // 自增提交总数和通过总数
 		//grade := model.NewExerciseContentFlow().QueryExerciseGrade(exerciseID)  // 获取当前习题的难度

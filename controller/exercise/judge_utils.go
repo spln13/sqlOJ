@@ -2,6 +2,9 @@ package exercise
 
 import (
 	"github.com/xwb1989/sqlparser"
+	"sqlOJ/fabric"
+	"sqlOJ/model"
+	"strconv"
 	"strings"
 )
 
@@ -64,4 +67,33 @@ func replaceTableName(sql string, tempTableName string, getType int) (string, st
 	}
 	modifiedSql := strings.Join(sqlSplit, " ")
 	return modifiedSql, originTableName
+}
+
+func appendPendingTxQueue(userID, userType, submissionID, contestID, exerciseID int64, status, grade int) {
+	// 首先将参数转换为string型
+	var number string
+	if userType != 1 { // 非学生用户提交
+		number = "0"
+	} else {
+		number = model.NewStudentAccountFlow().QueryStudentNumberByID(userID)
+	}
+	userIDStr := strconv.FormatInt(userID, 10)
+	userTypeStr := strconv.FormatInt(userType, 10)
+	submissionIDStr := strconv.FormatInt(submissionID, 10)
+	exerciseIDStr := strconv.FormatInt(exerciseID, 10)
+	contestIDStr := strconv.FormatInt(contestID, 10)
+	statusStr := strconv.Itoa(status)
+	gradeStr := strconv.Itoa(grade)
+	ledgerData := fabric.LedgerData{
+		SubmissionID: submissionIDStr,
+		UserID:       userIDStr,
+		UserType:     userTypeStr,
+		ExerciseID:   exerciseIDStr,
+		ContestID:    contestIDStr,
+		Status:       statusStr,
+		Grade:        gradeStr,
+		Number:       number,
+	}
+	fabric.PendingTxQueue <- ledgerData // 将需要上链的数据写入上链队列
+
 }
