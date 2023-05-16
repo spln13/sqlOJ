@@ -95,6 +95,8 @@ func InitServer() *gin.Engine {
 	server.GET("/teacher/exercise-answer/:exercise_id", func(context *gin.Context) {
 		context.HTML(http.StatusOK, "teacher-exercise-answer.html", "")
 	})
+	server.GET("/download/score", middlewares.TeacherJWTMiddleware(), student_account.StudentScoreDownloadHandle) // 获取学生智能合约评分结果
+
 	teacherHTMLGroup := server.Group("/teacher")
 	{
 		teacherHTMLGroup.GET("/upload-table/", func(context *gin.Context) {
@@ -129,6 +131,9 @@ func InitServer() *gin.Engine {
 		})
 		teacherHTMLGroup.GET("/migrate/", func(context *gin.Context) {
 			context.HTML(http.StatusOK, "teacher-migrate.html", "")
+		})
+		teacherHTMLGroup.GET("/score/", func(context *gin.Context) {
+			context.HTML(http.StatusOK, "teacher-student-score.html", "")
 		})
 	}
 	// api接口

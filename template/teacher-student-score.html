@@ -1,16 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>竞赛提交 BUCT-SQLOJ</title>
+    <title>教师端 BUCT-SQLOJ</title>
     <link rel="stylesheet" href="/static/semantic/semantic.min.css">
     <link href="/static/icon/favicon.ico" rel="shortcut icon">
-    <script src="/static/semantic/semantic.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="/static/js/teacher-contest-submission.js"></script>
+    <script src="/static/semantic/semantic.min.js"></script>
+    <script src="/static/js/teacher-student-score.js"></script>
 </head>
 <body>
 <div class="ui top fixed menu">
@@ -46,7 +43,7 @@
     <a class="item" href="/teacher/class/">
         班级管理
     </a>
-    <a class="item" href="/teacher/score/">
+    <a class="active item" href="/teacher/score/">
         学生成绩
     </a>
     <div class="right menu" style="margin-right: 100px">
@@ -56,25 +53,26 @@
     </div>
 </div>
 <div id="blank"></div>
+<button class="ui button" id="computing">计算学生成绩</button>
+<button class="ui button" id="download">导出学生成绩</button>
 
 <table class="ui celled table" style="margin: 50px 90px; width: 85%; ">
     <thead>
     <tr class="center aligned">
         <th class="center aligned one wide">#</th>
-        <th class="center aligned three wide">题目名</th>
-        <th class="center aligned two wide">用户</th>
-        <th class="center aligned three wide">提交时间</th>
-        <th class="center aligned three wide">提交语句</th>
-        <th class="center aligned one wide">是否上链</th>
-        <th class="center aligned one wide">状态</th>
+        <th class="center aligned one wide">学号</th>
+        <th class="center aligned one wide">姓名</th>
+        <th class="center aligned two wide">题库得分</th>
+        <th class="center aligned two wide">竞赛得分</th>
+        <th class="center aligned two wide">加权得分</th>
+
     </tr>
     </thead>
-    <tbody id="submission" class="center aligned">
+    <tbody id="students" class="center aligned">
     </tbody>
 </table>
-
-
 </body>
+</html>
 
 <style>
     #blank {
@@ -86,33 +84,11 @@
         padding: 0;
     }
 
+    #computing {
+        margin-left: 100px;
+    }
+
     p {
         font-size: 17px;
     }
-
-    .status_0 {
-    }
-
-    .status_1 {
-        background-color: #E6FEE6;
-    }
-
-    .status_2 {
-        background-color: #FAE4E3;
-    }
-
-    .status_3 {
-        background-color: #FAE4E3;
-    }
-
-    .user_3 {
-        /*管理员*/
-        color: red;
-    }
-
-    .user_2 {
-        color: purple;
-    }
 </style>
-
-</html>
