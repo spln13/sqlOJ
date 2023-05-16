@@ -14,6 +14,17 @@ const getCookie = (cname) => {
     return "";
 }
 
+let parseTime = (time) => {
+    const originalDate = new Date(time);
+    const year = originalDate.getFullYear(); // 年份
+    const month = originalDate.getMonth() + 1; // 月份（注意要加1，因为月份从0开始）
+    const day = originalDate.getDate(); // 日期
+    const hours = originalDate.getHours(); // 小时
+    const minutes = originalDate.getMinutes(); // 分钟
+    const seconds = originalDate.getSeconds(); // 秒钟
+    return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')} ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+}
+
 
 let createBox = (idx, exercise_id, exercise_name, status, submit_time, contest_id, submission_id, on_chain) => {
     let mother_box = document.querySelector("#submission");
@@ -94,7 +105,7 @@ window.onload = index => {
                     const status = list[i]['status'] // int
                     const submit_time = list[i]['submit_time'] // int
                     const on_chain = list[i]['on_chain']
-                    createBox(i + 1, exercise_id, exercise_name, status, submit_time, contestID, submission_id, on_chain);
+                    createBox(i + 1, exercise_id, exercise_name, status, parseTime(submit_time), contestID, submission_id, on_chain);
                 }
             }
         })

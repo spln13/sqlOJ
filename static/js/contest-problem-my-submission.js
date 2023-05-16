@@ -41,6 +41,18 @@ let createBox = (id, submit_time, status, on_chain) => {
     box.innerHTML = '<tr><td>' + id + '</td><td>' + submit_time + '</td><td>' + on_chain_content + '</td><td class="' + status_class + '">' + status_content + '</td></tr>';
 }
 
+let parseTime = (time) => {
+    const originalDate = new Date(time);
+    const year = originalDate.getFullYear(); // 年份
+    const month = originalDate.getMonth() + 1; // 月份（注意要加1，因为月份从0开始）
+    const day = originalDate.getDate(); // 日期
+    const hours = originalDate.getHours(); // 小时
+    const minutes = originalDate.getMinutes(); // 分钟
+    const seconds = originalDate.getSeconds(); // 秒钟
+    return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')} ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+}
+
+
 window.onload = () => {
     // 查看登 录状态，获取用户名
     // 获取所有cookie
@@ -85,7 +97,7 @@ window.onload = () => {
                 const submit_time = list[i]['submit_time'];
                 const status = list[i]['status'];
                 const on_chain = list[i]['on_chain'];
-                createBox(i + 1, submit_time, status, on_chain);
+                createBox(i + 1, parseTime(submit_time), status, on_chain);
             }
         })
         .catch(error => console.error(error));

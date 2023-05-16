@@ -63,10 +63,10 @@ func GetExerciseSetMember(exerciseIDStr string) ([]string, error) {
 	return members, nil
 }
 
-// CheckUserIDInContest 检查contestIDStr对应的Set是否已经过期
+// CheckRequestValidInContest 检查contestIDStr对应的Set是否已经过期
 // 首先判断contestIDStr对应的Set是否过期，再判断userID是否在contestID对应的Set中
-// 返回值规定: 0->错误; 1->该键值不存在; 2->集合中存在; 3->集合中不存在
-func CheckUserIDInContest(userID int64, contestIDStr string) (int, error) {
+// 返回值规定: 0->错误; 1->该键值不存在，可以访问; 2->集合中存在，可以访问; 3->集合中不存在或未到时间，不可以访问
+func CheckRequestValidInContest(userID int64, contestIDStr string) (int, error) {
 	keyName := "contest_valid_time_name:" + contestIDStr
 	exists, err := rdb.Exists(ctx, keyName).Result()
 	if err != nil {
@@ -75,6 +75,16 @@ func CheckUserIDInContest(userID int64, contestIDStr string) (int, error) {
 	}
 	if exists != 1 { // 键值不存在
 		return 1, nil
+	}
+	contestValidTimeStr, err := rdb.Get(ctx, keyName).Result()
+	if err != nil {
+		log.Println(err)
+		return 0, errors.New("查询竞赛是否存在时错误")
+	}
+	contestValidTime, _ := strconv.ParseInt(contestValidTimeStr, 10, 64)
+	currentTime := time.Now().Unix()    // 获取当前时间Unix
+	if currentTime < contestValidTime { // 若当前时间未到竞赛开始时间
+		return 3, nil
 	}
 	setName := "contest_forbid_student:" + contestIDStr
 	userIDStr := strconv.FormatInt(userID, 10)

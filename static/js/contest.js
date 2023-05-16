@@ -13,6 +13,17 @@ const getCookie = (cname) => {
     }
     return "";
 }
+let parseTime = (time) => {
+    const originalDate = new Date(time);
+    const year = originalDate.getFullYear(); // 年份
+    const month = originalDate.getMonth() + 1; // 月份（注意要加1，因为月份从0开始）
+    const day = originalDate.getDate(); // 日期
+    const hours = originalDate.getHours(); // 小时
+    const minutes = originalDate.getMinutes(); // 分钟
+    const seconds = originalDate.getSeconds(); // 秒钟
+    return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')} ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+}
+
 const createBox = (idx, contest_id, contest_name, publisher_name, publisher_type, begin_at, end_at) => {
     let mother_box = document.querySelector('#contests');
     let box = document.createElement('tr');
@@ -63,7 +74,7 @@ window.onload = () => {
                 const publisher_type = list[i]['publisher_type'] // 根据不同的发布者类型渲染不同颜色
                 const begin_at = list[i]['begin_at']
                 const end_at = list[i]['end_at']
-                createBox(i + 1, contest_id, contest_name, publisher_name, publisher_type, begin_at, end_at);
+                createBox(i + 1, contest_id, contest_name, publisher_name, publisher_type, parseTime(begin_at), parseTime(end_at));
             }
         })
         .catch(error => console.error(error));

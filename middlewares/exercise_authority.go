@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"sqlOJ/cache"
@@ -28,7 +27,7 @@ func CheckExerciseAuthority() gin.HandlerFunc {
 			return
 		}
 		for _, contestIDStr := range contestIDStrList {
-			code, err := cache.CheckUserIDInContest(userID, contestIDStr)
+			code, err := cache.CheckRequestValidInContest(userID, contestIDStr)
 			// code: 0->错误; 1->该键值不存在; 2->集合中存在; 3->集合中不存在
 			if err != nil {
 				context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(403, err.Error()))
@@ -71,14 +70,14 @@ func CheckContestAuthority() gin.HandlerFunc {
 		if exerciseIDStr == "" {
 			exerciseIDStr = context.PostForm("contest_id")
 		}
-		code, err := cache.CheckUserIDInContest(userID, exerciseIDStr)
+		code, err := cache.CheckRequestValidInContest(userID, exerciseIDStr)
 		if err != nil {
 			context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(403, err.Error()))
 			context.Abort()
 			return
 		}
 		// code: 0->错误; 1->该键值不存在; 2->集合中存在; 3->集合中不存在
-		fmt.Println(code)
+		//fmt.Println(code)
 		if code != 2 {
 			context.JSON(http.StatusOK, utils.NewCommonResponse(403, "您无权访问"))
 			context.Abort()

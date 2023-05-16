@@ -48,6 +48,18 @@ let createBox = (idx, exercise_id, exercise_name, grade, publisher_name, publish
         + grade_type + '</td><td class="' + publisher_class + '">' + publisher_name + '</td><td class="' + status_class + '">' + status_content + '</td></tr>';
 }
 
+let parseTime = (time) => {
+    const originalDate = new Date(time);
+    const year = originalDate.getFullYear(); // 年份
+    const month = originalDate.getMonth() + 1; // 月份（注意要加1，因为月份从0开始）
+    const day = originalDate.getDate(); // 日期
+    const hours = originalDate.getHours(); // 小时
+    const minutes = originalDate.getMinutes(); // 分钟
+    const seconds = originalDate.getSeconds(); // 秒钟
+    return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')} ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+}
+
+
 window.onload = index => {
     // 查看登录状态，获取用户名
     // 获取所有cookie
@@ -95,7 +107,7 @@ window.onload = index => {
                 let titleHTML = document.getElementById('title');
                 titleHTML.innerHTML = contest_id.toString() + '. ' + contest_name;
                 let timeHTML = document.getElementById('time');
-                timeHTML.innerHTML = '开始时间: ' + begin_at + '; 结束时间: ' + end_at;
+                timeHTML.innerHTML = '开始时间: ' + parseTime(begin_at) + '; 结束时间: ' + parseTime(end_at);
             }
         })
         .catch(error => console.error(error));

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gin-contrib/pprof"
 	"github.com/hyperledger/fabric-gateway/pkg/client"
 	"google.golang.org/grpc"
 	"log"
@@ -10,7 +11,8 @@ import (
 )
 
 func main() {
-	server := router.InitServer()    // 初始化Gin服务器
+	server := router.InitServer() // 初始化Gin服务器
+	pprof.Register(server)
 	exercise.InitJudgeGoroutine(100) // 打开100个判题协程
 	clientConnection, gw := fabric.InitFabricConnection()
 	defer func(clientConnection *grpc.ClientConn) { // 关闭grpc连接
