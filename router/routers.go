@@ -135,6 +135,9 @@ func InitServer() *gin.Engine {
 		teacherHTMLGroup.GET("/score/", func(context *gin.Context) {
 			context.HTML(http.StatusOK, "teacher-student-score.html", "")
 		})
+		teacherHTMLGroup.GET("/add/", func(context *gin.Context) {
+			context.HTML(http.StatusOK, "teacher-add.html", "")
+		})
 	}
 	// api接口
 	adminGroup := server.Group("/api/admin")

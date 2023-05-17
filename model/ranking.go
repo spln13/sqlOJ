@@ -47,7 +47,7 @@ func (*ScoreRecordFlow) InsertScoreRecord(userID, userType int64, username strin
 		Score:    0,
 	}
 	if err := GetSysDB().Transaction(func(tx *gorm.DB) error {
-		return tx.Create(scoreRecordDAO).Error
+		return tx.Create(&scoreRecordDAO).Error
 	}); err != nil {
 		log.Println(err)
 		return errors.New("创建用户得分记录错误")
