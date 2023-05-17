@@ -50,3 +50,9 @@ func GetContestHandle(context *gin.Context) {
 		Response:   utils.NewCommonResponse(0, ""),
 	})
 }
+
+// CheckAuthorityHandle 检查请求方是否有参加竞赛权限
+// 因为请求已经过竞赛鉴权中间件，此handle直接返回成功
+func CheckAuthorityHandle(context *gin.Context) {
+	context.JSON(http.StatusOK, utils.NewCommonResponse(0, ""))
+}

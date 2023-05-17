@@ -36,6 +36,28 @@ window.onload = index => {
             '      </div>' +
             '    </div>';
     }
+    const getTypeUrl = '/api/get-type/';
+    // 获取所有用户身份信息
+    fetch(getTypeUrl, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+        .then(response => response.json())
+        .then(data => {
+            const status_code = data['status_code'];
+            const status_msg = data['status_msg'];
+            if (status_code !== 0) {    // token出错
+                window.location = '/login/';
+                return
+            }
+            const type = data['type']
+            if (type < 1) {
+                window.location = '/login/';
+            }
+        })
+        .catch(error => console.error(error));
     // 获取当前页面的路径
     const path = window.location.pathname;
     // 分割路径并获取最后一个部分

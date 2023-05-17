@@ -14,6 +14,7 @@ const getCookie = (cname) => {
     return "";
 }
 
+
 window.onload = index => {
     // 查看登录状态，获取用户名
     // 获取所有cookie
@@ -37,6 +38,24 @@ window.onload = index => {
     const parts = path.split('/');
     const exerciseID = parts[parts.length - 1];
     const contestID = parts[parts.length - 3];
+
+    const checkAuthorityUrl = '/api/contest/check-authority?' + contestID;
+    fetch(checkAuthorityUrl, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+        .then(response => response.json())
+        .then(data => {
+            const status_code = data['status_code'];
+            const status_msg = data['status_msg'];
+            if (status_code !== 0) {
+                alert(status_msg)
+                window.location.href = '/contest/';
+            }
+        })
+        .catch(error => console.error(error));
     let my_submission_button = document.getElementById('my-submission');
     const my_submission_url = '/contest/' + contestID + '/problem/' + exerciseID + '/my-submission';
     my_submission_button.setAttribute('href', my_submission_url);

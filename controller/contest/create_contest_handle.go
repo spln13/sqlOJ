@@ -1,7 +1,6 @@
 package contest
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -32,8 +31,6 @@ func CreateContestHandle(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, "解析请求参数错误"))
 		return
 	}
-	fmt.Println(createContestData.BeginAt)
-	fmt.Println(createContestData.EndAt)
 	beginAt, err1 := time.Parse(time.RFC3339, createContestData.BeginAt)
 	endAt, err2 := time.Parse(time.RFC3339, createContestData.EndAt)
 	if err1 != nil || err2 != nil {
@@ -66,16 +63,9 @@ func CreateContestHandle(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, err.Error()))
 		return
 	}
-	// 缓存竞赛禁止学生访问名单
-	if err := cache.ContestForbidStudentCache(contestID, studentIDList, beginAt, endAt); err != nil {
+	// 缓存竞赛参与学生访问名单
+	if err := cache.ContestStudentCache(contestID, studentIDList, beginAt, endAt); err != nil {
 		return
-	}
-	// 缓存引用题目的竞赛IDList
-	for _, exerciseID := range createContestData.ExerciseIDList {
-		if err := cache.ExerciseContestCache(contestID, exerciseID); err != nil {
-			context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, err.Error()))
-			return
-		}
 	}
 	context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(0, ""))
 }
