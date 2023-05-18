@@ -58,6 +58,7 @@ window.onload = () => {
             '      <i class="dropdown icon"></i>' +
             '      <div class="menu">' +
             '        <a class="item" href="/teacher/migrate/">更改信息</a>' +
+            '        <a class="item" href="/teacher/add/">增加教师</a>' +
             '        <a class="item" href="/logout/">登出</a>' +
             '      </div>' +
             '    </div>';
