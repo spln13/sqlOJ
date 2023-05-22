@@ -113,3 +113,12 @@ func (*ContestExerciseStatusFlow) QueryStudentProblemStatusMap(userID, contestID
 	}
 	return studentProblemStatusMap, nil
 }
+
+func (*ContestExerciseStatusFlow) DeleteContestExerciseStatus(contestID int64) error {
+	err := GetSysDB().Delete(&ContestExerciseStatus{}).Where("contest_id = ?", contestID).Error
+	if err != nil {
+		log.Println(err)
+		return errors.New("删除竞赛习题状态错误")
+	}
+	return nil
+}

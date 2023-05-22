@@ -90,7 +90,7 @@ func (*UserProblemStatusFlow) QueryUserAllProblemStatus(userID, userType int64) 
 func (*UserProblemStatusFlow) QueryUserProblemStatus(userID, userType, exerciseID int64) int {
 	var userProblemStatusDAO UserProblemStatus
 	err := GetSysDB().Model(&UserProblemStatus{}).Select("id", "status").
-		Where("user_id = ? and user_type = ? and exercise_id = ?", userID, userType, exerciseID).
+		Where("user_id = ? and use r_type = ? and exercise_id = ?", userID, userType, exerciseID).
 		Find(&userProblemStatusDAO).Error
 	if err != nil {
 		log.Println(err)
@@ -100,4 +100,13 @@ func (*UserProblemStatusFlow) QueryUserProblemStatus(userID, userType, exerciseI
 		return 4
 	}
 	return userProblemStatusDAO.Status
+}
+
+func (*UserProblemStatusFlow) DeleteProblemStatus(exerciseID int64) error {
+	err := GetSysDB().Delete(&UserProblemStatus{}).Where("exercise_id = ?", exerciseID).Error
+	if err != nil {
+		log.Println(err)
+		return errors.New("清除题目提交状态错误")
+	}
+	return nil
 }

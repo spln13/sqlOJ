@@ -13,7 +13,7 @@ type AnswerDetailResponse struct {
 	StatusMsg  string `json:"status_msg"`
 }
 
-func GetAnswerDetailHandle(context *gin.Context) {
+func GetAnswerDetailHandler(context *gin.Context) {
 	userID, ok1 := context.MustGet("user_id").(int64)
 	userType, ok2 := context.MustGet("user_type").(int64)
 	if !ok1 || !ok2 {

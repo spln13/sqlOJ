@@ -55,7 +55,7 @@ func ParseToken(tokenString string) (*Claims, bool) {
 	return nil, false
 }
 
-func StudentJWTMiddleware() gin.HandlerFunc {
+func StudentJWTMiddleware() gin.HandlerrFunc {
 	return func(c *gin.Context) {
 		tokenStr, err := c.Cookie("token")
 		if err != nil {
@@ -86,7 +86,7 @@ func StudentJWTMiddleware() gin.HandlerFunc {
 	}
 }
 
-func TeacherJWTMiddleware() gin.HandlerFunc {
+func TeacherJWTMiddleware() gin.HandlerrFunc {
 	return func(c *gin.Context) {
 		tokenStr, err := c.Cookie("token")
 		if err != nil {
@@ -118,7 +118,7 @@ func TeacherJWTMiddleware() gin.HandlerFunc {
 	}
 }
 
-func AdminJWTMiddleware() gin.HandlerFunc {
+func AdminJWTMiddleware() gin.HandlerrFunc {
 	return func(c *gin.Context) {
 		tokenStr, err := c.Cookie("token")
 		if err != nil {

@@ -21,7 +21,7 @@ type StudentInfo struct {
 	Username  string `json:"username"`
 }
 
-func GetAllStudentsHandle(context *gin.Context) {
+func GetAllStudentsHandler(context *gin.Context) {
 	classIDNameMap, err := model.NewClassFlow().QueryClassIDNameMap()
 	// classIDNameMap 是一个key为classID, value为className的hashMap
 	if err != nil {

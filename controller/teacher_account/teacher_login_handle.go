@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func TeacherLoginHandle(context *gin.Context) {
+func TeacherLoginHandler(context *gin.Context) {
 	username := context.Query("username")
 	password, ok := context.MustGet("password_sha256").(string)
 	if !ok {

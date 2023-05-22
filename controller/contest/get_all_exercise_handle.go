@@ -25,7 +25,7 @@ type ExerciseInfo struct {
 	SubmitCount   int    `json:"submit_count"`
 }
 
-func GetAllExerciseHandle(context *gin.Context) {
+func GetAllExerciseHandler(context *gin.Context) {
 	userID, ok1 := context.MustGet("user_id").(int64)
 	userType, ok2 := context.MustGet("user_type").(int64)
 	if !ok1 || !ok2 {

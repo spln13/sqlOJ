@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"sqlOJ/model"
 	"sqlOJ/utils"
+	"strconv"
 )
 
 type PublishExerciseData struct {
@@ -18,8 +19,8 @@ type PublishExerciseData struct {
 	TableIDList []int64 `json:"table_id_list"`
 }
 
-// PublishExerciseHandle 完成发布题目功能
-func PublishExerciseHandle(context *gin.Context) {
+// PublishExerciseHandler 完成发布题目功能
+func PublishExerciseHandler(context *gin.Context) {
 	publisherID, ok1 := context.MustGet("user_id").(int64) // 获取由JWT设置的user_id
 	publisherType, ok2 := context.MustGet("user_type").(int64)
 	if !ok1 || !ok2 {
@@ -86,4 +87,30 @@ func parseAnswer(answer string) (int, error) {
 		code = 0
 	}
 	return code, nil
+}
+
+// DeleteExerciseHandler 删除题目
+func DeleteExerciseHandler(context *gin.Context) {
+	exerciseIDStr := context.Query("exercise_id")
+	exerciseID, err := strconv.ParseInt(exerciseIDStr, 10, 64)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, utils.NewCommonResponse(1, "请求参数错误"))
+		return
+	}
+	// 删除关联数据表
+	if err := model.NewExerciseAssociationFlow().DeleteAssociation(exerciseID); err != nil {
+		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, err.Error()))
+		return
+	}
+	// 删除题目状态表
+	if err := model.NewUserProblemStatusFlow().DeleteProblemStatus(exerciseID); err != nil {
+		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, err.Error()))
+		return
+	}
+	// 删除题目内容
+	if err := model.NewExerciseContentFlow().DeleteExerciseContent(exerciseID); err != nil {
+		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, err.Error()))
+		return
+	}
+	context.JSON(http.StatusOK, utils.NewCommonResponse(0, ""))
 }

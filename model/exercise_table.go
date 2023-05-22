@@ -86,3 +86,13 @@ func (*ExerciseTableFlow) QueryAllTable() ([]ExerciseTable, error) {
 	}
 	return tableList, nil
 }
+
+func (*ExerciseTableFlow) QueryTableNameByID(tableID int64) (string, error) {
+	var tableDAO ExerciseTable
+	err := GetSysDB().Model(&ExerciseTable{}).Select("name").Where("id = ?", tableID).Find(&tableDAO).Error
+	if err != nil {
+		log.Println(err)
+		return "", errors.New("查询数据表名称错误")
+	}
+	return tableDAO.Name, nil
+}

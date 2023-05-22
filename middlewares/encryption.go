@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// PasswordEncryptionMiddleware 使用SHA256算法对用户明文密码加密，向handles层发送加密后对密码进行后续处理
-func PasswordEncryptionMiddleware() gin.HandlerFunc {
+// PasswordEncryptionMiddleware 使用SHA256算法对用户明文密码加密，向Handlers层发送加密后对密码进行后续处理
+func PasswordEncryptionMiddleware() gin.HandlerrFunc {
 	return func(context *gin.Context) {
 		password := context.Query("password") // 获取password
 		if password == "" {
@@ -24,7 +24,7 @@ func PasswordEncryptionMiddleware() gin.HandlerFunc {
 // TwoPasswordEncryptionMiddleware 使用SHA256算法对用户明文密码加密
 // 与PasswordEncryptionMiddleware不同的是此中间件仅当学生、教师、管理员更改密码时使用
 // 参数中由`old_password`与`new_password`需要加密
-func TwoPasswordEncryptionMiddleware() gin.HandlerFunc {
+func TwoPasswordEncryptionMiddleware() gin.HandlerrFunc {
 	return func(context *gin.Context) {
 		oldPassword := context.Query("old_password")
 		newPassword := context.Query("new_password")

@@ -7,6 +7,7 @@ import (
 	"sqlOJ/cache"
 	"sqlOJ/model"
 	"sqlOJ/utils"
+	"strconv"
 	"time"
 )
 
@@ -18,7 +19,7 @@ type CreateContestData struct {
 	ClassIDList    []int64 `json:"class_id_list"`
 }
 
-func CreateContestHandle(context *gin.Context) {
+func CreateContestHandler(context *gin.Context) {
 	publisherID, ok1 := context.MustGet("user_id").(int64) // 获取又JWT设置的user_id
 	publisherType, ok2 := context.MustGet("user_type").(int64)
 	if !ok1 || !ok2 {
@@ -68,4 +69,32 @@ func CreateContestHandle(context *gin.Context) {
 		return
 	}
 	context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(0, ""))
+}
+
+// DeleteContestHandler 删除竞赛
+func DeleteContestHandler(context *gin.Context) {
+	contestIDStr := context.Query("contest_id")
+	contestID, err := strconv.ParseInt(contestIDStr, 10, 64)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, utils.NewCommonResponse(1, "请求参数错"))
+		return
+	}
+	// 删除竞赛时需要删除所有跟此竞赛相关的数据表
+	if err := model.NewContestExerciseAssociationFlow().DeleteContestExerciseAssociation(contestID); err != nil {
+		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, err.Error()))
+		return
+	}
+	if err := model.NewContestClassAssociationFlow().DeleteContestClassAssociation(contestID); err != nil {
+		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, err.Error()))
+		return
+	}
+	if err := model.NewContestExerciseStatusFlow().DeleteContestExerciseStatus(contestID); err != nil {
+		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, err.Error()))
+	}
+	if err := model.NewContestFlow().DeleteContest(contestID); err != nil {
+		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, err.Error()))
+		return
+	}
+	context.JSON(http.StatusOK, utils.NewCommonResponse(0, ""))
+	return
 }

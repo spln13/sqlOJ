@@ -7,9 +7,10 @@ import (
 	"os"
 	"sqlOJ/model"
 	"sqlOJ/utils"
+	"strconv"
 )
 
-func UploadTableHandle(context *gin.Context) {
+func UploadTableHandler(context *gin.Context) {
 	publisherID, ok1 := context.MustGet("user_id").(int64)
 	publisherType, ok2 := context.MustGet("user_type").(int64)
 	if !ok1 || !ok2 {
@@ -17,8 +18,13 @@ func UploadTableHandle(context *gin.Context) {
 		return
 	}
 	name := context.PostForm("name")
-	// 名字查重
-	isExist, err := model.NewExerciseTableFlow().QueryExerciseTableExist(name)
+	description := context.PostForm("description")
+	sqlFile, err := context.FormFile("sql_file")
+	if err != nil {
+		log.Println(err)
+		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, "获取文件错误"))
+	}
+	isExist, err := model.NewExerciseTableFlow().QueryExerciseTableExist(name) // 查看名字是否重复
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, err.Error()))
 		return
@@ -26,12 +32,6 @@ func UploadTableHandle(context *gin.Context) {
 	if isExist {
 		context.JSON(http.StatusOK, utils.NewCommonResponse(1, "表名已重复"))
 		return
-	}
-	description := context.PostForm("description")
-	sqlFile, err := context.FormFile("sql_file")
-	if err != nil {
-		log.Println(err)
-		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, "获取文件错误"))
 	}
 	filePath := "./temp_sql_files/" + name + ".sql"
 	if err = context.SaveUploadedFile(sqlFile, filePath); err != nil {
@@ -57,4 +57,34 @@ func UploadTableHandle(context *gin.Context) {
 	}
 	context.JSON(http.StatusOK, utils.NewCommonResponse(0, ""))
 	return
+}
+
+func DeleteTableHandler(context *gin.Context) {
+	tableIDStr := context.Query("table_id")
+	tableID, err := strconv.ParseInt(tableIDStr, 10, 64)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, utils.NewCommonResponse(1, "请求参数错误"))
+		return
+	}
+	exist, err := model.NewExerciseAssociationFlow().QueryAssociationExist(tableID)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, err.Error()))
+		return
+	}
+	if exist { // 如果存在关联, 删除失败
+		context.JSON(http.StatusOK, utils.NewCommonResponse(0, ""))
+		return
+	}
+	// 根据tableID获取数据表的名字
+	tableName, err := model.NewExerciseTableFlow().QueryTableNameByID(tableID)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, err.Error()))
+		return
+	}
+	err = model.ExecSqlDeleteTable(tableName) // 根据tableName执行sql语句删除sql_exercise中的数据表
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, err.Error()))
+		return
+	}
+	context.JSON(http.StatusOK, utils.NewCommonResponse(0, ""))
 }

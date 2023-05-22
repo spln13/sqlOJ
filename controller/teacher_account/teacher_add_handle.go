@@ -8,7 +8,7 @@ import (
 	"sqlOJ/utils"
 )
 
-func TeacherAddHandle(context *gin.Context) {
+func TeacherAddHandler(context *gin.Context) {
 	username := context.Query("username")
 	realName := context.Query("real_name")
 	password, ok := context.MustGet("password_sha256").(string) // 获取到由中间件加密的密码

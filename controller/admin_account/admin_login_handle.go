@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func AdminLoginHandle(context *gin.Context) {
+func AdminLoginHandler(context *gin.Context) {
 	username := context.Query("username")
 	password, ok := context.MustGet("password_sha256").(string) // 获取到由中间件加密的密码
 	if !ok {

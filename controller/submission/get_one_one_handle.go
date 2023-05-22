@@ -24,7 +24,7 @@ type OneOne struct {
 	SubmitTime time.Time `json:"submit_time"`
 }
 
-func GetOneOneHandle(context *gin.Context) {
+func GetOneOneHandler(context *gin.Context) {
 	userID, ok1 := context.MustGet("user_id").(int64)
 	userType, ok2 := context.MustGet("user_type").(int64)
 	if !ok1 || !ok2 {

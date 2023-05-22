@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-func AddStudentToClassHandle(context *gin.Context) {
+func AddStudentToClassHandler(context *gin.Context) {
 	studentIDStringArray := context.PostFormArray("student_id_list")
 	var studentIDList []int64
 	for _, val := range studentIDStringArray {

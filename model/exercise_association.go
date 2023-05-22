@@ -44,3 +44,26 @@ func (*ExerciseAssociationFlow) InsertExerciseAssociation(exerciseID int64, tabl
 	}
 	return nil
 }
+
+// QueryAssociationExist 查找是否有题目与该数据表关联
+func (*ExerciseAssociationFlow) QueryAssociationExist(tableID int64) (bool, error) {
+	var exerciseAssociation ExerciseAssociation
+	err := GetSysDB().Model(&ExerciseAssociation{}).Select("table_id = ?", tableID).Limit(1).Find(&exerciseAssociation).Error
+	if err != nil {
+		log.Println(err)
+		return false, errors.New("查找题目数据表引用错误")
+	}
+	if exerciseAssociation.ID == 0 { // 不存在
+		return false, nil
+	}
+	return true, nil
+}
+
+func (*ExerciseAssociationFlow) DeleteAssociation(exerciseID int64) error {
+	err := GetSysDB().Delete(&ExerciseAssociationFlow{}).Where("exercise_id = ?", exerciseID).Error
+	if err != nil {
+		log.Println(err)
+		return errors.New("删除关联关系错误")
+	}
+	return nil
+}

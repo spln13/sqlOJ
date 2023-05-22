@@ -25,7 +25,7 @@ type MySubmission struct {
 	OnChain      int       `json:"on_chain"`
 }
 
-func ContestGetMySubmissionHandle(context *gin.Context) {
+func ContestGetMySubmissionHandler(context *gin.Context) {
 	userID, ok1 := context.MustGet("user_id").(int64)
 	userType, ok2 := context.MustGet("user_type").(int64)
 	if !ok1 || !ok2 {

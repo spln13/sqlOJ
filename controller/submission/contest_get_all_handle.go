@@ -26,8 +26,8 @@ type Submission struct {
 	Username     string    `json:"username"`
 }
 
-// ContestGetAllSubmissionHandle 获取一场竞赛中所有的提交
-func ContestGetAllSubmissionHandle(context *gin.Context) {
+// ContestGetAllSubmissionHandler 获取一场竞赛中所有的提交
+func ContestGetAllSubmissionHandler(context *gin.Context) {
 	contestIDStr := context.Query("contest_id")
 	contestID, err := strconv.ParseInt(contestIDStr, 10, 64)
 	if err != nil {

@@ -95,7 +95,7 @@ func InitServer() *gin.Engine {
 	server.GET("/teacher/exercise-answer/:exercise_id", func(context *gin.Context) {
 		context.HTML(http.StatusOK, "teacher-exercise-answer.html", "")
 	})
-	server.GET("/download/score", middlewares.TeacherJWTMiddleware(), student_account.StudentScoreDownloadHandle) // 获取学生智能合约评分结果
+	server.GET("/download/score", middlewares.TeacherJWTMiddleware(), student_account.StudentScoreDownloadHandler) // 获取学生智能合约评分结果
 
 	teacherHTMLGroup := server.Group("/teacher")
 	{
@@ -142,79 +142,81 @@ func InitServer() *gin.Engine {
 	// api接口
 	adminGroup := server.Group("/api/admin")
 	{
-		adminGroup.POST("/add-debug/", middlewares.PasswordEncryptionMiddleware(), admin_account.AdminAddDebugHandle)
-		adminGroup.POST("/login/", middlewares.PasswordEncryptionMiddleware(), admin_account.AdminLoginHandle)                                                         // 系统管理员登录逻辑
-		adminGroup.POST("/add/", middlewares.AdminJWTMiddleware(), middlewares.PasswordEncryptionMiddleware(), admin_account.AdminAddHandle)                           // 系统管理员手动添加新的管理员
-		adminGroup.POST("/change-password/", middlewares.AdminJWTMiddleware(), middlewares.TwoPasswordEncryptionMiddleware(), admin_account.AdminChangePasswordHandle) // 系统管理员更改密码
+		adminGroup.POST("/add-debug/", middlewares.PasswordEncryptionMiddleware(), admin_account.AdminAddDebugHandler)
+		adminGroup.POST("/login/", middlewares.PasswordEncryptionMiddleware(), admin_account.AdminLoginHandler)                                                         // 系统管理员登录逻辑
+		adminGroup.POST("/add/", middlewares.AdminJWTMiddleware(), middlewares.PasswordEncryptionMiddleware(), admin_account.AdminAddHandler)                           // 系统管理员手动添加新的管理员
+		adminGroup.POST("/change-password/", middlewares.AdminJWTMiddleware(), middlewares.TwoPasswordEncryptionMiddleware(), admin_account.AdminChangePasswordHandler) // 系统管理员更改密码
 	}
 	teacherGroup := server.Group("/api/teacher")
 	{
-		teacherGroup.POST("/login/", middlewares.PasswordEncryptionMiddleware(), teacher_account.TeacherLoginHandle)                                                           // 老师登录
-		teacherGroup.POST("/add/", middlewares.TeacherJWTMiddleware(), middlewares.PasswordEncryptionMiddleware(), teacher_account.TeacherAddHandle)                           // 管理员&老师手动添加老师账号
-		teacherGroup.POST("/change-password/", middlewares.TwoPasswordEncryptionMiddleware(), middlewares.TeacherJWTMiddleware(), teacher_account.TeacherChangePasswordHandle) // 老师改密码
+		teacherGroup.POST("/login/", middlewares.PasswordEncryptionMiddleware(), teacher_account.TeacherLoginHandler)                                                           // 老师登录
+		teacherGroup.POST("/add/", middlewares.TeacherJWTMiddleware(), middlewares.PasswordEncryptionMiddleware(), teacher_account.TeacherAddHandler)                           // 管理员&老师手动添加老师账号
+		teacherGroup.POST("/change-password/", middlewares.TwoPasswordEncryptionMiddleware(), middlewares.TeacherJWTMiddleware(), teacher_account.TeacherChangePasswordHandler) // 老师改密码
 	}
 	studentGroup := server.Group("/api/student")
 	{
-		studentGroup.POST("/login/", middlewares.PasswordEncryptionMiddleware(), student_account.StudentLoginHandle) // 学生登录接口
-		//studentGroup.POST("/register/", middlewares.PasswordEncryptionMiddleware(), student_account.StudentRegisterHandle)                                                     // 学生注册接口
-		studentGroup.POST("/change-password/", middlewares.StudentJWTMiddleware(), middlewares.TwoPasswordEncryptionMiddleware(), student_account.StudentChangePasswordHandle) // 学生改密码接口
-		//studentGroup.POST("/email/send-code/", student_account.SendCodeHandle)                                                                                                 // 发送验证码
-		studentGroup.GET("/get/all-students/", middlewares.TeacherJWTMiddleware(), student_account.GetAllStudentsHandle) // 获取所有学生信息
-		studentGroup.POST("/reset/", middlewares.TeacherJWTMiddleware(), student_account.StudentResetHandle)             // 重置学生密码
-		studentGroup.GET("/get/score/", middlewares.TeacherJWTMiddleware(), student_account.StudentScoreHandle)          // 获取学生智能合约评分结果
+		studentGroup.POST("/login/", middlewares.PasswordEncryptionMiddleware(), student_account.StudentLoginHandler) // 学生登录接口
+		//studentGroup.POST("/register/", middlewares.PasswordEncryptionMiddleware(), student_account.StudentRegisterHandler)                                                     // 学生注册接口
+		studentGroup.POST("/change-password/", middlewares.StudentJWTMiddleware(), middlewares.TwoPasswordEncryptionMiddleware(), student_account.StudentChangePasswordHandler) // 学生改密码接口
+		//studentGroup.POST("/email/send-code/", student_account.SendCodeHandler)                                                                                                 // 发送验证码
+		studentGroup.GET("/get/all-students/", middlewares.TeacherJWTMiddleware(), student_account.GetAllStudentsHandler) // 获取所有学生信息
+		studentGroup.POST("/reset/", middlewares.TeacherJWTMiddleware(), student_account.StudentResetHandler)             // 重置学生密码
+		studentGroup.GET("/get/score/", middlewares.TeacherJWTMiddleware(), student_account.StudentScoreHandler)          // 获取学生智能合约评分结果
 	}
 	classGroup := server.Group("/api/class")
 	{
-		classGroup.POST("/create/", middlewares.TeacherJWTMiddleware(), class.CreateClassHandle)            // 教师&管理员添加班级接口
-		classGroup.POST("/add-student/", middlewares.TeacherJWTMiddleware(), class.AddStudentToClassHandle) // 教师添加学生进入班级接口
-		classGroup.GET("/get/all-class", middlewares.TeacherJWTMiddleware(), class.GetAllClassHandle)       // 获取所有班级
+		classGroup.POST("/create/", middlewares.TeacherJWTMiddleware(), class.CreateClassHandler)            // 教师&管理员添加班级接口
+		classGroup.POST("/add-student/", middlewares.TeacherJWTMiddleware(), class.AddStudentToClassHandler) // 教师添加学生进入班级接口
+		classGroup.GET("/get/all-class", middlewares.TeacherJWTMiddleware(), class.GetAllClassHandler)       // 获取所有班级
 	}
 	exerciseGroup := server.Group("/api/exercise")
 	{
-		exerciseGroup.POST("/publish/exercise", middlewares.TeacherJWTMiddleware(), exercise.PublishExerciseHandle)          // 发布练习接口
-		exerciseGroup.POST("/upload/table", middlewares.TeacherJWTMiddleware(), exercise.UploadTableHandle)                  // 发布练习表单接口
-		exerciseGroup.POST("/submit/", middlewares.StudentJWTMiddleware(), exercise.SubmitHandle)                            // 处理提交习题接口
-		exerciseGroup.GET("/get/all/without-token", exercise.GetAllExerciseWithoutTokenHandle)                               // 获取题库中所有可见的题目条目
-		exerciseGroup.GET("/get/all/with-token", middlewares.StudentJWTMiddleware(), exercise.GetAllExerciseWithTokenHandle) //  登录用户获取题库中所有可见的题目
-		exerciseGroup.GET("/get/one/", middlewares.StudentJWTMiddleware(), exercise.GetOneExerciseHandle)                    // 获取当前题目的题面
-		exerciseGroup.GET("/get/all-tables/", middlewares.TeacherJWTMiddleware(), exercise.GetAllTableHandle)                // 获取所有数据表
-		exerciseGroup.GET("/teacher/all-exercises/", middlewares.TeacherJWTMiddleware(), exercise.TeacherGetAllExercises)    // 教师获取题库所有题目
-		exerciseGroup.GET("/teacher/answer/", middlewares.TeacherJWTMiddleware(), exercise.TeacherGetAnswer)                 // 教师获取题目答案
-
+		exerciseGroup.POST("/publish/exercise", middlewares.TeacherJWTMiddleware(), exercise.PublishExerciseHandler)          // 发布练习接口
+		exerciseGroup.POST("/upload/table", middlewares.TeacherJWTMiddleware(), exercise.UploadTableHandler)                  // 发布练习表单接口
+		exerciseGroup.POST("/submit/", middlewares.StudentJWTMiddleware(), exercise.SubmitHandler)                            // 处理提交习题接口
+		exerciseGroup.GET("/get/all/without-token", exercise.GetAllExerciseWithoutTokenHandler)                               // 获取题库中所有可见的题目条目
+		exerciseGroup.GET("/get/all/with-token", middlewares.StudentJWTMiddleware(), exercise.GetAllExerciseWithTokenHandler) //  登录用户获取题库中所有可见的题目
+		exerciseGroup.GET("/get/one/", middlewares.StudentJWTMiddleware(), exercise.GetOneExerciseHandler)                    // 获取当前题目的题面
+		exerciseGroup.GET("/get/all-tables/", middlewares.TeacherJWTMiddleware(), exercise.GetAllTableHandler)                // 获取所有数据表
+		exerciseGroup.GET("/teacher/all-exercises/", middlewares.TeacherJWTMiddleware(), exercise.TeacherGetAllExercises)     // 教师获取题库所有题目
+		exerciseGroup.GET("/teacher/answer/", middlewares.TeacherJWTMiddleware(), exercise.TeacherGetAnswer)                  // 教师获取题目答案
+		exerciseGroup.DELETE("/delete/", middlewares.TeacherJWTMiddleware(), exercise.DeleteExerciseHandler)
+		exerciseGroup.DELETE("/delete-table/", middlewares.TeacherJWTMiddleware(), exercise.DeleteTableHandler)
 	}
 	submissionGroup := server.Group("/api/submission")
 	{
-		submissionGroup.GET("/get/one-one/", middlewares.StudentJWTMiddleware(), submission.GetOneOneHandle)                   // 查询当前用户当前题目提交记录
-		submissionGroup.GET("/get/one-all/", middlewares.StudentJWTMiddleware(), submission.GetOneAllHandle)                   // 查询当前用户所有提交记录
-		submissionGroup.GET("/get/all-all/", middlewares.TeacherJWTMiddleware(), submission.GetAllAllHandle)                   // 获取所有提交记录
-		submissionGroup.GET("/get/all-one/", middlewares.TeacherJWTMiddleware(), submission.GetAllOneHandle)                   // 获取当前题目所有用户的提交
-		submissionGroup.GET("/get/answer-detail/", middlewares.StudentJWTMiddleware(), submission.GetAnswerDetailHandle)       // 获取提交详情信息
-		submissionGroup.GET("/contest/get-all/", middlewares.TeacherJWTMiddleware(), submission.ContestGetAllSubmissionHandle) // 获取当前竞赛的所有提交
-		//submissionGroup.GET("/contest/get-my/", middlewares.StudentJWTMiddleware(), middlewares.CheckContestGetAuthority(), submission.ContestGetMySubmissionHandle) // 获取当前用户在竞赛中的所有提交
-		submissionGroup.GET("/contest/get-my/", middlewares.StudentJWTMiddleware(), submission.ContestGetMySubmissionHandle)      // test获取当前用户在竞赛中的所有提交
-		submissionGroup.GET("/contest/get-exercise/", middlewares.TeacherJWTMiddleware(), submission.ContestGetOneExerciseHandle) // 获取当前竞赛当前题目所有提交
-		submissionGroup.GET("/contest/detail/", middlewares.StudentJWTMiddleware(), submission.ContestGetDetailHandle)            // 获取竞赛提交记录对应的答案
-		submissionGroup.GET("/contest/", middlewares.StudentJWTMiddleware(), submission.ContestGetUserExerciseHandle)             // 获取当前用户当前竞赛当前题目的所有提交
+		submissionGroup.GET("/get/one-one/", middlewares.StudentJWTMiddleware(), submission.GetOneOneHandler)                   // 查询当前用户当前题目提交记录
+		submissionGroup.GET("/get/one-all/", middlewares.StudentJWTMiddleware(), submission.GetOneAllHandler)                   // 查询当前用户所有提交记录
+		submissionGroup.GET("/get/all-all/", middlewares.TeacherJWTMiddleware(), submission.GetAllAllHandler)                   // 获取所有提交记录
+		submissionGroup.GET("/get/all-one/", middlewares.TeacherJWTMiddleware(), submission.GetAllOneHandler)                   // 获取当前题目所有用户的提交
+		submissionGroup.GET("/get/answer-detail/", middlewares.StudentJWTMiddleware(), submission.GetAnswerDetailHandler)       // 获取提交详情信息
+		submissionGroup.GET("/contest/get-all/", middlewares.TeacherJWTMiddleware(), submission.ContestGetAllSubmissionHandler) // 获取当前竞赛的所有提交
+		//submissionGroup.GET("/contest/get-my/", middlewares.StudentJWTMiddleware(), middlewares.CheckContestGetAuthority(), submission.ContestGetMySubmissionHandler) // 获取当前用户在竞赛中的所有提交
+		submissionGroup.GET("/contest/get-my/", middlewares.StudentJWTMiddleware(), submission.ContestGetMySubmissionHandler)      // test获取当前用户在竞赛中的所有提交
+		submissionGroup.GET("/contest/get-exercise/", middlewares.TeacherJWTMiddleware(), submission.ContestGetOneExerciseHandler) // 获取当前竞赛当前题目所有提交
+		submissionGroup.GET("/contest/detail/", middlewares.StudentJWTMiddleware(), submission.ContestGetDetailHandler)            // 获取竞赛提交记录对应的答案
+		submissionGroup.GET("/contest/", middlewares.StudentJWTMiddleware(), submission.ContestGetUserExerciseHandler)             // 获取当前用户当前竞赛当前题目的所有提交
 
 	}
 	rankingGroup := server.Group("/api/ranking")
 	{
-		rankingGroup.GET("/get/list/", ranking.GetRankingHandle)   // 获取排行榜信息
-		rankingGroup.GET("/get/min/", ranking.GetMinRankingHandle) // 获取min排行榜信息
+		rankingGroup.GET("/get/list/", ranking.GetRankingHandler)   // 获取排行榜信息
+		rankingGroup.GET("/get/min/", ranking.GetMinRankingHandler) // 获取min排行榜信息
 	}
 	contestGroup := server.Group("/api/contest")
 	{
-		contestGroup.POST("/create/", middlewares.TeacherJWTMiddleware(), contest.CreateContestHandle)                                          // 创建竞赛接口
-		contestGroup.GET("/get/all/", contest.GetAllContestHandle)                                                                              // 获取所有竞赛接口
-		contestGroup.GET("/get/contest/", middlewares.StudentJWTMiddleware(), middlewares.CheckContestGetAuthority(), contest.GetContestHandle) // 获取竞赛详情信息                                                                          // 获取所有竞赛接口
-		//contestGroup.POST("/submit/", middlewares.StudentJWTMiddleware(), exercise.ContestSubmitHandle)          // test竞赛提交接口
-		//contestGroup.GET("/get/all-exercise/", middlewares.StudentJWTMiddleware(), contest.GetAllExerciseHandle) // test获取竞赛中所有的题目
-		contestGroup.GET("/status/", middlewares.TeacherJWTMiddleware(), contest.GetContestStatusHandle)                                                    // 获取竞赛的状态
-		contestGroup.POST("/submit/", middlewares.StudentJWTMiddleware(), middlewares.CheckContestSubmitAuthority(), exercise.ContestSubmitHandle)          // 竞赛提交接口
-		contestGroup.GET("/get/all-exercise/", middlewares.StudentJWTMiddleware(), middlewares.CheckContestGetAuthority(), contest.GetAllExerciseHandle)    // 获取竞赛中所有的题目
-		contestGroup.GET("/get/check-authority/", middlewares.StudentJWTMiddleware(), middlewares.CheckContestGetAuthority(), contest.CheckAuthorityHandle) // 获取竞赛中所有的题目
+		contestGroup.POST("/create/", middlewares.TeacherJWTMiddleware(), contest.CreateContestHandler)                                          // 创建竞赛接口
+		contestGroup.GET("/get/all/", contest.GetAllContestHandler)                                                                              // 获取所有竞赛接口
+		contestGroup.GET("/get/contest/", middlewares.StudentJWTMiddleware(), middlewares.CheckContestGetAuthority(), contest.GetContestHandler) // 获取竞赛详情信息                                                                          // 获取所有竞赛接口
+		//contestGroup.POST("/submit/", middlewares.StudentJWTMiddleware(), exercise.ContestSubmitHandler)          // test竞赛提交接口
+		//contestGroup.GET("/get/all-exercise/", middlewares.StudentJWTMiddleware(), contest.GetAllExerciseHandler) // test获取竞赛中所有的题目
+		contestGroup.GET("/status/", middlewares.TeacherJWTMiddleware(), contest.GetContestStatusHandler)                                                    // 获取竞赛的状态
+		contestGroup.POST("/submit/", middlewares.StudentJWTMiddleware(), middlewares.CheckContestSubmitAuthority(), exercise.ContestSubmitHandler)          // 竞赛提交接口
+		contestGroup.GET("/get/all-exercise/", middlewares.StudentJWTMiddleware(), middlewares.CheckContestGetAuthority(), contest.GetAllExerciseHandler)    // 获取竞赛中所有的题目
+		contestGroup.GET("/get/check-authority/", middlewares.StudentJWTMiddleware(), middlewares.CheckContestGetAuthority(), contest.CheckAuthorityHandler) // 获取竞赛中所有的题目
+		contestGroup.GET("/delete/", middlewares.TeacherJWTMiddleware(), contest.DeleteContestHandler)                                                       // 获取竞赛中所有的题目
 
 	}
-	server.GET("/api/get-type/", middlewares.StudentJWTMiddleware(), common.GetTypeHandle) // 获取用户类型
+	server.GET("/api/get-type/", middlewares.StudentJWTMiddleware(), common.GetTypeHandler) // 获取用户类型
 	return server
 }

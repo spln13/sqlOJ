@@ -133,3 +133,12 @@ func (*ExerciseContentFlow) QueryExerciseGrade(exerciseID int64) int {
 	}
 	return exerciseContentDAO.Grade
 }
+
+func (*ExerciseContentFlow) DeleteExerciseContent(exerciseID int64) error {
+	err := GetSysDB().Delete(&ExerciseContent{}, exerciseID).Error
+	if err != nil {
+		log.Println(err)
+		return errors.New("删除题目错误")
+	}
+	return nil
+}

@@ -22,8 +22,8 @@ type SingleContest struct {
 	EndAt         time.Time `json:"end_at"`
 }
 
-// GetAllContestHandle 获取所有竞赛, 按时间降序排列
-func GetAllContestHandle(context *gin.Context) {
+// GetAllContestHandler 获取所有竞赛, 按时间降序排列
+func GetAllContestHandler(context *gin.Context) {
 	contestDAOList, err := model.NewContestFlow().GetAllContest()
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, Response{

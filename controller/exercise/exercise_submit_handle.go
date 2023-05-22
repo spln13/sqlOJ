@@ -21,8 +21,8 @@ type SubmitMessage struct {
 	SubmitTime time.Time
 }
 
-// SubmitHandle 处理用户提交题目的请求
-func SubmitHandle(context *gin.Context) {
+// SubmitHandler 处理用户提交题目的请求
+func SubmitHandler(context *gin.Context) {
 	userID, ok1 := context.MustGet("user_id").(int64)
 	userType, ok2 := context.MustGet("user_type").(int64)
 	if !ok1 || !ok2 {

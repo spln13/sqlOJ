@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-func SendCodeHandle(context *gin.Context) {
+func SendCodeHandler(context *gin.Context) {
 	emailAddr := context.Query("email")
 	ok, err := cache.CheckEmailCodeSendTimeValid(emailAddr)
 	if err != nil {

@@ -27,8 +27,8 @@ type AllAll struct {
 	OnChain      int       `json:"on_chain"`
 }
 
-// GetAllAllHandle 获取所有的提交记录, 包括在cache中的
-func GetAllAllHandle(context *gin.Context) {
+// GetAllAllHandler 获取所有的提交记录, 包括在cache中的
+func GetAllAllHandler(context *gin.Context) {
 	allSubmitHistory, err := model.NewSubmitHistoryFlow().QueryAllSubmitHistory()
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, AllAllResponse{

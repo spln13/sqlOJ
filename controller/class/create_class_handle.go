@@ -18,7 +18,7 @@ type StudentInfo struct {
 	Name   string
 }
 
-func CreateClassHandle(context *gin.Context) {
+func CreateClassHandler(context *gin.Context) {
 	className := context.PostForm("name")
 	classFile, err := context.FormFile("class_file")
 	if err != nil {

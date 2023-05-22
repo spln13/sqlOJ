@@ -24,8 +24,8 @@ type OneExerciseResponse struct {
 	utils.Response
 }
 
-// GetOneExerciseHandle 获取当前题目的题目信息
-func GetOneExerciseHandle(context *gin.Context) {
+// GetOneExerciseHandler 获取当前题目的题目信息
+func GetOneExerciseHandler(context *gin.Context) {
 	exerciseIDStr := context.Query("exercise_id")
 	exerciseID, err := strconv.ParseInt(exerciseIDStr, 10, 64)
 	if err != nil {

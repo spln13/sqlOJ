@@ -8,7 +8,7 @@ import (
 	"sqlOJ/utils"
 )
 
-func StudentRegisterHandle(context *gin.Context) {
+func StudentRegisterHandler(context *gin.Context) {
 	username := context.PostForm("username")
 	number := context.PostForm("number")
 	email := context.PostForm("email")

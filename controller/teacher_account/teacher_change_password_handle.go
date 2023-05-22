@@ -8,7 +8,7 @@ import (
 	"sqlOJ/utils"
 )
 
-func TeacherChangePasswordHandle(context *gin.Context) {
+func TeacherChangePasswordHandler(context *gin.Context) {
 	UserID, ok := context.MustGet("user_id").(int64)
 	if !ok {
 		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, "解析用户信息错误"))

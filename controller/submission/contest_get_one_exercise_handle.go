@@ -26,7 +26,7 @@ type OneExerciseSubmission struct {
 	Username     string    `json:"username"`
 }
 
-func ContestGetOneExerciseHandle(context *gin.Context) {
+func ContestGetOneExerciseHandler(context *gin.Context) {
 	contestIDStr := context.Query("contest_id")
 	exerciseIDStr := context.Query("exercise_id")
 	contestID, err1 := strconv.ParseInt(contestIDStr, 10, 64)

@@ -22,7 +22,7 @@ type OneContest struct {
 	BeginAt     time.Time `json:"begin_at"`
 }
 
-func GetContestHandle(context *gin.Context) {
+func GetContestHandler(context *gin.Context) {
 	contestIDStr := context.Query("contest_id")
 	contestID, err := strconv.ParseInt(contestIDStr, 10, 64)
 	if err != nil {
@@ -51,8 +51,8 @@ func GetContestHandle(context *gin.Context) {
 	})
 }
 
-// CheckAuthorityHandle 检查请求方是否有参加竞赛权限
-// 因为请求已经过竞赛鉴权中间件，此handle直接返回成功
-func CheckAuthorityHandle(context *gin.Context) {
+// CheckAuthorityHandler 检查请求方是否有参加竞赛权限
+// 因为请求已经过竞赛鉴权中间件，此Handler直接返回成功
+func CheckAuthorityHandler(context *gin.Context) {
 	context.JSON(http.StatusOK, utils.NewCommonResponse(0, ""))
 }

@@ -25,7 +25,7 @@ type StudentScoreInfo struct {
 	Score         float64 `json:"score"`
 }
 
-func StudentScoreHandle(context *gin.Context) {
+func StudentScoreHandler(context *gin.Context) {
 	studentScoreArray, err := fabric.RatingStudents()
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, StudentScoreResponse{
@@ -59,7 +59,7 @@ func StudentScoreHandle(context *gin.Context) {
 	})
 }
 
-func StudentScoreDownloadHandle(context *gin.Context) {
+func StudentScoreDownloadHandler(context *gin.Context) {
 	studentScoreArray, err := fabric.RatingStudents()
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, StudentScoreResponse{

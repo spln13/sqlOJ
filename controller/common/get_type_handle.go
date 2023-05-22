@@ -11,8 +11,8 @@ type GetTypeResponse struct {
 	utils.Response
 }
 
-// GetTypeHandle 获取token对应的用户类型
-func GetTypeHandle(context *gin.Context) {
+// GetTypeHandler 获取token对应的用户类型
+func GetTypeHandler(context *gin.Context) {
 	userType, ok := context.MustGet("user_type").(int64)
 	if !ok {
 		context.JSON(http.StatusInternalServerError, GetTypeResponse{

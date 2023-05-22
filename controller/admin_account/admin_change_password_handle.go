@@ -8,9 +8,9 @@ import (
 	"sqlOJ/utils"
 )
 
-// AdminChangePasswordHandle 将用户名对应的管理员旧密码更改为新密码
+// AdminChangePasswordHandler 将用户名对应的管理员旧密码更改为新密码
 // 1. 比对输入旧密码与数据库中密码是否相同 2. 将数据库中密码更新为新密码
-func AdminChangePasswordHandle(context *gin.Context) {
+func AdminChangePasswordHandler(context *gin.Context) {
 	UserID, ok := context.MustGet("user_id").(int64)
 	if !ok {
 		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, "解析用户信息错误"))

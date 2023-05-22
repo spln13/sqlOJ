@@ -18,7 +18,7 @@ type Item struct {
 	Username string `json:"username"`
 }
 
-func GetRankingHandle(context *gin.Context) {
+func GetRankingHandler(context *gin.Context) {
 	rankingAPIList, err := model.NewScoreRecordFlow().GetRanking()
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, Response{
@@ -42,7 +42,7 @@ func GetRankingHandle(context *gin.Context) {
 	})
 }
 
-func GetMinRankingHandle(context *gin.Context) {
+func GetMinRankingHandler(context *gin.Context) {
 	rankingMinAPIList, err := model.NewScoreRecordFlow().GetMinRanking()
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, Response{

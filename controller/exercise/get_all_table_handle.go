@@ -19,7 +19,7 @@ type TableInfo struct {
 	TableName        string `json:"table_name"`
 }
 
-func GetAllTableHandle(context *gin.Context) {
+func GetAllTableHandler(context *gin.Context) {
 	var tableInfoList []TableInfo
 	tableList, err := model.NewExerciseTableFlow().QueryAllTable()
 	if err != nil {

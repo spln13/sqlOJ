@@ -23,8 +23,8 @@ type AllExercise struct {
 	Status        int    `json:"status"`
 }
 
-// GetAllExerciseWithoutTokenHandle 获取题库中所有可见的题目条目, 未登录状态时请求
-func GetAllExerciseWithoutTokenHandle(context *gin.Context) {
+// GetAllExerciseWithoutTokenHandler 获取题库中所有可见的题目条目, 未登录状态时请求
+func GetAllExerciseWithoutTokenHandler(context *gin.Context) {
 	exerciseContentArray, err := model.NewExerciseContentFlow().GetAllExercise()
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, AllExerciseResponse{
@@ -54,8 +54,8 @@ func GetAllExerciseWithoutTokenHandle(context *gin.Context) {
 	})
 }
 
-// GetAllExerciseWithTokenHandle 登录用户获取所有题目信息
-func GetAllExerciseWithTokenHandle(context *gin.Context) {
+// GetAllExerciseWithTokenHandler 登录用户获取所有题目信息
+func GetAllExerciseWithTokenHandler(context *gin.Context) {
 	userID, ok1 := context.MustGet("user_id").(int64)
 	userType, ok2 := context.MustGet("user_type").(int64)
 	if !ok1 || !ok2 {

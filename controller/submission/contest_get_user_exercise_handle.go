@@ -22,7 +22,7 @@ type OneUserExerciseSubmission struct {
 	SubmitTime time.Time `json:"submit_time"`
 }
 
-func ContestGetUserExerciseHandle(context *gin.Context) {
+func ContestGetUserExerciseHandler(context *gin.Context) {
 	userID, ok1 := context.MustGet("user_id").(int64)
 	userType, ok2 := context.MustGet("user_type").(int64)
 	if !ok1 || !ok2 {

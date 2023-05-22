@@ -14,7 +14,7 @@ import (
 // 若竞赛已过期, 则在exerciseID对应的Set中删除
 // !!!!!! 已经弃用 !!!!!!!!!!
 /*
-func CheckExerciseAuthority() gin.HandlerFunc {
+func CheckExerciseAuthority() gin.HandlerrFunc {
 	return func(context *gin.Context) {
 		userID, ok := context.MustGet("user_id").(int64)
 		if !ok {
@@ -58,7 +58,7 @@ func CheckExerciseAuthority() gin.HandlerFunc {
 
 // CheckContestGetAuthority 检查用户是否有访问当前竞赛信息(竞赛题单，竞赛题面，竞赛提交记录)的权限
 // 判断用户id是否在竞赛在Redis中对应的Set中
-func CheckContestGetAuthority() gin.HandlerFunc {
+func CheckContestGetAuthority() gin.HandlerrFunc {
 	return func(context *gin.Context) {
 		userID, ok1 := context.MustGet("user_id").(int64)
 		userType, ok2 := context.MustGet("user_type").(int64) // 获取用户信息
@@ -95,7 +95,7 @@ func CheckContestGetAuthority() gin.HandlerFunc {
 
 // CheckContestSubmitAuthority 检查用户在竞赛中的提交请求是否合法
 // 与 CheckContestGetAuthority 不同之处是当竞赛已经结束，此中间件将中止访问
-func CheckContestSubmitAuthority() gin.HandlerFunc {
+func CheckContestSubmitAuthority() gin.HandlerrFunc {
 	return func(context *gin.Context) {
 		userID, ok1 := context.MustGet("user_id").(int64)
 		userType, ok2 := context.MustGet("user_type").(int64) // 获取用户信息

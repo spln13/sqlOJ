@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-func StudentResetHandle(context *gin.Context) {
+func StudentResetHandler(context *gin.Context) {
 	studentIDStr := context.Query("student_id")
 	studentID, err := strconv.ParseInt(studentIDStr, 10, 64)
 	if err != nil {

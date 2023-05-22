@@ -25,8 +25,8 @@ type AllOne struct {
 	UserAgent  string    `json:"user_agent"`
 }
 
-// GetAllOneHandle 获取当前题目所有用户的提交
-func GetAllOneHandle(context *gin.Context) {
+// GetAllOneHandler 获取当前题目所有用户的提交
+func GetAllOneHandler(context *gin.Context) {
 	exerciseIDStr := context.Query("exercise_id")
 	exerciseID, err := strconv.ParseInt(exerciseIDStr, 10, 64)
 	if err != nil {

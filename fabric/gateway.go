@@ -53,7 +53,7 @@ type StudentScore struct {
 
 // RatingStudents 调用评分链码获取学生做题情况
 func RatingStudents() ([]StudentScore, error) {
-	initLedger(contract)
+	//initLedger(contract)
 	ratingResultBytes, err := contract.EvaluateTransaction("RatingStudents")
 	if err != nil {
 		log.Println(err)

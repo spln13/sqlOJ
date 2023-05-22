@@ -81,3 +81,11 @@ func (*ContestFlow) GetContestInfo(contestID int64) (Contest, error) {
 	}
 	return contestDAO, nil
 }
+
+func (*ContestFlow) DeleteContest(contestID int64) error {
+	err := GetSysDB().Delete(&Contest{}, contestID).Error
+	if err != nil {
+		return errors.New("删除竞赛错误")
+	}
+	return nil
+}

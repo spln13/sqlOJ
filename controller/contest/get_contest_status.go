@@ -15,7 +15,7 @@ type OneContestStatusResponse struct {
 	utils.Response
 }
 
-func GetContestStatusHandle(context *gin.Context) {
+func GetContestStatusHandler(context *gin.Context) {
 	contestIDStr := context.Query("contest_id")
 	contestID, err := strconv.ParseInt(contestIDStr, 10, 64)
 	if err != nil {

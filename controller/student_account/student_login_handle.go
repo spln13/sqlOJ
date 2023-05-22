@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func StudentLoginHandle(context *gin.Context) {
+func StudentLoginHandler(context *gin.Context) {
 	usernameEmail := context.Query("username_email") // 用户名或者密码
 	codeStr := context.Query("code")                 // code: 1-> 用户名登录; 2 -> 邮箱登录
 	code, err := strconv.Atoi(codeStr)
@@ -60,7 +60,7 @@ func StudentLoginHandle(context *gin.Context) {
 	// 设置cookie过期时间
 	expires := time.Now().Add(7 * 24 * time.Hour)
 	// 设置cookie
-	context.SetCookie("token", token, int(expires.Unix()), "/", "localhost:8080", true, false)
-	context.SetCookie("username", username, int(expires.Unix()), "/", "localhost:8080", true, false)
+	context.SetCookie("token", token, int(expires.Unix()), "/", "127.0.0.1", true, false)
+	context.SetCookie("username", username, int(expires.Unix()), "/", "127.0.0.1", true, false)
 	context.JSON(http.StatusOK, utils.NewCommonResponse(0, ""))
 }

@@ -18,7 +18,7 @@ type OneClass struct {
 	StudentCount int    `json:"student_count"`
 }
 
-func GetAllClassHandle(context *gin.Context) {
+func GetAllClassHandler(context *gin.Context) {
 	classDAOList, err := model.NewClassFlow().GetAllClass()
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, GetAllClassResponse{
