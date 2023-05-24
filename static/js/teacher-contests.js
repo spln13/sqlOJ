@@ -25,6 +25,31 @@ let parseTime = (time) => {
     return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')} ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
 }
 
+let deleteContest = (contest_id) => {
+    const r = confirm("确定删除吗?");
+    if (r === false) {
+        return
+    }
+    const url = '/api/contest/delete?contest_id=' + contest_id;
+    fetch(url, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+        .then(response => response.json())
+        .then(data => {
+            const status_code = data['status_code'];
+            const status_msg = data['status_msg'];
+            if (status_code !== 0) {
+                alert(status_msg);
+                return
+            }
+            alert("删除成功");
+        })
+        .catch(error => console.error(error));
+}
+
 
 const createBox = (idx, contest_id, contest_name, publisher_name, publisher_type, begin_at, end_at) => {
     let mother_box = document.querySelector('#contests');
@@ -32,9 +57,10 @@ const createBox = (idx, contest_id, contest_name, publisher_name, publisher_type
     const publisher_class = "publisher_" + publisher_type;
     const contestStatusURL = '/contest/status/' + contest_id;
     const submissionURL = '/contest/submission/' + contest_id;
-    box.innerHTML = '<tr><td>' + idx + '</td><td><a href="/contest/' + contest_id.toString() + '">' + contest_name + '</a></td>' +
+    box.innerHTML = '<td>' + idx + '</td><td><a href="/contest/' + contest_id.toString() + '">' + contest_name + '</a></td>' +
         '<td class="' + publisher_class + '">' + publisher_name + '</td><td>' + '<a href="' + contestStatusURL + '">查看</a>' +
-        '<td><a href="' + submissionURL + '">查看' + '</a></td>' + '<td>' + begin_at + '</td><td>' + end_at + '</td></tr>';
+        '<td><a href="' + submissionURL + '">查看' + '</a></td>' + '<td>' + begin_at + '</td><td>' + end_at + '</td>' +
+        '<td><button class="ui button" onclick="deleteContest(' + contest_id + ')">删除</button></td>';
     mother_box.append(box);
 }
 

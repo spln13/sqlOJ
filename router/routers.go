@@ -214,7 +214,7 @@ func InitServer() *gin.Engine {
 		contestGroup.POST("/submit/", middlewares.StudentJWTMiddleware(), middlewares.CheckContestSubmitAuthority(), exercise.ContestSubmitHandler)          // 竞赛提交接口
 		contestGroup.GET("/get/all-exercise/", middlewares.StudentJWTMiddleware(), middlewares.CheckContestGetAuthority(), contest.GetAllExerciseHandler)    // 获取竞赛中所有的题目
 		contestGroup.GET("/get/check-authority/", middlewares.StudentJWTMiddleware(), middlewares.CheckContestGetAuthority(), contest.CheckAuthorityHandler) // 获取竞赛中所有的题目
-		contestGroup.GET("/delete/", middlewares.TeacherJWTMiddleware(), contest.DeleteContestHandler)                                                       // 获取竞赛中所有的题目
+		contestGroup.DELETE("/delete/", middlewares.TeacherJWTMiddleware(), contest.DeleteContestHandler)                                                    // 获取竞赛中所有的题目
 
 	}
 	server.GET("/api/get-type/", middlewares.StudentJWTMiddleware(), common.GetTypeHandler) // 获取用户类型
