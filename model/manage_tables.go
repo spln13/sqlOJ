@@ -30,7 +30,7 @@ func ExecSqlCreateTable(filePath string) error {
 
 // ExecSqlDeleteTable 在练习数据库中删除tableName对应表名
 func ExecSqlDeleteTable(tableName string) error {
-	err := GetExeDB().Exec("drop table ?", tableName).Error
+	err := GetExeDB().Exec("drop table " + tableName).Error
 	if err != nil {
 		log.Println(err)
 		return errors.New("删除数据表错误")

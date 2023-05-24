@@ -14,12 +14,37 @@ getCookie = (cname) => {
     return "";
 }
 
+let deleteTable = (table_id) => {
+    const r = confirm("确定删除吗?");
+    if (r === false) {
+        return
+    }
+    const url = '/api/exercise/delete-table?table_id=' + table_id;
+    fetch(url, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+        .then(response => response.json())
+        .then(data => {
+            const status_code = data['status_code'];
+            const status_msg = data['status_msg'];
+            if (status_code !== 0) {
+                alert(status_msg);
+                return
+            }
+            alert("删除成功");
+        })
+        .catch(error => console.error(error));
+}
+
 let createBox = (idx, table_id, table_name, description, association_count) => {
     let mother_box = document.querySelector("#tables");
     let box = document.createElement('tr');
     mother_box.appendChild(box);
-    box.innerHTML = '<tr><td>' + idx + '</td><td>' + table_name + '</td><td>' + description + '</td>' +
-        '<td>' + association_count + '</td></tr>';
+    box.innerHTML = '<td>' + table_id + '</td><td>' + table_name + '</td><td>' + description + '</td>' +
+        '<td>' + association_count + '</td><td><button class="ui button" onclick="deleteTable('+ table_id + ')">删除</button></td>';
 
 }
 

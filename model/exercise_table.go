@@ -96,3 +96,12 @@ func (*ExerciseTableFlow) QueryTableNameByID(tableID int64) (string, error) {
 	}
 	return tableDAO.Name, nil
 }
+
+func (*ExerciseTableFlow) DeleteTableByID(tableID int64) error {
+	err := GetSysDB().Delete(&ExerciseTable{}, tableID).Error
+	if err != nil {
+		log.Println(err)
+		return errors.New("删除数据表数据错误")
+	}
+	return nil
+}

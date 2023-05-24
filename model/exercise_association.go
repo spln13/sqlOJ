@@ -48,7 +48,7 @@ func (*ExerciseAssociationFlow) InsertExerciseAssociation(exerciseID int64, tabl
 // QueryAssociationExist 查找是否有题目与该数据表关联
 func (*ExerciseAssociationFlow) QueryAssociationExist(tableID int64) (bool, error) {
 	var exerciseAssociation ExerciseAssociation
-	err := GetSysDB().Model(&ExerciseAssociation{}).Select("table_id = ?", tableID).Limit(1).Find(&exerciseAssociation).Error
+	err := GetSysDB().Model(&ExerciseAssociation{}).Select("id").Where("table_id = ?", tableID).Limit(1).Find(&exerciseAssociation).Error
 	if err != nil {
 		log.Println(err)
 		return false, errors.New("查找题目数据表引用错误")

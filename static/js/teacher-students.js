@@ -30,7 +30,7 @@ let resetPassword = (studentID) => {    // 重制当前学生密码
         .then(data => {
             const status_code = data['status_code'];
             const status_msg = data['status_msg'];
-            if (status_code !== 0) {    // token出错
+            if (status_code !== 0) {
                 alert(status_msg);
                 return
             }

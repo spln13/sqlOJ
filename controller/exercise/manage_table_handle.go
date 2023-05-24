@@ -86,5 +86,10 @@ func DeleteTableHandler(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, err.Error()))
 		return
 	}
+	err = model.NewExerciseTableFlow().DeleteTableByID(tableID)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, utils.NewCommonResponse(1, err.Error()))
+		return
+	}
 	context.JSON(http.StatusOK, utils.NewCommonResponse(0, ""))
 }
