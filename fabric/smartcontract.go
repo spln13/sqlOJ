@@ -184,7 +184,7 @@ func (s *SmartContract) RatingStudents(ctx contractapi.TransactionContextInterfa
 				userScoreMap[number] = append(userScoreMap[number], submission.Grade) // 加入题库成绩
 				userScoreMap[number] = append(userScoreMap[number], 0)                // 加入竞赛成绩
 			}
-
+			// FIXME: 需要判断该提交记录是否以及加过分
 		} else { // 竞赛中做题记录
 			if len(userScoreMap[submission.Number]) > 0 { // 当前用户已有在规定userScore中有记录
 				userScoreMap[number][1] += submission.Grade // 增加竞赛得分

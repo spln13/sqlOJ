@@ -58,7 +58,7 @@ func CheckExerciseAuthority() gin.HandlerrFunc {
 
 // CheckContestGetAuthority 检查用户是否有访问当前竞赛信息(竞赛题单，竞赛题面，竞赛提交记录)的权限
 // 判断用户id是否在竞赛在Redis中对应的Set中
-func CheckContestGetAuthority() gin.HandlerrFunc {
+func CheckContestGetAuthority() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		userID, ok1 := context.MustGet("user_id").(int64)
 		userType, ok2 := context.MustGet("user_type").(int64) // 获取用户信息
@@ -95,7 +95,7 @@ func CheckContestGetAuthority() gin.HandlerrFunc {
 
 // CheckContestSubmitAuthority 检查用户在竞赛中的提交请求是否合法
 // 与 CheckContestGetAuthority 不同之处是当竞赛已经结束，此中间件将中止访问
-func CheckContestSubmitAuthority() gin.HandlerrFunc {
+func CheckContestSubmitAuthority() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		userID, ok1 := context.MustGet("user_id").(int64)
 		userType, ok2 := context.MustGet("user_type").(int64) // 获取用户信息

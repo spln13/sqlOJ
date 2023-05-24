@@ -40,7 +40,7 @@ window.onload = () => {
             '      </div>' +
             '    </div>';
     }
-    const url = '/api/ranking/get/list/';
+    const url = '/api/ranking/get/min/';
     fetch(url, {
         method: 'GET',
         headers: {
