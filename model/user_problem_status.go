@@ -103,7 +103,7 @@ func (*UserProblemStatusFlow) QueryUserProblemStatus(userID, userType, exerciseI
 }
 
 func (*UserProblemStatusFlow) DeleteProblemStatus(exerciseID int64) error {
-	err := GetSysDB().Delete(&UserProblemStatus{}).Where("exercise_id = ?", exerciseID).Error
+	err := GetSysDB().Where("exercise_id = ?", exerciseID).Delete(&UserProblemStatus{}).Error
 	if err != nil {
 		log.Println(err)
 		return errors.New("清除题目提交状态错误")

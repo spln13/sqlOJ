@@ -14,6 +14,31 @@ getCookie = (cname) => {
     return "";
 }
 
+let deleteExercise = (exercise_id) => {
+    const r = confirm("确定删除吗?");
+    if (r === false) {
+        return
+    }
+    const url = '/api/exercise/delete?exercise_id=' + exercise_id;
+    fetch(url, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+        .then(response => response.json())
+        .then(data => {
+            const status_code = data['status_code'];
+            const status_msg = data['status_msg'];
+            if (status_code !== 0) {
+                alert(status_msg);
+                return
+            }
+            alert("删除成功");
+        })
+        .catch(error => console.error(error));
+}
+
 createBox = (exercise_id, exercise_name, publisher_id, publisher_name, publisher_type, grade, answer, description, submit_count, pass_count) => {
     let mother_box = document.querySelector("#exercises");
     let box = document.createElement('tr');
@@ -34,7 +59,8 @@ createBox = (exercise_id, exercise_name, publisher_id, publisher_name, publisher
     const answer_url = '/teacher/exercise-answer/' + exercise_id;
     box.innerHTML = '<tr><td>' + exercise_id + '</td><td><a href="' + exercise_url + '">' + exercise_name + '</a></td>' +
         '<td class="' + publisher_class + '">' + publisher_name + '</td><td class="' + grade_class + '">' + grade_type + '</td>' +
-        '<td>' + submit_count + '</td><td>' + pass_count + '</td><td><a href="' + answer_url + '">查看</a>';
+        '<td>' + submit_count + '</td><td>' + pass_count + '</td><td><a href="' + answer_url + '">查看</a></td>' +
+        '<td><button class="ui button" onclick="deleteExercise('+ exercise_id + ')">删除</button></td>';
 
 }
 

@@ -56,7 +56,7 @@ func (*ContestExerciseAssociationFlow) GetExerciseIDListByContestID(contestID in
 }
 
 func (*ContestExerciseAssociationFlow) DeleteContestExerciseAssociation(contestID int64) error {
-	err := GetSysDB().Delete(&ContestExerciseAssociation{}).Where("contest_id = ?", contestID).Error
+	err := GetSysDB().Where("contest_id = ?", contestID).Delete(&ContestExerciseAssociation{}).Error
 	if err != nil {
 		log.Println(err)
 		return errors.New("删除竞赛题目关系错误")

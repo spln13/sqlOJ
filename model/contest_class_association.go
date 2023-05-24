@@ -42,7 +42,7 @@ func (*ContestClassAssociationFlow) InsertContestClassAssociation(contestID int6
 }
 
 func (*ContestClassAssociationFlow) DeleteContestClassAssociation(contestID int64) error {
-	err := GetSysDB().Delete(&ContestClassAssociation{}).Where("contest_id = ?", contestID).Error
+	err := GetSysDB().Where("contest_id = ?", contestID).Delete(&ContestClassAssociation{}).Error
 	if err != nil {
 		log.Println(err)
 		return errors.New("删除竞赛班级关系错误")

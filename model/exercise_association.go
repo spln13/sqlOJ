@@ -60,7 +60,7 @@ func (*ExerciseAssociationFlow) QueryAssociationExist(tableID int64) (bool, erro
 }
 
 func (*ExerciseAssociationFlow) DeleteAssociation(exerciseID int64) error {
-	err := GetSysDB().Delete(&ExerciseAssociationFlow{}).Where("exercise_id = ?", exerciseID).Error
+	err := GetSysDB().Where("exercise_id = ?", exerciseID).Delete(&ExerciseAssociation{}).Error
 	if err != nil {
 		log.Println(err)
 		return errors.New("删除关联关系错误")
