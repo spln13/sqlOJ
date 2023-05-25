@@ -39,11 +39,37 @@ let resetPassword = (studentID) => {    // 重制当前学生密码
         .catch(error => console.error(error));
 }
 
+let deleteStudent = (student_id) => {
+    const r = confirm("确定删除吗?");
+    if (r === false) {
+        return
+    }
+    const url = '/api/student/delete?student_id=' + student_id;
+    fetch(url, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    })
+        .then(response => response.json())
+        .then(data => {
+            const status_code = data['status_code'];
+            const status_msg = data['status_msg'];
+            if (status_code !== 0) {
+                alert(status_msg);
+                return
+            }
+            alert("删除成功");
+        })
+        .catch(error => console.error(error));
+}
+
 let createBox = (idx, number, className, username, realName, studentID) => {
     let mother_box = document.querySelector("#students");
     let box = document.createElement('tr');
     box.innerHTML = '<td>' + idx + '</td><td>' + number + '</td><td>' + username + '</td><td>' + realName + '</td>' +
-        '<td>' + className + '</td><td><button class="ui button" onclick="resetPassword('+ studentID + ')">重置密码</button></td>'
+        '<td>' + className + '</td><td><button class="ui button" onclick="resetPassword('+ studentID + ')">重置密码</button></td>' +
+        '<td><button class="ui button" onclick="deleteStudent(' + studentID + ')">删除</button></td>';
     mother_box.append(box);
 }
 

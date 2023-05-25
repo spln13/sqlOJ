@@ -93,3 +93,12 @@ func (*ScoreRecordFlow) GetMinRanking() ([]RankingAPI, error) {
 	}
 	return rankingAPIList, nil
 }
+
+func (*ScoreRecordFlow) DeleteRanking(studentID int64) error {
+	err := GetSysDB().Where("user_type = 1 and user_id = ?", studentID).Delete(&ScoreRecord{}).Error
+	if err != nil {
+		log.Println(err)
+		return errors.New("删除学生分数信息错误")
+	}
+	return nil
+}

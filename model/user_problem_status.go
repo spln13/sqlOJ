@@ -110,3 +110,12 @@ func (*UserProblemStatusFlow) DeleteProblemStatus(exerciseID int64) error {
 	}
 	return nil
 }
+
+func (*UserProblemStatusFlow) DeleteStudentStatus(studentID int64) error {
+	err := GetSysDB().Where("user_type = 1 and user_id = ?", studentID).Delete(&UserProblemStatus{}).Error
+	if err != nil {
+		log.Println(err)
+		return errors.New("清除用户提交状态错误")
+	}
+	return nil
+}

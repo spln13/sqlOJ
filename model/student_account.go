@@ -241,3 +241,12 @@ func (*StudentAccountFlow) QueryStudentNumberByID(studentID int64) string {
 	}
 	return studentAccount.Number
 }
+
+func (*StudentAccountFlow) DeleteStudentByID(studentID int64) error {
+	err := GetSysDB().Delete(&StudentAccount{}, studentID).Error
+	if err != nil {
+		log.Println(err)
+		return errors.New("删除学生信息错误")
+	}
+	return nil
+}

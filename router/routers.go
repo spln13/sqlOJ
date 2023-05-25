@@ -162,6 +162,7 @@ func InitServer() *gin.Engine {
 		studentGroup.GET("/get/all-students/", middlewares.TeacherJWTMiddleware(), student_account.GetAllStudentsHandler) // 获取所有学生信息
 		studentGroup.POST("/reset/", middlewares.TeacherJWTMiddleware(), student_account.StudentResetHandler)             // 重置学生密码
 		studentGroup.GET("/get/score/", middlewares.TeacherJWTMiddleware(), student_account.StudentScoreHandler)          // 获取学生智能合约评分结果
+		studentGroup.DELETE("/delete/", middlewares.TeacherJWTMiddleware(), student_account.StudentDeleteHandler)         // 删除学生
 	}
 	classGroup := server.Group("/api/class")
 	{
